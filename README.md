@@ -1,0 +1,2 @@
+# MiningPersonalityInGerman
+MiningPersonalityInGerman (MiPInG)
