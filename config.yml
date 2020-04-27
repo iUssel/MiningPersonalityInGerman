@@ -1,0 +1,21 @@
+#SAMPLE
+
+initial_settings:
+
+  # sample bool variable
+  read_full_load: false
+
+  # available models
+  model:
+    - SVM
+    - NB
+    - LR
+    - NN
+    - RF
+    - DT
+    - EL
+
+  # method of evaluation
+  # KF = KFold-Cross-Validation
+  # LOO = Leave-One-Out
+  evaluation: KF
