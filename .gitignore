@@ -1,3 +1,6 @@
+## Ignore data folder completly for development
+/data/*
+
 ##Ignore Dot files which are used by pyreverse for class diagram generation
 *.dot
 

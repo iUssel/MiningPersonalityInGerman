@@ -8,8 +8,6 @@ class ConfigLoader:
     TODO docstring
     """
 
-    config = None
-
     def __init__(
         self,
         configPath="",
@@ -68,30 +66,12 @@ class ConfigLoader:
                 "See README file."
             )
 
-        apiKeys['twitter']['ConsumerSecrect'] = (
+        apiKeys['twitter']['ConsumerSecret'] = (
             os.environ.get("twitter_consumer_secret")
         )
-        if apiKeys['twitter']['ConsumerSecrect'] is None:
+        if apiKeys['twitter']['ConsumerSecret'] is None:
             raise _InputError(
                 "No Twitter consumer secret in environment variables. " +
-                "See README file."
-            )
-
-        apiKeys['twitter']['AccessToken'] = (
-            os.environ.get("twitter_access_token")
-        )
-        if apiKeys['twitter']['AccessToken'] is None:
-            raise _InputError(
-                "No Twitter access token in environment variables. " +
-                "See README file."
-            )
-
-        apiKeys['twitter']['AccessTokenSecret'] = (
-            os.environ.get("twitter_access_token_secret")
-        )
-        if apiKeys['twitter']['AccessTokenSecret'] is None:
-            raise _InputError(
-                "No Twitter access token secret in environment variables. " +
                 "See README file."
             )
 

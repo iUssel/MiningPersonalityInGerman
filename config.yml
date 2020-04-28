@@ -1,3 +1,20 @@
+twitter:
+
+  # max tweets per user used for mining
+  user_max_tweet_no: 5
+
+  # if True prints a message, when Twitter's API limits are reached
+  wait_on_rate_limit_notify: True
+
+  # relevant additional tweet attributes
+  # (used while retrieving tweets)
+  # id_str, created_at, user_id, isRetweet and text are always included
+  add_attributes:
+    - lang
+    - is_quote_status
+    - coordinates
+    - place
+
 #SAMPLE
 
 initial_settings:
