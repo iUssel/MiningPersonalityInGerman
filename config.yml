@@ -1,3 +1,10 @@
+# controls which steps to do when starting main.py
+process:
+  scraping: True
+
+scraping:
+  timer: 30
+
 twitter:
 
   # max tweets per user used for mining
@@ -6,6 +13,14 @@ twitter:
   # if True prints a message, when Twitter's API limits are reached
   wait_on_rate_limit_notify: True
 
+  # remove line breaks from tweet text
+  # csv files look odd when they contain new line characters
+  # if set to true tweet texts will be cleaned of those
+  remove_new_line: True
+
+  # ignore retweets, since they are not written by the user
+  ignore_retweets: True
+
   # relevant additional tweet attributes
   # (used while retrieving tweets)
   # id_str, created_at, user_id, isRetweet and text are always included
@@ -13,26 +28,16 @@ twitter:
     - lang
     - is_quote_status
     - coordinates
-    - place
 
-#SAMPLE
-
-initial_settings:
-
-  # sample bool variable
-  read_full_load: false
-
-  # available models
-  model:
-    - SVM
-    - NB
-    - LR
-    - NN
-    - RF
-    - DT
-    - EL
-
-  # method of evaluation
-  # KF = KFold-Cross-Validation
-  # LOO = Leave-One-Out
-  evaluation: KF
+  # for filtering tweets based on location
+  # coordinates are needed
+  # we want to get tweets from multiple locations
+  # (USA and Germany), hence we provide multiple countiries
+  coordinates:
+    country1: # USA
+      northeast: # state Maine, USA
+        lat: 47.459833
+        lng: -66.885417
+      southwest: # state California, USA
+        lat: 32.528832
+        lng: -124.482003

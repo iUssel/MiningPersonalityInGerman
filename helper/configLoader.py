@@ -75,6 +75,24 @@ class ConfigLoader:
                 "See README file."
             )
 
+        apiKeys['twitter']['AccessToken'] = (
+            os.environ.get("twitter_access_token")
+        )
+        if apiKeys['twitter']['AccessToken'] is None:
+            print(
+                'No Twitter access token supplied. ' +
+                'Streaming will be disabled.'
+            )
+
+        apiKeys['twitter']['AccessTokenSec'] = (
+            os.environ.get("twitter_access_token_sec")
+        )
+        if apiKeys['twitter']['AccessTokenSec'] is None:
+            print(
+                'No Twitter access token secret supplied. ' +
+                'Streaming will be disabled.'
+            )
+
         return apiKeys
 
 

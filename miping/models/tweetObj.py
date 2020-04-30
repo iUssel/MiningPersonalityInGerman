@@ -21,9 +21,10 @@ class TweetObj:
         self,
         tweepyStatus=None,
         additionalAttributeList=None,
+        removeNewLineChar=True
     ):
         """
-        TODO init func Class TweetObj
+        TODO init func Class TweetObj maybe reduce complexity
         Creates tweetObj, which can be manually filled
         or via init function
         """
@@ -37,10 +38,27 @@ class TweetObj:
             # is retweet? and text
             if hasattr(tweepyStatus, 'retweeted_status'):
                 self.isRetweet = 1
-                self.text = tweepyStatus.retweeted_status.full_text
+                # if it has attribute full_text, take that
+                if hasattr(tweepyStatus.retweeted_status, 'full_text'):
+                    self.text = tweepyStatus.retweeted_status.full_text
+                elif hasattr(tweepyStatus, 'extended_tweet'):
+                    self.text = tweepyStatus.extended_tweet['full_text']
+                else:
+                    self.text = tweepyStatus.retweeted_status.text
             else:
                 self.isRetweet = 0
-                self.text = tweepyStatus.full_text
+                # if it has attribute full_text, take that
+                if hasattr(tweepyStatus, 'full_text'):
+                    self.text = tweepyStatus.full_text
+                elif hasattr(tweepyStatus, 'extended_tweet'):
+                    self.text = tweepyStatus.extended_tweet['full_text']
+                else:
+                    self.text = tweepyStatus.text
+
+            # now that text if filled, we will remove new line chars
+            if removeNewLineChar is True:
+                self.text = self.text.replace("\n", " ")
+                self.text = self.text.replace("\r", " ")
 
             # if any attributes are given, add them
             if additionalAttributeList is not None:
@@ -61,3 +79,5 @@ class TweetObj:
             if additionalAttributeList is not None:
                 for attr in additionalAttributeList:
                     setattr(self, attr, None)
+
+        return

@@ -49,7 +49,7 @@ class TweetCollection:
         """
 
         # write output csv file
-        with open(full_path, "w", newline='') as outfile:
+        with open(full_path, "w", newline='', encoding='utf-8') as outfile:
             # initialize csv writer
             writer = csv.writer(
                 outfile,
@@ -85,6 +85,7 @@ class TweetCollection:
         self,
         full_path='tweetlist.csv',
         ids_only=False,
+        removeNewLineChar=True,
     ):
         """
         TODO docstring read_tweet_list_file
@@ -92,7 +93,7 @@ class TweetCollection:
         """
 
         # read csv file
-        with open(full_path, "r", newline='') as infile:
+        with open(full_path, "r", newline='', encoding='utf-8') as infile:
             # initialize csv reader
             reader = csv.reader(
                 infile,
@@ -102,7 +103,7 @@ class TweetCollection:
             )
             for row in reader:
                 # convert to custom tweet object
-                twInstance = TweetObj()
+                twInstance = TweetObj(removeNewLineChar=removeNewLineChar)
                 twInstance.id_str = row[0]
 
                 # only if False, we read other attributes
@@ -110,7 +111,13 @@ class TweetCollection:
                     twInstance.created_at = row[1]
                     twInstance.user_id = row[2]
                     twInstance.isRetweet = row[3]
+
                     twInstance.text = row[4]
+                    if removeNewLineChar is True:
+                        # if setted, we will remove new line chars
+                        twInstance.text = twInstance.text.replace("\n", " ")
+                        twInstance.text = twInstance.text.replace("\r", " ")
+
                     if self.addAttrBool:
                         # if there are additional attributes
                         # we will read them column by column
