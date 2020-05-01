@@ -13,7 +13,7 @@ class TweetObj:
             "TweetObj with ID " +
             self.id_str +
             " and User ID " +
-            self.user_id
+            str(self.user_id)
         )
         return returnString
 

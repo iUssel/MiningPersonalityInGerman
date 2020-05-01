@@ -54,7 +54,8 @@ class ConfigLoader:
         # initialize dict
         apiKeys = {
             'twitter': {},
-            'ibm': {}
+            'ibm': {},
+            'google': {},
         }
 
         apiKeys['twitter']['ConsumerKey'] = (
@@ -91,6 +92,16 @@ class ConfigLoader:
             print(
                 'No Twitter access token secret supplied. ' +
                 'Streaming will be disabled.'
+            )
+
+        apiKeys['google']['maps'] = (
+            os.environ.get("google_geocode_api")
+        )
+        if apiKeys['google']['maps'] is None:
+            print(
+                'No Google Geocode API key supplied. ' +
+                'Locations lookup will be disabled. ' +
+                'Only necessary if scraping is True.'
             )
 
         return apiKeys

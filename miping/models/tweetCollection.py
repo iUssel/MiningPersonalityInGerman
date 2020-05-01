@@ -140,3 +140,18 @@ class TweetCollection:
         idList = list(tweets.id_str for tweets in self.tweetList)
 
         return idList
+
+    def get_distinct_user_id_list(
+        self,
+    ):
+        """
+        TODO docstring get_distinct_user_id_list
+        """
+
+        # get user ids from tweets
+        idList = list(tweets.user_id for tweets in self.tweetList)
+
+        # remove duplicate user ids
+        userIDList = list(dict.fromkeys(idList))
+
+        return userIDList

@@ -1,5 +1,6 @@
 from .profile import Profile
 
+
 class ProfileCollection:
     """
     TODO docstring Class ProfileCollection

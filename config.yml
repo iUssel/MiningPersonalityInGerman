@@ -3,12 +3,30 @@ process:
   scraping: True
 
 scraping:
-  timer: 30
+  timer: 10
+  # max follower number for eligible users
+  # 0 = no limit
+  user_max_followers: 10000
+  # minimum tweet number for eligible users (incl. retweets)
+  # 0 = no limit
+  users_min_tweet_no: 400
+
+  # the number of users to select followers from
+  # the API is limited to 15 calls per 15 minutes
+  sampling_follower: 15
+
+  # how many eligible users should be (randomly) included
+  # from the location scraping
+  sampling_location_users: 100
+
+  # total sample size of users we try to achieve
+  total_sample_size: 1000
 
 twitter:
 
   # max tweets per user used for mining
-  user_max_tweet_no: 5
+  # (3200 is a limit given by Twitter)
+  user_max_tweet_no: 3200
 
   # if True prints a message, when Twitter's API limits are reached
   wait_on_rate_limit_notify: True
@@ -27,7 +45,6 @@ twitter:
   add_attributes:
     - lang
     - is_quote_status
-    - coordinates
 
   # for filtering tweets based on location
   # coordinates are needed
@@ -35,9 +52,21 @@ twitter:
   # (USA and Germany), hence we provide multiple countiries
   coordinates:
     country1: # USA
+      name: 'USA'
+      lang: 'en'
       northeast: # state Maine, USA
         lat: 47.459833
         lng: -66.885417
       southwest: # state California, USA
         lat: 32.528832
         lng: -124.482003
+
+#    country2:
+#      name: 'Germany'
+#      lang: 'de'
+#      northeast: # Mecklenburg-Vorpommern according to Google API
+#        lat: 54.6847005
+#        lng: 14.4122569
+#      southwest: # Baden-Württemberg according to Google API
+#        lat: 47.5323664
+#        lng: 7.511756799999999

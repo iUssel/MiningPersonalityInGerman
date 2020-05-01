@@ -68,16 +68,52 @@ def main():
 
     for tweet in fullTweets.tweetList:
         print(tweet.text)
+
+    userIDListasd=['13310352']
+    usersasd = twitter.getUsersByList(userIDList=userIDListasd)
+    for user in usersasd.userList:
+        print(user)
+    usersasd.write_user_list_file(
+        full_path='data/userlist.csv'
+        )
+    kasdk = miping.models.UserCollection()
+    kasdk.read_user_list_file(
+        full_path='data/userlist.csv'
+    )
+    for user in kasdk.userList:
+        print(user)
     """
 
-    if globalConfig["process"]["scraping"] is True:
-        print("Begin Twitter Scraping")
+    userIDListasd=['21553001']
+    usersasd = twitter.getUsersByList(userIDList=userIDListasd)
+
+    maps = miping.interfaces.MapsAPI(
+        apiKey = apiKeys['google']['maps']
+    )
+
+    for user in usersasd.userList:
+        print(user.screen_name)
+        result = maps.get_geocode(
+            user.location
+        )
+        print(result)
+
+    if globalConfig["process"]["scraping"] is False:
+        # initialize object
         scraping = helper.Scraping(
             config=globalConfig,
-            twitter=twitter
+            twitter=twitter,
+            writeFiles=True
         )
-        scraping.doScraping()
-        print("End Twitter Scraping")
+        # get data from stream
+        scrapedTweets = scraping.doScrapingByLocation()
+
+        # select users and check if they are eligible
+        userIDList = scraping.doUserSelection(
+            tweetSampleCol=scrapedTweets,
+        )
+        print("followers after")
+        print(len(userIDList.userList))
 
 
 def initialize():

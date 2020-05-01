@@ -3,6 +3,8 @@ import time
 
 from ..models import TweetObj
 from ..models import TweetCollection
+from ..models import User
+from ..models import UserCollection
 
 
 class TwitterAPI:
@@ -66,6 +68,62 @@ class TwitterAPI:
         user = self.api.get_user(screen_name=screen_name)
 
         return user.id_str
+    
+    def getUsersByList(
+        self,
+        userIDList,
+        maxFollowerCount=0,
+        minStatusesCount=0,
+    ):
+        """
+        TODO docstring funcGetUsersByList
+        """
+        userCol = UserCollection()
+
+        # for all IDs in list, get the user object
+        apiChunks = 100
+
+        # twitter's API acceppts only 100 users at a time
+        # so we split our given list in 100er chunks
+        chunks = [
+            userIDList[x:x+apiChunks] for x in range(0, len(userIDList), apiChunks)
+        ]
+
+        # for each 100er chunk, we will perform an API request
+        for chunkList in chunks:
+            # get all users in given id list
+            result = self.api.lookup_users(
+                user_ids=chunkList,
+            )
+
+            for userIter in result:
+                if userIter.protected is True:
+                    # skip private/protected users
+                    continue
+                # if set, we will check the user requirements
+                # follower count and statuses count
+                if minStatusesCount > 0:
+                    # check for number of statuses
+                    if userIter.statuses_count < minStatusesCount:
+                        # user does not have necessary number of tweets
+                        # skip this user, otherwise continue
+                        continue
+
+                if maxFollowerCount > 0:
+                    # check for number of followers
+                    if userIter.followers_count > maxFollowerCount:
+                        # user has too many followers
+                        # skip this user, otherwise continue
+                        continue
+
+                # convert incoming user to custom tweet object
+                userInstance = User(
+                    userIter,
+                )
+                # add user to collection
+                userCol.funcAddUser(userInstance)
+
+        return userCol
 
     def funcGetTweetListByUser(
         self,
@@ -103,7 +161,7 @@ class TwitterAPI:
                     # if it's a retweet, we check if we skip it
                     if hasattr(tweet, 'retweeted_status'):
                         if self.ignoreRetweets is True:
-                            # skip this tweet, otherwise continue
+                            # skip this tweet, otherwise add tweet to list
                             continue
 
                     # convert to custom tweet object
@@ -157,6 +215,13 @@ class TwitterAPI:
             )
 
             for tweet in result:
+
+                # if it's a retweet, we check if we skip it
+                if hasattr(tweet, 'retweeted_status'):
+                    if self.ignoreRetweets is True:
+                        # skip this tweet, otherwise add tweet to list
+                        continue
+
                 # convert to custom tweet object
                 twInstance = TweetObj(
                     tweet,
@@ -173,17 +238,32 @@ class TwitterAPI:
 
     def get_followers_of_user(
         self,
-        userID,
+        userIDList,
+        limit=0
     ):
         """
         TODO doctstring get_followers_of_user
         """
-        pass
+
+        followerIDs = []
+
+        for userID in userIDList:
+            # get follower ids of specified user
+            for user in tweepy.Cursor(
+                self.api.followers_ids,
+                user_id=userID,
+            ).items(limit):
+                # add ID to list
+                followerIDs.append(user)
+
+        return followerIDs
 
     def stream_tweets_by_location(
         self,
         location,
         timeLimit=5,
+        maxFollowerCount=0,
+        minStatusesCount=0,
     ):
         """
         TODO docstring stream_tweets_by_location
@@ -211,7 +291,11 @@ class TwitterAPI:
         myStreamListener = _MyStreamListener(
             tweetCollect=tweetCol,
             additionalAttributes=self.additionalAttributes,
-            time_limit=timeLimit
+            time_limit=timeLimit,
+            removeNewLineChar=self.removeNewLineChar,
+            ignoreRetweets=self.ignoreRetweets,
+            maxFollowerCount=maxFollowerCount,
+            minStatusesCount=minStatusesCount,
         )
         myStream = tweepy.Stream(
             auth=self.api.auth,
@@ -237,7 +321,9 @@ class _MyStreamListener(
         additionalAttributes,
         time_limit=10,
         removeNewLineChar=True,
-        ignoreRetweets=True
+        ignoreRetweets=True,
+        maxFollowerCount=0,
+        minStatusesCount=0,
     ):
         """
         TODO docstring __init__
@@ -252,6 +338,13 @@ class _MyStreamListener(
         self.removeNewLineChar = removeNewLineChar
         self.ignoreRetweets = ignoreRetweets
 
+        self.maxFollowerCount = maxFollowerCount
+        self.minStatusesCount = minStatusesCount
+
+        # keep track of how many tweets we skip
+        self.skipFollowerCounter = 0
+        self.skipStatusesCounter = 0
+
         super(_MyStreamListener, self).__init__()
 
     def on_status(
@@ -263,6 +356,30 @@ class _MyStreamListener(
         """
         # check time limit
         if (time.time() - self.start_time) < self.limit:
+            # if it's a retweet, we check if we skip it
+            if hasattr(tweet, 'retweeted_status'):
+                if self.ignoreRetweets is True:
+                    # skip this tweet, otherwise continue
+                    return True
+
+            # if set, we will check the user requirements
+            # follower count and statuses count
+            if self.minStatusesCount > 0:
+                # check for number of statuses
+                if tweet.user.statuses_count < self.minStatusesCount:
+                    # user does not have necessary number of tweets
+                    # skip this tweet, otherwise continue
+                    self.skipStatusesCounter = self.skipStatusesCounter + 1
+                    return True
+
+            if self.maxFollowerCount > 0:
+                # check for number of followers
+                if tweet.user.followers_count > self.maxFollowerCount:
+                    # user has too many followers
+                    # skip this tweet, otherwise continue
+                    self.skipFollowerCounter = self.skipFollowerCounter + 1
+                    return True
+
             # convert incoming tweet to custom tweet object
             twInstance = TweetObj(
                 tweet,
@@ -276,6 +393,14 @@ class _MyStreamListener(
             # time is up
             # returning false will end stream
             print('Ending stream')
+            print(
+                "Skipped " +
+                str(self.skipStatusesCounter) +
+                " tweet(s) because user has to few tweets" +
+                " and skipped " +
+                str(self.skipFollowerCounter) +
+                " tweet(s) because user has too many followers."
+            )
             return False
 
     def on_error(
