@@ -1,4 +1,5 @@
 import os
+
 import helper
 import miping
 
@@ -11,12 +12,6 @@ def main():
 
     # get configuration
     globalConfig, apiKeys = initialize()
-
-    # print basic configuration
-    print(
-        "Max tweets per user: " +
-        str(globalConfig["twitter"]["user_max_tweet_no"])
-    )
 
     # initialize Twitter API with keys
     twitter = miping.interfaces.TwitterAPI(
@@ -33,87 +28,43 @@ def main():
         ignoreRetweets=globalConfig["twitter"]["ignore_retweets"],
     )
 
-    """
-    # test function
-    userID = twitter.funcGetUserID(
-        screen_name='iUssel'
-    )
-    print(userID)
-
-    # test function
-    twCol = twitter.funcGetTweetListByUser(
-        userID='13310352',
-        limit=globalConfig["twitter"]["user_max_tweet_no"],
-    )  # '13310352')
-
-    twCol.write_tweet_list_file(full_path='data/tweetlist.csv', ids_only=True)
-
-    newTwCol = miping.models.TweetCollection(
-        globalConfig["twitter"]["add_attributes"]
-    )
-
-    newTwCol.read_tweet_list_file(
-        full_path='data/tweetlist.csv',
-        ids_only=True
-    )
-    """
-    """
-    listID = ['488827559187333121']
-    # test get tweet by id
-    fullTweets, invalidIDs = twitter.get_tweets_by_list(
-        listID  # newTwCol.get_id_list()
-    )
-
-    print("Invalid " + str(invalidIDs))
-
-    for tweet in fullTweets.tweetList:
-        print(tweet.text)
-
-    userIDListasd=['13310352']
-    usersasd = twitter.getUsersByList(userIDList=userIDListasd)
-    for user in usersasd.userList:
-        print(user)
-    usersasd.write_user_list_file(
-        full_path='data/userlist.csv'
+    if globalConfig["process"]["scraping"] is True:
+        # initialize maps interface
+        maps = miping.interfaces.MapsAPI(
+            apiKey=apiKeys['google']['maps']
         )
-    kasdk = miping.models.UserCollection()
-    kasdk.read_user_list_file(
-        full_path='data/userlist.csv'
-    )
-    for user in kasdk.userList:
-        print(user)
-    """
-
-    userIDListasd=['21553001']
-    usersasd = twitter.getUsersByList(userIDList=userIDListasd)
-
-    maps = miping.interfaces.MapsAPI(
-        apiKey = apiKeys['google']['maps']
-    )
-
-    for user in usersasd.userList:
-        print(user.screen_name)
-        result = maps.get_geocode(
-            user.location
-        )
-        print(result)
-
-    if globalConfig["process"]["scraping"] is False:
         # initialize object
         scraping = helper.Scraping(
             config=globalConfig,
             twitter=twitter,
-            writeFiles=True
+            maps=maps,
         )
         # get data from stream
-        scrapedTweets = scraping.doScrapingByLocation()
-
-        # select users and check if they are eligible
-        userIDList = scraping.doUserSelection(
-            tweetSampleCol=scrapedTweets,
+        scrapedTweetsDict = scraping.doScrapingByLocation(
+            readFiles=globalConfig["scraping"]["scrapingByLoc"]["readFile"],
+            writeFiles=globalConfig["scraping"]["scrapingByLoc"]["writeFile"]
         )
-        print("followers after")
-        print(len(userIDList.userList))
+
+        for country in globalConfig['twitter']['coordinates']:
+            countryConf = globalConfig['twitter']['coordinates'][country]
+            # select users and some followers
+            locationUsersCol, eligibleFolCol = scraping.doFollowerSelection(
+                tweetSampleCol=scrapedTweetsDict[countryConf['name']],
+                countryName=countryConf['name'],
+                readFiles=globalConfig["scraping"]["followerSelect"]["readFile"],
+                writeFiles=globalConfig["scraping"]["followerSelect"]["writeFile"]
+            )
+
+            verifiedUsers, verifiedTweetCol = scraping.doUserSelection(
+                country=country,
+                locationUsersCol=locationUsersCol,
+                eligibleFolCol=eligibleFolCol,
+                readFiles=globalConfig["scraping"]["userSelect"]["readFile"],
+                writeFiles=globalConfig["scraping"]["userSelect"]["writeFile"]
+            )
+            
+            print(len(verifiedUsers.userList))
+            print(len(verifiedTweetCol.get_distinct_user_id_list()))
 
 
 def initialize():

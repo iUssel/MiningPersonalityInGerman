@@ -1,2 +1,0 @@
-
-    maps = miping.interfaces.MapsAPI(

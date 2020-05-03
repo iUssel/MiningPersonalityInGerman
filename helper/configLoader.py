@@ -95,11 +95,11 @@ class ConfigLoader:
             )
 
         apiKeys['google']['maps'] = (
-            os.environ.get("google_geocode_api")
+            os.environ.get("google_places_api")
         )
         if apiKeys['google']['maps'] is None:
             print(
-                'No Google Geocode API key supplied. ' +
+                'No Google Places API key supplied. ' +
                 'Locations lookup will be disabled. ' +
                 'Only necessary if scraping is True.'
             )

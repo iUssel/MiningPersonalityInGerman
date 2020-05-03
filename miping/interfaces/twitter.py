@@ -68,27 +68,27 @@ class TwitterAPI:
         user = self.api.get_user(screen_name=screen_name)
 
         return user.id_str
-    
+
     def getUsersByList(
         self,
         userIDList,
         maxFollowerCount=0,
         minStatusesCount=0,
+        skipPrivateUsers=True,
     ):
         """
         TODO docstring funcGetUsersByList
         """
         userCol = UserCollection()
 
-        # for all IDs in list, get the user object
-        apiChunks = 100
-
         # twitter's API acceppts only 100 users at a time
         # so we split our given list in 100er chunks
+        apiPart = 100
         chunks = [
-            userIDList[x:x+apiChunks] for x in range(0, len(userIDList), apiChunks)
+            userIDList[x:x+apiPart] for x in range(0, len(userIDList), apiPart)
         ]
 
+        # for all IDs in list, get the user object
         # for each 100er chunk, we will perform an API request
         for chunkList in chunks:
             # get all users in given id list
@@ -97,7 +97,7 @@ class TwitterAPI:
             )
 
             for userIter in result:
-                if userIter.protected is True:
+                if userIter.protected is True and skipPrivateUsers is True:
                     # skip private/protected users
                     continue
                 # if set, we will check the user requirements
@@ -134,6 +134,7 @@ class TwitterAPI:
         TODO docstring funcGetTweetListByUser
         Return id list and tweet col
         limit=0 -> no limit
+        limit including RTs! 3200 is max limit
 
         will be empty if error occured
         """
@@ -155,7 +156,9 @@ class TwitterAPI:
                 for tweet in tweepy.Cursor(
                     self.api.user_timeline,
                     user_id=userID,
-                    tweet_mode='extended'
+                    tweet_mode='extended',
+                    include_rts=(not self.ignoreRetweets),
+                    count=200  # API allows up to 200 tweets per request
                 ).items(limit):
 
                     # if it's a retweet, we check if we skip it
@@ -176,6 +179,7 @@ class TwitterAPI:
             except tweepy.error.TweepError as e:
                 print("An error occured, probably your user is private.")
                 print(str(e))
+                print('UserID = ' + str(userID))
 
         return tweetCol
 

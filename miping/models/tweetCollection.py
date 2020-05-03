@@ -36,6 +36,17 @@ class TweetCollection:
 
         return
 
+    def add_tweet_collection(
+        self,
+        tweetCol,
+    ):
+        """
+        TODO add_tweet_collection
+        """
+        self.tweetList.extend(tweetCol.tweetList)
+
+        return
+
     def write_tweet_list_file(
         self,
         full_path='tweetlist.csv',
