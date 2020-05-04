@@ -1,5 +1,5 @@
 import random
-import json
+
 from pathlib import Path
 from miping.models.tweetCollection import TweetCollection
 from miping.models.userCollection import UserCollection
@@ -193,7 +193,7 @@ class Scraping:
 
             # retrieve user ids from tweets
             userList = tweetSampleCol.get_distinct_user_id_list()
-
+            print(userList)
             # get users based on IDs
             # (follower and tweet count already ensured)
             locationUsersCol = self.twitter.getUsersByList(
@@ -212,6 +212,17 @@ class Scraping:
                 userIDList=randList,
                 limit=5000  # 5000 users are returned per API call
             )
+
+            # remove duplicates inside follower list
+            followers = list(set(followers))
+
+            # remove duplicates from followers if
+            # already in locationUsersCol
+            # first get the ids apparent in both lists
+            duplicates = set(userList).intersection(followers)
+            # second only take the user id (idU) if it's not in 
+            # the duplicate list
+            followers = [idU for idU in followers if idU not in duplicates]
 
             # select eligible followers
             # tweet count and follower count will be checked
@@ -308,13 +319,15 @@ class Scraping:
 
         else:
             # no loading from file
-            sampling_location = self.config['scraping']['sampling_location_users']
+            sampling_location = (
+                self.config['scraping']['sampling_location_users']
+            )
             sampling_total = self.config['scraping']['total_sample_size']
             sampling_other = sampling_total - sampling_location
 
             # verify that user's language and location is correct
             # this call is for already location verified users
-            verifiedUsers, verifiedTweetCol= (
+            verifiedUsers, verifiedTweetCol = (
                 self.verifyUserLocAndLang(
                     countryID=country,
                     usersCol=locationUsersCol,
@@ -441,9 +454,17 @@ class Scraping:
                     )
                     verifiedUsers.funcAddUser(user)
                     verifiedCounter = verifiedCounter + 1
+                    if (verifiedCounter % (userLimit/10)) == 0:
+                        # give progress each 10 percent step
+                        print(
+                            "Current progress: " +
+                            str(verifiedCounter) +
+                            " verified users."
+                        )
 
             if verifiedCounter >= userLimit:
                 break
+
 
         print(
             'Number of inspected users ' +

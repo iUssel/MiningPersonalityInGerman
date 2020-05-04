@@ -32,7 +32,13 @@ class User:
             self.screen_name = user_entity.screen_name
             self.followers = user_entity.followers_count
             self.tweet_count = user_entity.statuses_count
-            self.location = user_entity.location
+
+            # remove any new line char from location
+            # this is confusing in csv files
+            location = user_entity.location
+            location = location.replace("\n", " ")
+            location = location.replace("\r", " ")
+            self.location = location
 
         else:
             # initialize empty values

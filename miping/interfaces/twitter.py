@@ -1,6 +1,8 @@
 import tweepy
 import time
 
+from datetime import datetime
+
 from ..models import TweetObj
 from ..models import TweetCollection
 from ..models import User
@@ -247,18 +249,49 @@ class TwitterAPI:
     ):
         """
         TODO doctstring get_followers_of_user
+        # 5000 is recommended in limit, to minimize API calls
         """
 
         followerIDs = []
+        sleepTime = 900
 
-        for userID in userIDList:
-            # get follower ids of specified user
-            for user in tweepy.Cursor(
-                self.api.followers_ids,
-                user_id=userID,
-            ).items(limit):
-                # add ID to list
-                followerIDs.append(user)
+        # twitter's API limits us to 15 calls
+        # so we split our given list in 15er chunks
+        # after that we need to wait 15 minutes
+        # this prevents timeouts of the connection
+        apiPart = 15
+        chunks = [
+            userIDList[x:x+apiPart] for x in range(0, len(userIDList), apiPart)
+        ]
+        chunkLen = len(chunks)
+
+        # for all IDs in list, get followers
+        # for each 15er chunk, we will perform an API request
+        # and sleep afterwards
+        for num, chunkList in enumerate(chunks):
+            for userID in chunkList:
+                # get follower ids of specified user
+                for user in tweepy.Cursor(
+                    self.api.followers_ids,
+                    user_id=userID,
+                ).items(limit):
+                    # add ID to list
+                    followerIDs.append(str(user))
+            if ((num + 1) < chunkLen):
+                # num is 0 based index
+                # if we have another chunk waiting, we need to sleep
+                # to comply with API limit
+                print(
+                    "Rate limit reached for Followers. Sleeping for: " +
+                    str(sleepTime)
+                )
+                # print current time
+                now = datetime.now()
+                current_time = now.strftime("%H:%M:%S")
+                print("Current Time =", current_time)
+                # sleep for 15 minutes
+                # necessary to avoid timeouts in tweepy
+                time.sleep(sleepTime)
 
         return followerIDs
 

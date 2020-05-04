@@ -1,6 +1,7 @@
 # controls which steps to do when starting main.py
 process:
   scraping: True
+  dataPreparation: False
 
 scraping:
   # number of seconds to stream tweet data
@@ -72,24 +73,27 @@ twitter:
   # we want to get tweets from multiple locations
   # (USA and Germany), hence we provide multiple countiries
   coordinates:
-    USA: # USA
-      name: 'USA' # should match Google Places API result
-      lang: 'en'
+    Germany:
+      name: 'Germany'
+      lang: 'de'
       langThreshold: 0.8
       otherLangThreshold: 0.05
-      northeast: # state Maine, USA
-        lat: 47.459833
-        lng: -66.885417
-      southwest: # state California, USA
-        lat: 32.528832
-        lng: -124.482003
+      northeast: # Mecklenburg-Vorpommern according to Google API
+        lat: 54.6847005
+        lng: 14.4122569
+      southwest: # Baden-Württemberg according to Google API
+        lat: 47.5323664
+        lng: 7.511756799999999
+#    USA: # USA
+#      name: 'USA' # should match Google Places API result
+#      lang: 'en'
+#      langThreshold: 0.8
+#      otherLangThreshold: 0.05
+#      northeast: # state Maine, USA
+#        lat: 47.459833
+#        lng: -66.885417
+#      southwest: # state California, USA
+#        lat: 32.528832
+#        lng: -124.482003
 
-#    country2:
-#      name: 'Germany'
-#      lang: 'de'
-#      northeast: # Mecklenburg-Vorpommern according to Google API
-#        lat: 54.6847005
-#        lng: 14.4122569
-#      southwest: # Baden-Württemberg according to Google API
-#        lat: 47.5323664
-#        lng: 7.511756799999999
+

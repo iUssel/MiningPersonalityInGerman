@@ -29,6 +29,7 @@ def main():
     )
 
     if globalConfig["process"]["scraping"] is True:
+        scrapeConf = globalConfig["scraping"]
         # initialize maps interface
         maps = miping.interfaces.MapsAPI(
             apiKey=apiKeys['google']['maps']
@@ -41,8 +42,8 @@ def main():
         )
         # get data from stream
         scrapedTweetsDict = scraping.doScrapingByLocation(
-            readFiles=globalConfig["scraping"]["scrapingByLoc"]["readFile"],
-            writeFiles=globalConfig["scraping"]["scrapingByLoc"]["writeFile"]
+            readFiles=scrapeConf["scrapingByLoc"]["readFile"],
+            writeFiles=scrapeConf["scrapingByLoc"]["writeFile"]
         )
 
         for country in globalConfig['twitter']['coordinates']:
@@ -51,20 +52,44 @@ def main():
             locationUsersCol, eligibleFolCol = scraping.doFollowerSelection(
                 tweetSampleCol=scrapedTweetsDict[countryConf['name']],
                 countryName=countryConf['name'],
-                readFiles=globalConfig["scraping"]["followerSelect"]["readFile"],
-                writeFiles=globalConfig["scraping"]["followerSelect"]["writeFile"]
+                readFiles=scrapeConf["followerSelect"]["readFile"],
+                writeFiles=scrapeConf["followerSelect"]["writeFile"]
             )
 
             verifiedUsers, verifiedTweetCol = scraping.doUserSelection(
                 country=country,
                 locationUsersCol=locationUsersCol,
                 eligibleFolCol=eligibleFolCol,
-                readFiles=globalConfig["scraping"]["userSelect"]["readFile"],
-                writeFiles=globalConfig["scraping"]["userSelect"]["writeFile"]
+                readFiles=scrapeConf["userSelect"]["readFile"],
+                writeFiles=scrapeConf["userSelect"]["writeFile"]
             )
-            
+
             print(len(verifiedUsers.userList))
             print(len(verifiedTweetCol.get_distinct_user_id_list()))
+
+    if globalConfig["process"]["dataPreparation"] is True:
+        dataPre = miping.training.DataPreparation(
+        )
+
+        # Test TODO CONTINUE
+        newTwCol = miping.models.TweetCollection(
+            additionalAttributes=None
+        )
+        newTwCol.read_tweet_list_file(
+            full_path='data/trash/streamedGermanytweet.csv',
+            ids_only=False
+        )
+
+        laksd = newTwCol.get_tweets_of_userid(userID='405251081')
+
+        textString = laksd.combine_tweet_text()
+        print(textString)
+        print('After')
+        textString = dataPre.clean_text(
+            textString=textString
+        )
+        print(textString)
+
 
 
 def initialize():

@@ -166,3 +166,48 @@ class TweetCollection:
         userIDList = list(dict.fromkeys(idList))
 
         return userIDList
+
+    def get_tweets_of_userid(
+        self,
+        userID
+    ):
+        """
+        TODO docstring get_tweet_of_userid
+        give userID and return tweetCollection with tweets
+        by that user
+        """
+        # initialize new tweet collection
+        if self.addAttrBool:
+            twCol = TweetCollection(
+                additionalAttributes=self.additionalAttributes
+            )
+        else:
+            twCol = TweetCollection()
+
+        # filter current tweet list to get only tweets
+        # relevant to userID
+        userTweetList = [
+            tweet for tweet in self.tweetList if tweet.user_id == userID
+        ]
+
+        # assign filtered list to new collection
+        twCol.tweetList = userTweetList
+
+        return twCol
+
+    def combine_tweet_text(
+        self,
+    ):
+        """
+        TODO docstring combine_tweet_text
+
+        takes all tweets of list and combines the text
+        in one string
+        """
+        # join tweet texts with space in one string
+        # it will access each tweets text attribute
+        # of the tweetList
+        totalText = ' '.join(tweet.text for tweet in self.tweetList)
+
+        return totalText
+

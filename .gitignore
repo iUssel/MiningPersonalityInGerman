@@ -1,7 +1,10 @@
+## Visual Studio code temp file
+tempCodeRunnerFile.py
+
 ## Ignore data folder completly for development
 /data/*
 
-##Ignore Dot files which are used by pyreverse for class diagram generation
+## Ignore Dot files which are used by pyreverse for class diagram generation
 *.dot
 
 ## Ignore .evn file - as it contains API keys, which should be kept private
