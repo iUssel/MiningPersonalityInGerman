@@ -27,11 +27,18 @@ class MapsAPI:
         TODO docstring get_address
         """
 
-        address_result = self.gmaps.find_place(
-            input=geoString,
-            input_type='textquery',
-            fields=['formatted_address'],
-            language='en'  # result language should be unified
-        )
+        try:
+            address_result = self.gmaps.find_place(
+                input=geoString,
+                input_type='textquery',
+                fields=['formatted_address'],
+                language='en'  # result language should be unified
+            )
+        except googlemaps.exceptions.ApiError as e:
+            # some times there are maps errors
+            # to help debugging we will print the geoString
+            print("GeoString for address was:")
+            print(str(geoString))
+            raise e
 
         return address_result

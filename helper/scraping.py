@@ -193,7 +193,7 @@ class Scraping:
 
             # retrieve user ids from tweets
             userList = tweetSampleCol.get_distinct_user_id_list()
-            print(userList)
+
             # get users based on IDs
             # (follower and tweet count already ensured)
             locationUsersCol = self.twitter.getUsersByList(
