@@ -220,7 +220,7 @@ class Scraping:
             # already in locationUsersCol
             # first get the ids apparent in both lists
             duplicates = set(userList).intersection(followers)
-            # second only take the user id (idU) if it's not in 
+            # second only take the user id (idU) if it's not in
             # the duplicate list
             followers = [idU for idU in followers if idU not in duplicates]
 
@@ -464,7 +464,6 @@ class Scraping:
 
             if verifiedCounter >= userLimit:
                 break
-
 
         print(
             'Number of inspected users ' +

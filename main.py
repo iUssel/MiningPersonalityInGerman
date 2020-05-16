@@ -28,6 +28,9 @@ def main():
         ignoreRetweets=globalConfig["twitter"]["ignore_retweets"],
     )
 
+    # initialize result variables
+    finalTweets = {}
+    finalUsers = {}
     if globalConfig["process"]["scraping"] is True:
         scrapeConf = globalConfig["scraping"]
         # initialize maps interface
@@ -64,32 +67,56 @@ def main():
                 writeFiles=scrapeConf["userSelect"]["writeFile"]
             )
 
-            print(len(verifiedUsers.userList))
-            print(len(verifiedTweetCol.get_distinct_user_id_list()))
+            finalTweets[country] = verifiedTweetCol
+            finalUsers[country] = verifiedUsers
 
     if globalConfig["process"]["dataPreparation"] is True:
-        dataPre = miping.training.DataPreparation(
+        preparationConfig = globalConfig["preparationProcess"]
+
+        # ibm api init
+        ibmApi = miping.interfaces.IbmAPI(
+            apiKey=apiKeys['ibm']['api'],
+            url=apiKeys['ibm']['url'],
         )
 
-        # Test TODO CONTINUE
-        newTwCol = miping.models.TweetCollection(
-            additionalAttributes=None
-        )
-        newTwCol.read_tweet_list_file(
-            full_path='data/trash/streamedGermanytweet.csv',
-            ids_only=False
+        preparation = helper.PreparationProcess(
+            config=globalConfig,
+            ibm=ibmApi
         )
 
-        laksd = newTwCol.get_tweets_of_userid(userID='405251081')
+        # contains profile collections for each country
+        # will be filled in next step
+        globalProfileCollection = {}
 
-        textString = laksd.combine_tweet_text()
-        print(textString)
-        print('After')
-        textString = dataPre.clean_text(
-            textString=textString
-        )
-        print(textString)
+        for country in globalConfig['twitter']['coordinates']:
+            countryConf = globalConfig['twitter']['coordinates'][country]
+            if preparationConfig["condenseTweets"]["readFile"] is True:
+                # if we read from file, we do not need any input
+                finalTweets[country] = None
+                finalUsers[country] = None
+            # prepare text and create empty profiles
+            localProfileCollection = preparation.do_condense_tweets(
+                verifiedTweetCol=finalTweets[country],
+                verifiedUsers=finalUsers[country],
+                language=countryConf['lang'],
+                country=country,
+                readFiles=preparationConfig["condenseTweets"]["readFile"],
+                writeFiles=preparationConfig["condenseTweets"]["writeFile"]
+            )
 
+            # for desginated countries fill profiles with ibm data
+            if country in preparationConfig['countriesIBM']:
+                # get profiles for each user from IBM
+                localProfileCollection = preparation.do_get_ibm_profiles(
+                    profileCol=localProfileCollection,
+                    country=country,
+                    readFiles=preparationConfig["getIBMprofile"]["readFile"],
+                    writeFiles=preparationConfig["getIBMprofile"]["writeFile"]
+                )
+
+            globalProfileCollection[country] = localProfileCollection
+
+        # TODO save profiles for LIWC (one file for each profile)
 
 
 def initialize():

@@ -210,4 +210,3 @@ class TweetCollection:
         totalText = ' '.join(tweet.text for tweet in self.tweetList)
 
         return totalText
-

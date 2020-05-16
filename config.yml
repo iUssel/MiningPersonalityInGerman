@@ -1,7 +1,7 @@
 # controls which steps to do when starting main.py
 process:
-  scraping: True
-  dataPreparation: False
+  scraping: False
+  dataPreparation: True
 
 scraping:
   # number of seconds to stream tweet data
@@ -43,6 +43,24 @@ scraping:
   # determines if the location of followers should be validated or not
   validateLocation: True
 
+preparationProcess:
+
+  # list of countries (subset of countries defined under twitter)
+  # for these countries we will get profiles from ibm
+  countriesIBM:
+    - USA
+
+  # determines if files are written during the process or read
+  # helps to recreate steps with the same data
+  condenseTweets:
+    writeFile: False
+    readFile: True
+
+  getIBMprofile:
+    writeFile: False
+    readFile: True
+    
+
 twitter:
 
   # max tweets per user used for mining
@@ -73,27 +91,27 @@ twitter:
   # we want to get tweets from multiple locations
   # (USA and Germany), hence we provide multiple countiries
   coordinates:
-    Germany:
-      name: 'Germany'
-      lang: 'de'
+    USA:
+      name: 'USA' # should match Google Places API result
+      lang: 'en'
       langThreshold: 0.8
       otherLangThreshold: 0.05
-      northeast: # Mecklenburg-Vorpommern according to Google API
-        lat: 54.6847005
-        lng: 14.4122569
-      southwest: # Baden-Württemberg according to Google API
-        lat: 47.5323664
-        lng: 7.511756799999999
-#    USA: # USA
-#      name: 'USA' # should match Google Places API result
-#      lang: 'en'
+      northeast: # state Maine, USA
+        lat: 47.459833
+        lng: -66.885417
+      southwest: # state California, USA
+        lat: 32.528832
+        lng: -124.482003
+
+#    Germany:
+#      name: 'Germany'
+#      lang: 'de'
 #      langThreshold: 0.8
 #      otherLangThreshold: 0.05
-#      northeast: # state Maine, USA
-#        lat: 47.459833
-#        lng: -66.885417
-#      southwest: # state California, USA
-#        lat: 32.528832
-#        lng: -124.482003
-
+#      northeast: # Mecklenburg-Vorpommern according to Google API
+#        lat: 54.6847005
+#        lng: 14.4122569
+#      southwest: # Baden-Württemberg according to Google API
+#        lat: 47.5323664
+#        lng: 7.511756799999999
 

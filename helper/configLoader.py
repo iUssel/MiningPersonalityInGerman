@@ -104,6 +104,17 @@ class ConfigLoader:
                 'Only necessary if scraping is True.'
             )
 
+        apiKeys['ibm']['url'] = (
+            os.environ.get("IBM_URL")
+        )
+        if apiKeys['ibm']['url'] is None:
+            print('No IBM URL in .env')
+        apiKeys['ibm']['api'] = (
+            os.environ.get("IBM_IAM_APIKEY")
+        )
+        if apiKeys['ibm']['api'] is None:
+            print('No IBM API key in .env')
+
         return apiKeys
 
 

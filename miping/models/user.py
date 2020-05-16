@@ -39,7 +39,7 @@ class User:
             location = location.replace("\n", " ")
             location = location.replace("\r", " ")
             # coordinates work not well with google api
-            location = location.replace("°","")
+            location = location.replace("°", "")
             location = location.replace('.', ' ')
             self.location = location
 
