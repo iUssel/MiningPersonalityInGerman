@@ -47,6 +47,7 @@ preparationProcess:
 
   # list of countries (subset of countries defined under twitter)
   # for these countries we will get profiles from ibm
+  # e.g. USA (or NONE, if nothing should be retrieved)
   countriesIBM:
     - USA
 
@@ -59,6 +60,17 @@ preparationProcess:
   getIBMprofile:
     writeFile: False
     readFile: True
+  
+  # for LIWC we always write the files if read is false
+  # since it's a separate program
+  liwc:
+    writeFile: True
+    readFile: False
+    # relative path f0r LIWC results 
+    path: 'data/liwcInput/'
+    # will be prefixed with country name
+    # e.g.: USAliwcResult.csv
+    fileName: 'liwcResult.csv'
     
 
 twitter:
@@ -102,16 +114,15 @@ twitter:
       southwest: # state California, USA
         lat: 32.528832
         lng: -124.482003
-
-#    Germany:
-#      name: 'Germany'
-#      lang: 'de'
-#      langThreshold: 0.8
-#      otherLangThreshold: 0.05
-#      northeast: # Mecklenburg-Vorpommern according to Google API
-#        lat: 54.6847005
-#        lng: 14.4122569
-#      southwest: # Baden-Württemberg according to Google API
-#        lat: 47.5323664
-#        lng: 7.511756799999999
+    Germany:
+      name: 'Germany'
+      lang: 'de'
+      langThreshold: 0.8
+      otherLangThreshold: 0.05
+      northeast: # Mecklenburg-Vorpommern according to Google API
+        lat: 54.6847005
+        lng: 14.4122569
+      southwest: # Baden-Württemberg according to Google API
+        lat: 47.5323664
+        lng: 7.511756799999999
 

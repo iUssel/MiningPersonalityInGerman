@@ -46,6 +46,102 @@ class Profile:
         'text'
     ]
 
+    liwc_category_list = [
+        'WC',
+        'Analytic',
+        'Clout',
+        'Authentic',
+        'Tone',
+        'WPS',
+        'Sixltr',
+        'Dic',
+        'function',
+        'pronoun',
+        'ppron',
+        'i',
+        'we',
+        'you',
+        'shehe',
+        'they',
+        'ipron',
+        'article',
+        'prep',
+        'auxverb',
+        'adverb',
+        'conj',
+        'negate',
+        'verb',
+        'adj',
+        'compare',
+        'interrog',
+        'number',
+        'quant',
+        'affect',
+        'posemo',
+        'negemo',
+        'anx',
+        'anger',
+        'sad',
+        'social',
+        'family',
+        'friend',
+        'female',
+        'male',
+        'cogproc',
+        'insight',
+        'cause',
+        'discrep',
+        'tentat',
+        'certain',
+        'differ',
+        'percept',
+        'see',
+        'hear',
+        'feel',
+        'bio',
+        'body',
+        'health',
+        'sexual',
+        'ingest',
+        'drives',
+        'affiliation',
+        'achieve',
+        'power',
+        'reward',
+        'risk',
+        'focuspast',
+        'focuspresent',
+        'focusfuture',
+        'relativ',
+        'motion',
+        'space',
+        'time',
+        'work',
+        'leisure',
+        'home',
+        'money',
+        'relig',
+        'death',
+        'informal',
+        'swear',
+        'netspeak',
+        'assent',
+        'nonflu',
+        'filler',
+        'AllPunc',
+        'Period',
+        'Comma',
+        'Colon',
+        'SemiC',
+        'QMark',
+        'Exclam',
+        'Dash',
+        'Quote',
+        'Apostro',
+        'Parenth',
+        'OtherP'
+    ]
+
     def __init__(
         self,
         userID=None,
@@ -53,7 +149,7 @@ class Profile:
         numberWords=None,
         numberTweets=None,
         language=None,
-        ibmJson=None
+        ibmJson=None,
     ):
         """
         TODO init func Class Profile
@@ -62,6 +158,10 @@ class Profile:
         # initialize attributes even if they are none
         # that way every profile will have all attributes
         for attr in Profile.attributeNameList:
+            setattr(self, attr, None)
+
+        # initialize all liwc attributes
+        for attr in Profile.liwc_category_list:
             setattr(self, attr, None)
 
         # if main attributes are given, save them

@@ -55,6 +55,10 @@ class ProfileCollection:
                 for attr in Profile.attributeNameList:
                     basicList.append(getattr(entry, attr))
 
+                # write liwc categories (even if they are empty)
+                for attr in Profile.liwc_category_list:
+                    basicList.append(getattr(entry, attr))
+
                 writer.writerow(basicList)
 
         return
@@ -82,12 +86,52 @@ class ProfileCollection:
 
                 # we will read all attributes column by column
                 # via the profiles attribute list
+                counter = 0
                 for num, attr in enumerate(Profile.attributeNameList):
                     # 0 based index
                     # read column as attribute
                     setattr(profileInst, attr, row[num])
+                    counter = num
+
+                # counter indicates the column index already read
+                # we will add 1, since that is the next column we
+                # want to read
+                counter = counter + 1
+
+                # read liwc categories column by column
+                for num, attr in enumerate(Profile.liwc_category_list):
+                    # 0 based index
+                    # read column as attribute
+                    setattr(profileInst, attr, row[num+counter])
 
                 # add profile to collection
                 self.add_profile(profileInst)
 
         return
+
+    def get_profile_by_user_id(
+        self,
+        userID
+    ):
+        """
+        TODO docstring get_profile_by_user_id
+        give userID and return profile with
+        """
+
+        # filter current profile list to get profile
+        # with corresponding userID
+        userProfileList = [
+            profile for profile in self.profileList if profile.userID == userID
+        ]
+
+        # if more than one profile, something went wrong
+        if len(userProfileList) > 1:
+            raise Exception(
+                "Error in ProfileCollection while retrieving user" +
+                "profile by userID. More than one profile matched."
+            )
+
+        # get first occurence
+        userProfile = userProfileList[0]
+
+        return userProfile

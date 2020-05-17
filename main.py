@@ -114,9 +114,38 @@ def main():
                     writeFiles=preparationConfig["getIBMprofile"]["writeFile"]
                 )
 
+            # global profile collection contains profiles inlcuding
+            # ibm data, if available
             globalProfileCollection[country] = localProfileCollection
 
-        # TODO save profiles for LIWC (one file for each profile)
+        # this is a manual step:
+        # the extracted profiles will be enriched with LIWC
+        # data. This is a separate program, therefore
+        # we will ask the user if liwc files are provided
+        for country in globalConfig['twitter']['coordinates']:
+            # read profile collection from dict
+            localProfileCollection = globalProfileCollection[country]
+
+            # either read previously exported file or read LIWC output file
+            localProfileCollection = preparation.do_liwc(
+                    profileCol=localProfileCollection,
+                    country=country,
+                    liwcPath=preparationConfig["liwc"]["path"],
+                    fileName=preparationConfig["liwc"]["fileName"],
+                    readFiles=preparationConfig["liwc"]["readFile"],
+                    writeFiles=preparationConfig["liwc"]["writeFile"],
+                    skipInputWait=False
+            )
+
+            # global profile collection contains profiles inlcuding
+            # ibm data, if available
+            # now including liwc data
+            globalProfileCollection[country] = localProfileCollection
+
+        # TODO this is were we continue
+        # Build LIWC based model with English texts
+
+        # derive German personalities
 
 
 def initialize():

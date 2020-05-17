@@ -77,8 +77,8 @@ class Scraping:
                     full_path=file_path
                 )
 
-            # add collection to dict
-            returnDictCollection[countryConf['name']] = scrapedTweets
+                # add collection to dict
+                returnDictCollection[countryConf['name']] = scrapedTweets
 
             print("Files successfully loaded")
         else:
@@ -120,8 +120,8 @@ class Scraping:
                         full_path=file_path
                     )
 
-            # add collection to dict
-            returnDictCollection[countryConf['name']] = scrapedTweets
+                # add collection to dict
+                returnDictCollection[countryConf['name']] = scrapedTweets
             print("End scraping by location")
 
         return returnDictCollection
