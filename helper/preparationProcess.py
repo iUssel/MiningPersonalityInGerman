@@ -1,3 +1,5 @@
+import numpy
+
 from pathlib import Path
 from miping.models.profile import Profile
 from miping.models.profileCollection import ProfileCollection
@@ -313,3 +315,84 @@ class PreparationProcess:
             print("End LIWC loading.")
 
         return returnProfileCol
+
+    def print_statistics(
+        self,
+        globalProfileCollection,
+    ):
+        """
+        TODO docstring print_statistics
+        """
+
+        print("\nData Preparation Statistics")
+        for idx, country in enumerate(globalProfileCollection):
+            print("Statistics for: " + str(country))
+
+            locProfileList = globalProfileCollection[country].profileList
+
+            # number of users
+            numUsers = len(locProfileList)
+            print("Number of users: " + str(numUsers))
+
+            # number of words per user
+            print("Number of words")
+            numWords = [
+                float(getattr(profile, 'numberWords'))
+                for profile in locProfileList
+            ]
+            self.print_min_max_mean_std(numWords)
+            # number of tweets
+            print("Number of tweets")
+            numTweets = [
+                float(getattr(profile, 'numberTweets'))
+                for profile in locProfileList
+            ]
+            self.print_min_max_mean_std(numTweets)
+
+            # ibm big 5 data
+            locAttrList = [
+                'big5_openness',
+                'big5_conscientiousness',
+                'big5_extraversion',
+                'big5_agreeableness',
+                'big5_neuroticism'
+            ]
+
+            for attr in locAttrList:
+                print(attr)
+                seq = []
+                for profile in locProfileList:
+                    value = getattr(profile, attr)
+                    if value == '':
+                        # append nothing if no value given
+                        continue
+                    seq.append(float(value))
+                self.print_min_max_mean_std(seq)
+
+            # duplicate check (there should be no more than 250 tweets)
+            print("user with more than 250 tweets")
+            for profile in locProfileList:
+                if int(getattr(profile, 'numberTweets')) > 250:
+                    print(profile)
+                    print(profile.userID)
+            print("END users with more than 250 tweets")
+
+        print("Finished\n")
+        return
+
+    def print_min_max_mean_std(
+        self,
+        printList,
+    ):
+        """
+        TODO docstring
+        """
+        if len(printList) > 0:
+            print("MIN: " + str(min(printList)))
+            print("MAX: " + str(max(printList)))
+            print("Mean: " + str(numpy.mean(printList)))
+            print("Standard Deviation" + str(numpy.std(printList)))
+        else:
+            print('No value in list')
+
+        return

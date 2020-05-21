@@ -224,8 +224,12 @@ class Scraping:
             # the duplicate list
             followers = [idU for idU in followers if idU not in duplicates]
 
+            # remove duplicates inside follower list, just in case
+            followers = list(set(followers))
+
             # select eligible followers
             # tweet count and follower count will be checked
+            # TODO CHECK If this step creates duplicates
             eligibleFollowersCol = self.twitter.getUsersByList(
                 userIDList=followers,
                 maxFollowerCount=scrapeConfig['user_max_followers'],

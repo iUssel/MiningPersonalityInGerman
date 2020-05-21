@@ -44,6 +44,7 @@ scraping:
   validateLocation: True
 
 preparationProcess:
+  printStatistics: True
 
   # list of countries (subset of countries defined under twitter)
   # for these countries we will get profiles from ibm
@@ -64,8 +65,8 @@ preparationProcess:
   # for LIWC we always write the files if read is false
   # since it's a separate program
   liwc:
-    writeFile: True
-    readFile: False
+    writeFile: False
+    readFile: True
     # relative path f0r LIWC results 
     path: 'data/liwcInput/'
     # will be prefixed with country name

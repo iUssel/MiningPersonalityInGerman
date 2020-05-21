@@ -142,6 +142,9 @@ def main():
             # now including liwc data
             globalProfileCollection[country] = localProfileCollection
 
+        if preparationConfig["printStatistics"] is True:
+            preparation.print_statistics(globalProfileCollection)
+
         # TODO this is were we continue
         # Build LIWC based model with English texts
 
