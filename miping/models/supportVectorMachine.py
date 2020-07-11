@@ -1,9 +1,9 @@
-from sklearn import tree
+from sklearn.svm import SVR
 
 
-class DecisionTree:
+class SupportVectorMachine:
     """
-    TODO docstring Class DecisionTree
+    TODO docstring Class SupportVectorMachine
     """
 
     def __init__(
@@ -11,7 +11,7 @@ class DecisionTree:
         gridSearchParams=None,
     ):
         """
-        TODO init func Class DecisionTree
+        TODO init func Class SupportVectorMachine
         gridSearchParams: dict
         """
 
@@ -20,17 +20,15 @@ class DecisionTree:
         else:
             # TODO applying best default parameters
             defaultParams = {
-                'criterion': ['mse'],
-                'splitter': ['best'],
-                'max_depth': [10],
-                'min_samples_split': [2],
-                'min_samples_leaf': [1],
-                'random_state': [0]
+                'kernel': ['rbf', 'sigmoid', 'linear'],
+                'C': [0.001, 0.01, 0.1, 1, 10, 100],
+                'epsilon': [0.001, 0.01, 0.1, 1, 10],
+                'max_iter': [100],
             }
 
             self.gridSearchParams = defaultParams
 
-        self.name = 'DecisionTree'
+        self.name = 'SupportVectorMachine'
 
         return
 
@@ -43,6 +41,6 @@ class DecisionTree:
         this will be modified during gridsearch
         """
 
-        model = tree.DecisionTreeRegressor()
+        model = SVR()
 
         return model

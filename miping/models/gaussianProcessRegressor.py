@@ -1,9 +1,9 @@
-from sklearn import tree
+from sklearn.gaussian_process import GaussianProcessRegressor as skGPR
 
 
-class DecisionTree:
+class GaussianProcessRegressor:
     """
-    TODO docstring Class DecisionTree
+    TODO docstring Class GaussianProcessRegressor
     """
 
     def __init__(
@@ -11,7 +11,7 @@ class DecisionTree:
         gridSearchParams=None,
     ):
         """
-        TODO init func Class DecisionTree
+        TODO init func Class GaussianProcessRegressor
         gridSearchParams: dict
         """
 
@@ -20,17 +20,13 @@ class DecisionTree:
         else:
             # TODO applying best default parameters
             defaultParams = {
-                'criterion': ['mse'],
-                'splitter': ['best'],
-                'max_depth': [10],
-                'min_samples_split': [2],
-                'min_samples_leaf': [1],
+                'n_restarts_optimizer': [0, 2, 10],
                 'random_state': [0]
             }
 
             self.gridSearchParams = defaultParams
 
-        self.name = 'DecisionTree'
+        self.name = 'GaussianProcessRegressor'
 
         return
 
@@ -43,6 +39,6 @@ class DecisionTree:
         this will be modified during gridsearch
         """
 
-        model = tree.DecisionTreeRegressor()
+        model = skGPR()
 
         return model

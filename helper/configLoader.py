@@ -11,7 +11,7 @@ class ConfigLoader:
     def __init__(
         self,
         configPath="",
-        environmentVars="",
+        modelConfigPath="",
     ):
         """
         TODO init function of ConfigLoader Class
@@ -20,12 +20,16 @@ class ConfigLoader:
         # .env variables are loaded from file
         load_dotenv()
 
-        if configPath != "":
+        if configPath != "" and modelConfigPath != "":
             self.config = self._funcReadConfig(configPath)
+
+            # load model parameters config
+            self.config_models = self._funcReadConfig(modelConfigPath)
         else:
             raise _InputError(
                 "No configPath given. " +
-                "You need to pass the full path to config.yml."
+                "You need to pass the full path to config.yml and " +
+                "config_model_parameters.yml."
             )
 
         self.environmentVars = self._funcReadEnvironmentVars()

@@ -11,7 +11,7 @@ def main():
     """
 
     # get configuration
-    globalConfig, apiKeys = initialize()
+    globalConfig, config_models, apiKeys = initialize()
 
     # initialize Twitter API with keys
     twitter = miping.interfaces.TwitterAPI(
@@ -145,6 +145,18 @@ def main():
         if preparationConfig["printStatistics"] is True:
             preparation.print_statistics(globalProfileCollection)
 
+    if globalConfig["process"]["modelTrainingLIWC"] is True:
+        trainConf = globalConfig["modelTraining"]
+        # init helper class
+        trainingSteps = helper.TrainingProcess(
+            config=trainConf,
+            modelConfig=config_models
+        )
+        # build LIWC model based on English texts
+        trainingSteps.doLIWCModelTraining(
+            profileCol=globalProfileCollection['USA']
+        )
+
         # TODO this is were we continue
         # Build LIWC based model with English texts
 
@@ -158,13 +170,18 @@ def initialize():
     # load configuration
     configPath = Path(os.path.dirname(os.path.abspath(__file__)))
     configFullPath = configPath / "config.yml"
-    configHelper = helper.ConfigLoader(configFullPath)
+    configModelFullPath = configPath / "config_models.yml"
+    configHelper = helper.ConfigLoader(
+        configPath=configFullPath,
+        modelConfigPath=configModelFullPath
+    )
     config = configHelper.config
+    config_models = configHelper.config_models
 
     # retrieve API keys and other secrets from environment variables
     apiKeys = configHelper.environmentVars
 
-    return config, apiKeys
+    return config, config_models, apiKeys
 
 
 if __name__ == "__main__":

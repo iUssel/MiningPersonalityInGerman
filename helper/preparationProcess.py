@@ -370,12 +370,15 @@ class PreparationProcess:
                 self.print_min_max_mean_std(seq)
 
             # duplicate check (there should be no more than 250 tweets)
-            print("user with more than 250 tweets")
+            print("User with more than 250 tweets (check for duplicates)")
             for profile in locProfileList:
                 if int(getattr(profile, 'numberTweets')) > 250:
                     print(profile)
                     print(profile.userID)
-            print("END users with more than 250 tweets")
+            print(
+                "END users with more than 250 tweets " +
+                "(if no users shown it's fine)"
+            )
 
         print("Finished\n")
         return

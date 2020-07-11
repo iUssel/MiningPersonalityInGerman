@@ -2,6 +2,7 @@
 process:
   scraping: False
   dataPreparation: True
+  modelTrainingLIWC: True
 
 scraping:
   # number of seconds to stream tweet data
@@ -67,18 +68,29 @@ preparationProcess:
   liwc:
     writeFile: False
     readFile: True
-    # relative path f0r LIWC results 
+    # relative path for LIWC results 
     path: 'data/liwcInput/'
     # will be prefixed with country name
     # e.g.: USAliwcResult.csv
     fileName: 'liwcResult.csv'
-    
+
+modelTraining:
+  # defines which target labels should be used in model training process
+  # could be e.g. extended to use facets as well
+  # labels need to exist in Profile
+  labelsGlobalList:
+    - big5_openness
+    #- big5_conscientiousness
+    #- big5_extraversion
+    #- big5_agreeableness
+    #- big5_neuroticism
 
 twitter:
 
   # max tweets per user used for mining
   # (3200 is a max limit given by Twitter)
   # lower limits might be useful due to API rate limits
+  # this is the number of tweets excluding retweets
   user_max_tweet_no:  250 # 200
 
   # if True prints a message, when Twitter's API limits are reached

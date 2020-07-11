@@ -1,9 +1,9 @@
-from sklearn import tree
+from sklearn import linear_model
 
 
-class DecisionTree:
+class RidgeRegression:
     """
-    TODO docstring Class DecisionTree
+    TODO docstring Class RidgeRegression
     """
 
     def __init__(
@@ -20,17 +20,13 @@ class DecisionTree:
         else:
             # TODO applying best default parameters
             defaultParams = {
-                'criterion': ['mse'],
-                'splitter': ['best'],
-                'max_depth': [10],
-                'min_samples_split': [2],
-                'min_samples_leaf': [1],
+                'alpha': [0.1, 1.0, 10.0],
                 'random_state': [0]
             }
 
             self.gridSearchParams = defaultParams
 
-        self.name = 'DecisionTree'
+        self.name = 'RidgeRegression'
 
         return
 
@@ -43,6 +39,6 @@ class DecisionTree:
         this will be modified during gridsearch
         """
 
-        model = tree.DecisionTreeRegressor()
+        model = linear_model.Ridge()
 
         return model

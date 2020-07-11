@@ -1,9 +1,9 @@
-from sklearn import tree
+from sklearn import linear_model
 
 
-class DecisionTree:
+class BayesianRidge:
     """
-    TODO docstring Class DecisionTree
+    TODO docstring Class BayesianRidge
     """
 
     def __init__(
@@ -11,7 +11,7 @@ class DecisionTree:
         gridSearchParams=None,
     ):
         """
-        TODO init func Class DecisionTree
+        TODO init func Class BayesianRidge
         gridSearchParams: dict
         """
 
@@ -20,17 +20,12 @@ class DecisionTree:
         else:
             # TODO applying best default parameters
             defaultParams = {
-                'criterion': ['mse'],
-                'splitter': ['best'],
-                'max_depth': [10],
-                'min_samples_split': [2],
-                'min_samples_leaf': [1],
-                'random_state': [0]
+                'n_iterint': [100, 300, 500],
             }
 
             self.gridSearchParams = defaultParams
 
-        self.name = 'DecisionTree'
+        self.name = 'BayesianRidge'
 
         return
 
@@ -43,6 +38,6 @@ class DecisionTree:
         this will be modified during gridsearch
         """
 
-        model = tree.DecisionTreeRegressor()
+        model = linear_model.BayesianRidge()
 
         return model
