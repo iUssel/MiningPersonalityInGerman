@@ -1,6 +1,8 @@
 import datetime
 import numpy as np
 
+from ..models.modelBase import ModelBase
+
 from warnings import simplefilter
 
 from sklearn.exceptions import ConvergenceWarning
@@ -143,7 +145,7 @@ class ModelTraining:
 
     def provideScores(
         self,
-        model,
+        modelBase,
         labels,
         features
     ):
@@ -151,6 +153,8 @@ class ModelTraining:
         TODO func doc provideScores
         MAE, MSE, RMSE, correlations and R2
         """
+        # get actual estimator from object
+        model = modelBase.model
         # summarize all metrics
         scoring = {
             'negMAE': 'neg_mean_absolute_error',
@@ -169,16 +173,25 @@ class ModelTraining:
             scoring=scoring
         )
 
+        scores_to_save = {}
+
         # Printing scores for each model
         for i, key in enumerate(scoring):
             # get results, these are prefixed with test_
             key_value = ('test_' + str(key))
             scores = cv_results[key_value]
+            values = "%0.4f (+/- %0.4f)" % (scores.mean(), scores.std() * 2)
             print(
                 str(key) + ": " +
-                "%0.4f (+/- %0.4f)" %
-                (scores.mean(), scores.std() * 2)
+                str(values)
             )
+            # save scores to save it later in model object
+            scores_to_save[key] = values
+
+        # save scores in model object
+        modelBase.scores = scores_to_save
+
+        return
 
     def startModelSelection(
         self,
@@ -218,7 +231,7 @@ class ModelTraining:
                 # get model
                 currentModel = modelObj.getModel()
                 currentGridParams = modelObj.gridSearchParams
-                print('\nCurrently at model: ' + modelObj.name)
+                print('\nCurrently at model: ' + modelObj.modelName)
                 # do crossvalidation for this model
 
                 best_score, bestModel, bestParams = self.crossvalidateModel(
@@ -227,21 +240,23 @@ class ModelTraining:
                     labels=labels,
                     features=features,
                 )
-                # save best model in dict, to select from
+                # save best model as object in dict, to select from
                 # after all have been evaluated
-                labelBestModels[modelObj.name] = {
-                    'score': best_score,
-                    'model': bestModel,
-                    'parmas': bestParams,
-                    'name': modelObj.name,
-                    'labelName': labelName
-                }
+                localModel = ModelBase(
+                    labelName=labelName,
+                    modelName=modelObj.modelName,
+                    model=bestModel,
+                    params=bestParams,
+                    scores=best_score,
+                    gridSearchParams=None,
+                )
+                labelBestModels[modelObj.modelName] = localModel
 
             # select best model and its params by taking entry
             # with highest score
             bestModelName = max(
                 labelBestModels.keys(),
-                key=(lambda k: labelBestModels[k]['score'])
+                key=(lambda k: labelBestModels[k].scores)
             )
             # save it for this label in dict
             globalBestModels[labelName] = labelBestModels[bestModelName]
@@ -251,13 +266,13 @@ class ModelTraining:
                 "\nBest model for " +
                 labelName +
                 " is " +
-                globalBestModels[labelName]['name']
+                globalBestModels[labelName].modelName
             )
 
             # provide MAE, MSE, RMSE, correlations and R2
             # for comparison reasons
             self.provideScores(
-                globalBestModels[labelName]['model'],
+                globalBestModels[labelName],
                 labels,
                 features
             )
@@ -292,15 +307,15 @@ class ModelTraining:
             )
 
             # select the model we previously evaluated for this trait
-            modelDict = modelCollection[labelName]
-            model = modelDict['model']
+            baseModel = modelCollection[labelName]
+            model = baseModel.model
 
             # for each model, we will fully train the model
             model.fit(features, labels)
 
-            # save model back in dict
-            modelDict['model'] = model
+            # save model back in object
+            baseModel.model = model
             # back into collection
-            modelCollection[labelName] = modelDict
+            modelCollection[labelName] = baseModel
 
         return modelCollection

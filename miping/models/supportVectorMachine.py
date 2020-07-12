@@ -1,7 +1,8 @@
+from .modelBase import ModelBase
 from sklearn.svm import SVR
 
 
-class SupportVectorMachine:
+class SupportVectorMachine(ModelBase):
     """
     TODO docstring Class SupportVectorMachine
     """
@@ -16,7 +17,7 @@ class SupportVectorMachine:
         """
 
         if gridSearchParams is not None:
-            self.gridSearchParams = gridSearchParams
+            gridSearch = gridSearchParams
         else:
             # TODO applying best default parameters
             defaultParams = {
@@ -26,21 +27,12 @@ class SupportVectorMachine:
                 'max_iter': [100],
             }
 
-            self.gridSearchParams = defaultParams
+            gridSearch = defaultParams
 
-        self.name = 'SupportVectorMachine'
+        super().__init__(
+            modelName='SupportVectorMachine',
+            model=SVR(),
+            gridSearchParams=gridSearch
+        )
 
         return
-
-    def getModel(
-        self,
-    ):
-        """
-        TODO func getModel
-        returns default model
-        this will be modified during gridsearch
-        """
-
-        model = SVR()
-
-        return model

@@ -93,7 +93,7 @@ class TrainingProcess:
         # fully train model in different method of modelTraining
         print("\nFull model training for selected models")
         print("Auskommentiert")
-        # globalTrainedModels = modelTraining.completeModelTraining( TODO
+        # globalTrainedModels = modelTraining.completeModelTraining(
         #    modelCollection=globalBestModels,
         #    featurePipeline=liwcFeaturePipeline,
         #    profileColTraining=profileCol,

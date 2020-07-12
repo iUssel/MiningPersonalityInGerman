@@ -1,3 +1,4 @@
+from .modelBase import ModelBase
 from .decisionTree import DecisionTree
 from .ridgeRegression import RidgeRegression
 from .gaussianProcessRegressor import GaussianProcessRegressor

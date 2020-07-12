@@ -1,7 +1,8 @@
+from .modelBase import ModelBase
 from sklearn.gaussian_process import GaussianProcessRegressor as skGPR
 
 
-class GaussianProcessRegressor:
+class GaussianProcessRegressor(ModelBase):
     """
     TODO docstring Class GaussianProcessRegressor
     """
@@ -16,7 +17,7 @@ class GaussianProcessRegressor:
         """
 
         if gridSearchParams is not None:
-            self.gridSearchParams = gridSearchParams
+            gridSearch = gridSearchParams
         else:
             # TODO applying best default parameters
             defaultParams = {
@@ -24,21 +25,12 @@ class GaussianProcessRegressor:
                 'random_state': [0]
             }
 
-            self.gridSearchParams = defaultParams
+            gridSearch = defaultParams
 
-        self.name = 'GaussianProcessRegressor'
+        super().__init__(
+            modelName='GaussianProcessRegressor',
+            model=skGPR(),
+            gridSearchParams=gridSearch
+        )
 
         return
-
-    def getModel(
-        self,
-    ):
-        """
-        TODO func getModel
-        returns default model
-        this will be modified during gridsearch
-        """
-
-        model = skGPR()
-
-        return model

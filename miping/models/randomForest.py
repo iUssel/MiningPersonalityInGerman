@@ -1,7 +1,8 @@
+from .modelBase import ModelBase
 from sklearn.ensemble import RandomForestRegressor
 
 
-class RandomForest:
+class RandomForest(ModelBase):
     """
     TODO docstring Class RandomForest
     """
@@ -16,7 +17,7 @@ class RandomForest:
         """
 
         if gridSearchParams is not None:
-            self.gridSearchParams = gridSearchParams
+            gridSearch = gridSearchParams
         else:
             # TODO applying best default parameters
             defaultParams = {
@@ -30,21 +31,12 @@ class RandomForest:
                 'random_state': [0]
             }
 
-            self.gridSearchParams = defaultParams
+            gridSearch = defaultParams
 
-        self.name = 'RandomForest'
+        super().__init__(
+            modelName='RandomForest',
+            model=RandomForestRegressor(),
+            gridSearchParams=gridSearch
+        )
 
         return
-
-    def getModel(
-        self,
-    ):
-        """
-        TODO func getModel
-        returns default model
-        this will be modified during gridsearch
-        """
-
-        model = RandomForestRegressor()
-
-        return model

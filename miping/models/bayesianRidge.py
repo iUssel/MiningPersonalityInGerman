@@ -1,7 +1,8 @@
+from .modelBase import ModelBase
 from sklearn import linear_model
 
 
-class BayesianRidge:
+class BayesianRidge(ModelBase):
     """
     TODO docstring Class BayesianRidge
     """
@@ -16,28 +17,19 @@ class BayesianRidge:
         """
 
         if gridSearchParams is not None:
-            self.gridSearchParams = gridSearchParams
+            gridSearch = gridSearchParams
         else:
             # TODO applying best default parameters
             defaultParams = {
                 'n_iterint': [100, 300, 500],
             }
 
-            self.gridSearchParams = defaultParams
+            gridSearch = defaultParams
 
-        self.name = 'BayesianRidge'
+        super().__init__(
+            modelName='BayesianRidge',
+            model=linear_model.BayesianRidge(),
+            gridSearchParams=gridSearch
+        )
 
         return
-
-    def getModel(
-        self,
-    ):
-        """
-        TODO func getModel
-        returns default model
-        this will be modified during gridsearch
-        """
-
-        model = linear_model.BayesianRidge()
-
-        return model

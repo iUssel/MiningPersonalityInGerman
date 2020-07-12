@@ -1,7 +1,8 @@
+from .modelBase import ModelBase
 from sklearn import linear_model
 
 
-class RidgeRegression:
+class RidgeRegression(ModelBase):
     """
     TODO docstring Class RidgeRegression
     """
@@ -14,31 +15,20 @@ class RidgeRegression:
         TODO init func Class DecisionTree
         gridSearchParams: dict
         """
-
         if gridSearchParams is not None:
-            self.gridSearchParams = gridSearchParams
+            gridSearch = gridSearchParams
         else:
             # TODO applying best default parameters
             defaultParams = {
                 'alpha': [0.1, 1.0, 10.0],
                 'random_state': [0]
             }
+            gridSearch = defaultParams
 
-            self.gridSearchParams = defaultParams
-
-        self.name = 'RidgeRegression'
+        super().__init__(
+            modelName='RidgeRegression',
+            model=linear_model.Ridge(),
+            gridSearchParams=gridSearch
+        )
 
         return
-
-    def getModel(
-        self,
-    ):
-        """
-        TODO func getModel
-        returns default model
-        this will be modified during gridsearch
-        """
-
-        model = linear_model.Ridge()
-
-        return model

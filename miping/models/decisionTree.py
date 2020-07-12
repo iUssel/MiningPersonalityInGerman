@@ -1,7 +1,8 @@
+from .modelBase import ModelBase
 from sklearn import tree
 
 
-class DecisionTree:
+class DecisionTree(ModelBase):
     """
     TODO docstring Class DecisionTree
     """
@@ -16,7 +17,7 @@ class DecisionTree:
         """
 
         if gridSearchParams is not None:
-            self.gridSearchParams = gridSearchParams
+            gridSearch = gridSearchParams
         else:
             # TODO applying best default parameters
             defaultParams = {
@@ -28,21 +29,12 @@ class DecisionTree:
                 'random_state': [0]
             }
 
-            self.gridSearchParams = defaultParams
+            gridSearch = defaultParams
 
-        self.name = 'DecisionTree'
+        super().__init__(
+            modelName='DecisionTree',
+            model=tree.DecisionTreeRegressor(),
+            gridSearchParams=gridSearch
+        )
 
         return
-
-    def getModel(
-        self,
-    ):
-        """
-        TODO func getModel
-        returns default model
-        this will be modified during gridsearch
-        """
-
-        model = tree.DecisionTreeRegressor()
-
-        return model
