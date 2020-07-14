@@ -1,4 +1,12 @@
 liwcModelSelection:
+  # BayesianRidge
+  BayesianRidge:
+    n_iter:
+      - 50
+      - 75
+      - 100
+      - 125
+      - 150
   # Decision Tree
   DecisionTree: # actual class name
     criterion:
@@ -6,41 +14,36 @@ liwcModelSelection:
     splitter:
       - 'best'
     max_depth:
+      - 3
       - 5
+      - 7
       - 10
-      - 20
-      - 50
-      - 100
-      -  # none value
+      - 12
+      - 15
     min_samples_split:
-      - 2
       - 5
+      - 8
       - 10
+      - 15
       - 20
     min_samples_leaf:
-      - 2
       - 5
+      - 8
       - 10
-    random_state:
-      - 0
-  # Ridge
-  RidgeRegression:
-    alpha:
-      - 0
-      - 0.0001
-      - 0.001
-      - 0.01
-      - 0.1
-      - 1.0
-      - 10.0
+      - 12
+      - 20
     random_state:
       - 0
   # GaussianProcessRegressor
   GaussianProcessRegressor:
     n_restarts_optimizer:
       - 0
-      - 2
       - 10
+      - 100
+    alpha:
+      - 0.0000000001
+      - 0.00000001
+      - 0.0001
     random_state:
       - 0
   # RandomForest
@@ -48,36 +51,36 @@ liwcModelSelection:
     criterion:
       - 'mse'
     n_estimators:
-      - 10
-      - 50
-      - 100
+      - 80
+      - 90
     max_depth:
-      - 2
-      - 5
-      - 10
-      - 50
+      - 25
+      - 40
     min_samples_split:
       - 2
+      - 3
+      - 4
       - 5
-      - 10
     min_samples_leaf:
-      - 1
-      - 2
+      - 3
       - 5
-      - 10
     max_leaf_nodes:
       - 100
       - 250
+      - 300
     max_features:
       -  # None # recommended for Regression
     random_state:
       - 0
-  # BayesianRidge
-  BayesianRidge:
-    n_iter: 
-      - 100
-      - 300
-      - 500
+  # Ridge
+  RidgeRegression:
+    alpha:
+      - 5.0
+      - 10.0
+      - 15
+      - 20
+    random_state:
+      - 0
   SupportVectorMachine:
     kernel:
       - 'rbf'
@@ -87,12 +90,9 @@ liwcModelSelection:
       - 0.001
       - 0.01
       - 0.1
-      - 1
-      - 10
     epsilon:
-      - 0.001
-      - 0.1
+      - 0.5
       - 1
-      - 10
+      - 2
     max_iter: 
       - 100
