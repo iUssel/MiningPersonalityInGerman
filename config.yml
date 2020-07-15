@@ -1,22 +1,24 @@
 # controls which steps to do when starting main.py
 process:
-  scraping: False
+  scraping: True
   dataPreparation: True
-  modelTrainingLIWC: True
+  modelTrainingLIWC: False
 
 scraping:
   # number of seconds to stream tweet data
-  timer: 7200  # 180
+  timer: 14400  # 180
   # max follower number for eligible users
   # 0 = no limit
   user_max_followers: 10000
+  # at least x followers for eligible users
+  user_min_followers: 10
   # minimum tweet number for eligible users (incl. retweets)
   # 0 = no limit
   users_min_tweet_no: 400
 
   # the number of users to select followers from
   # the API is limited to 15 calls per 15 minutes
-  sampling_follower: 30  # 15
+  sampling_follower: 45  # 15
 
   # how many eligible users should be (randomly) included
   # from the location scraping
@@ -24,7 +26,7 @@ scraping:
 
   # total sample size of users we try to achieve
   # must be greater or equal to sampling_location_users
-  total_sample_size: 1000
+  total_sample_size: 1100
 
   # determines if files are written during the process or read
   # helps to recreate steps with the same data
@@ -37,9 +39,8 @@ scraping:
     readFile: True
 
   userSelect:
-    writeFile: False
-    readFile: True
-  
+    writeFile: True
+    readFile: False
 
   # determines if the location of followers should be validated or not
   validateLocation: True
@@ -56,18 +57,18 @@ preparationProcess:
   # determines if files are written during the process or read
   # helps to recreate steps with the same data
   condenseTweets:
-    writeFile: False
-    readFile: True
+    writeFile: True
+    readFile: False
 
   getIBMprofile:
-    writeFile: False
-    readFile: True
+    writeFile: True
+    readFile: False
   
   # for LIWC we always write the files if read is false
   # since it's a separate program
   liwc:
-    writeFile: False
-    readFile: True
+    writeFile: True
+    readFile: False
     # relative path for LIWC results 
     path: 'data/liwcInput/'
     # will be prefixed with country name

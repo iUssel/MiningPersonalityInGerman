@@ -76,6 +76,7 @@ class TwitterAPI:
         userIDList,
         maxFollowerCount=0,
         minStatusesCount=0,
+        minFollowerCount=0,
         skipPrivateUsers=True,
     ):
         """
@@ -115,6 +116,13 @@ class TwitterAPI:
                     # check for number of followers
                     if userIter.followers_count > maxFollowerCount:
                         # user has too many followers
+                        # skip this user, otherwise continue
+                        continue
+
+                if maxFollowerCount > 0:
+                    # check for number of followers
+                    if userIter.followers_count < minFollowerCount:
+                        # user has too few followers
                         # skip this user, otherwise continue
                         continue
 
@@ -301,6 +309,7 @@ class TwitterAPI:
         timeLimit=5,
         maxFollowerCount=0,
         minStatusesCount=0,
+        minFollowerCount=0,
     ):
         """
         TODO docstring stream_tweets_by_location
@@ -333,6 +342,7 @@ class TwitterAPI:
             ignoreRetweets=self.ignoreRetweets,
             maxFollowerCount=maxFollowerCount,
             minStatusesCount=minStatusesCount,
+            minFollowerCount=minFollowerCount,
         )
         myStream = tweepy.Stream(
             auth=self.api.auth,
@@ -361,6 +371,7 @@ class _MyStreamListener(
         ignoreRetweets=True,
         maxFollowerCount=0,
         minStatusesCount=0,
+        minFollowerCount=0,
     ):
         """
         TODO docstring __init__
@@ -377,6 +388,7 @@ class _MyStreamListener(
 
         self.maxFollowerCount = maxFollowerCount
         self.minStatusesCount = minStatusesCount
+        self.minFollowerCount = minFollowerCount
 
         # keep track of how many tweets we skip
         self.skipFollowerCounter = 0
@@ -413,6 +425,14 @@ class _MyStreamListener(
                 # check for number of followers
                 if tweet.user.followers_count > self.maxFollowerCount:
                     # user has too many followers
+                    # skip this tweet, otherwise continue
+                    self.skipFollowerCounter = self.skipFollowerCounter + 1
+                    return True
+
+            if self.minFollowerCount > 0:
+                # check of number of minimum followers
+                if tweet.user.followers_count < self.minFollowerCount:
+                    # user has too few followers
                     # skip this tweet, otherwise continue
                     self.skipFollowerCounter = self.skipFollowerCounter + 1
                     return True

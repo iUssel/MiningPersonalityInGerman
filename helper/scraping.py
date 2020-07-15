@@ -104,6 +104,7 @@ class Scraping:
                     timeLimit=scrapeConfig['timer'],
                     maxFollowerCount=scrapeConfig['user_max_followers'],
                     minStatusesCount=scrapeConfig['users_min_tweet_no'],
+                    minFollowerCount=scrapeConfig['user_min_followers'],
                 )
 
                 # only write file if specified
@@ -181,7 +182,10 @@ class Scraping:
             print("Files successfully loaded")
 
         else:
-            print("\nStart Follower Selection")
+            print(
+                "\nStart Follower Selection for country " +
+                str(countryName)
+            )
             scrapeConfig = self.config['scraping']
             sampling_follower = scrapeConfig['sampling_follower']
 
@@ -233,7 +237,8 @@ class Scraping:
             eligibleFollowersCol = self.twitter.getUsersByList(
                 userIDList=followers,
                 maxFollowerCount=scrapeConfig['user_max_followers'],
-                minStatusesCount=scrapeConfig['users_min_tweet_no']
+                minStatusesCount=scrapeConfig['users_min_tweet_no'],
+                minFollowerCount=scrapeConfig['user_min_followers']
             )
 
             # shuffle lists to have true random selection
