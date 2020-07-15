@@ -31,12 +31,12 @@ scraping:
   # determines if files are written during the process or read
   # helps to recreate steps with the same data
   scrapingByLoc:
-    writeFile: False
-    readFile: True
+    writeFile: True
+    readFile: False
 
   followerSelect:
-    writeFile: False
-    readFile: True
+    writeFile: True
+    readFile: False
 
   userSelect:
     writeFile: True
