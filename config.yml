@@ -1,8 +1,8 @@
 # controls which steps to do when starting main.py
 process:
-  scraping: True
+  scraping: False
   dataPreparation: True
-  modelTrainingLIWC: False
+  modelTrainingLIWC: True
 
 scraping:
   # number of seconds to stream tweet data
@@ -31,16 +31,16 @@ scraping:
   # determines if files are written during the process or read
   # helps to recreate steps with the same data
   scrapingByLoc:
-    writeFile: True
-    readFile: False
+    writeFile: False
+    readFile: True
 
   followerSelect:
-    writeFile: True
-    readFile: False
+    writeFile: False
+    readFile: True
 
   userSelect:
-    writeFile: True
-    readFile: False
+    writeFile: False
+    readFile: True
 
   # determines if the location of followers should be validated or not
   validateLocation: True
@@ -57,18 +57,18 @@ preparationProcess:
   # determines if files are written during the process or read
   # helps to recreate steps with the same data
   condenseTweets:
-    writeFile: True
-    readFile: False
+    writeFile: False
+    readFile: True
 
   getIBMprofile:
-    writeFile: True
-    readFile: False
+    writeFile: False
+    readFile: True
   
   # for LIWC we always write the files if read is false
   # since it's a separate program
   liwc:
-    writeFile: True
-    readFile: False
+    writeFile: False
+    readFile: True
     # relative path for LIWC results 
     path: 'data/liwcInput/'
     # will be prefixed with country name
@@ -82,9 +82,9 @@ modelTraining:
   labelsGlobalList:
     - big5_openness
     - big5_conscientiousness
-    - big5_extraversion
-    - big5_agreeableness
-    - big5_neuroticism
+    #- big5_extraversion
+    #- big5_agreeableness
+    #- big5_neuroticism
 
 twitter:
 

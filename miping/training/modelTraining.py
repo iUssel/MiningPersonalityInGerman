@@ -209,7 +209,10 @@ class ModelTraining:
         profileList = profileColTraining.profileList
         features = featurePipeline.fit_transform(profileList)
 
+        print("Feature shape: " + str(features.shape))
+
         globalBestModels = {}
+        scoreStatistics = {}
 
         # do this whole process for each label
         # (e.g. big dimensions or big 5 facets)
@@ -251,6 +254,13 @@ class ModelTraining:
                     gridSearchParams=None,
                 )
                 labelBestModels[modelObj.modelName] = localModel
+                # save score in dict, to evalute each model type
+                # at the end of the function
+                self._nested_set(
+                    scoreStatistics, 
+                    [modelObj.modelName, labelName],
+                    best_score
+                )
 
             # select best model and its params by taking entry
             # with highest score
@@ -277,6 +287,33 @@ class ModelTraining:
                 features
             )
 
+        # for comparison identify model, that on average performs
+        # best over all labels
+        # meaning good scores in all dimensions for this model type
+        # helps with model selection and avoid overfitting
+        print("\nOverall average performance (might help with model selection):")
+        meanScores = {}
+        for modelType in scoreStatistics:
+            scores = 0
+            counter = 0
+            for label, score in scoreStatistics[modelType].items():
+                scores = scores + float(score)
+                counter = counter + 1
+            mean = scores / counter
+            meanScores[modelType] = mean
+            print(
+                "Mean score over all dimensions for model type " +
+                str(modelType) +
+                " is :" +
+                str(mean)
+            )
+        # best mean score
+        meanBest = max(
+            meanScores.keys(),
+            key=(lambda k: meanScores[k])
+        )
+        print("Mean best is " + str(meanBest))
+
         return globalBestModels
 
     def completeModelTraining(
@@ -291,7 +328,7 @@ class ModelTraining:
         """
 
         # calculate features once
-        print("Calculating features")
+        print("Calculating features for complete training")
         profileList = profileColTraining.profileList
         features = featurePipeline.fit_transform(profileList)
 
@@ -319,3 +356,20 @@ class ModelTraining:
             modelCollection[labelName] = baseModel
 
         return modelCollection
+
+    def _nested_set(
+        self,
+        dic,
+        keys,
+        value
+    ):
+        """
+        TODO doc string _nested_set
+        nested arrays
+        https://stackoverflow.com/questions/13687924/
+        setting-a-value-in-a-nested-python-dictionary-
+        given-a-list-of-indices-and-value
+        """
+        for key in keys[:-1]:
+            dic = dic.setdefault(key, {})
+        dic[keys[-1]] = value

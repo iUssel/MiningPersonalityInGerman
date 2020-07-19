@@ -4,6 +4,7 @@ from .ridgeRegression import RidgeRegression
 from .gaussianProcessRegressor import GaussianProcessRegressor
 from .randomForest import RandomForest
 from .bayesianRidge import BayesianRidge
+from .onnxModel import OnnxModel
 from .supportVectorMachine import SupportVectorMachine
 from .profile import Profile
 from .profileCollection import ProfileCollection

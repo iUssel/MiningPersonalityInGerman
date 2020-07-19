@@ -154,12 +154,14 @@ def main():
         )
         # build LIWC model based on English texts
         trainingSteps.doLIWCModelTraining(
-            profileCol=globalProfileCollection['USA']
+            profileCol=globalProfileCollection['USA'],
+            writePickleFiles=False,
+            readPickleFiles=False,
+            writeONNXModel=False,  # TODO config
+            readONNXModel=False,
         )
 
         # TODO this is were we continue
-        # Build LIWC based model with English texts
-
         # derive German personalities
 
 
