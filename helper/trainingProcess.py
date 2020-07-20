@@ -40,11 +40,11 @@ class TrainingProcess:
         # easier to do it dynamically
         loadModels = [
             'BayesianRidge',
-            #'DecisionTree',
-            #'GaussianProcessRegressor',
-            #'RandomForest',
+            'DecisionTree',
+            'GaussianProcessRegressor',
+            'RandomForest',
             'RidgeRegression',
-            #'SupportVectorMachine'
+            'SupportVectorMachine'
         ]
 
         # gridsearch parameters from config
