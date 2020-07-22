@@ -153,17 +153,45 @@ def main():
             modelConfig=config_models
         )
         # build LIWC model based on English texts
-        trainingSteps.doLIWCModelTraining(
+        globalLIWCModels = trainingSteps.doLIWCModelTraining(
             profileCol=globalProfileCollection['USA'],
-            writePickleFiles=False,
-            readPickleFiles=False,
-            writeONNXModel=False,  # TODO config
-            readONNXModel=False,
+            writePickleFiles=trainConf["writePickleFiles"],
+            readPickleFiles=trainConf["readPickleFiles"],
+            writeONNXModel=trainConf["writeONNXModel"],
+            readONNXModel=trainConf["readONNXModel"]
         )
 
-        # TODO this is were we continue
-        # derive German personalities
+    if globalConfig["process"]["derivePersonalities"] is True:
+        trainConf = globalConfig["modelTraining"]
+        # use trained model to derive German personalities
+        # init helper class
+        trainingSteps = helper.TrainingProcess(
+            config=trainConf,
+            modelConfig=config_models
+        )
+        # loop over all available countries
+        for country in globalConfig['twitter']['coordinates']:
+            # set variables to None, if we read files,
+            # because they are not needed
+            if trainConf["readFile"] is True:
+                globalLIWCModels = None
+                locProfileCollection = None
+                globalProfileCollection = {}
+            else:
+                locProfileCollection = globalProfileCollection[country]
 
+            # for all countries we did not get IBM profiles for
+            # we will fill profile with trained LIWC model
+            filledProfileCollection = trainingSteps.predictPersonalitiesLIWC(
+                profileCol=locProfileCollection,
+                country=country,
+                globalLIWCModels=globalLIWCModels,
+                ibmList=globalConfig["preparationProcess"]['countriesIBM'],
+                readFiles=trainConf["readFile"],
+                writeFiles=trainConf["writeFile"]
+            )
+
+            globalProfileCollection[country] = filledProfileCollection
 
 def initialize():
     """

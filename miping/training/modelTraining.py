@@ -25,6 +25,7 @@ class ModelTraining:
         # neg_root_mean_squared_error RMSE
         scoringFunc='neg_root_mean_squared_error',
         printIntermediateResults=True,
+        printCoefficients=False,
     ):
         """
         TODO init func Class ModelTraining
@@ -47,6 +48,10 @@ class ModelTraining:
         # to keep the terminal output clean, prints can
         # be minimized, showing only most relevant prints
         self.printIntermediateResults = printIntermediateResults
+
+        # some model's have coefficients that are
+        # set during training and might be of interest
+        self.printCoefficients = printCoefficients
 
         return
 
@@ -110,9 +115,10 @@ class ModelTraining:
 
         if self.printIntermediateResults is True:
             print("best score: " + str(grid_model.best_score_))
-            bestParams = {}
-            for param_name in sorted(gridSearchParams.keys()):
-                bestParams[param_name] = grid_model.best_params_[param_name]
+        bestParams = {}
+        for param_name in sorted(gridSearchParams.keys()):
+            bestParams[param_name] = grid_model.best_params_[param_name]
+            if self.printIntermediateResults is True:
                 print(
                     "%s: %r" %
                     (param_name, grid_model.best_params_[param_name])
@@ -136,10 +142,19 @@ class ModelTraining:
                 " Score: %0.4f (+/- %0.4f)" %
                 (scores.mean(), scores.std() * 2)
             )
+        if self.printCoefficients is True:
+            if hasattr(bestModel, 'coef_'):
+                # some models provide coefficients
+                # that are set during training
+                print(
+                    "Model's coefficients: " +
+                    str(bestModel.coef_)
+                )
 
         endTime = datetime.datetime.now()
         runTime = endTime - startTime
-        print("Duration: " + str(runTime))
+        if self.printIntermediateResults is True:
+            print("Duration: " + str(runTime))
 
         return grid_model.best_score_, bestModel, bestParams
 
@@ -181,10 +196,11 @@ class ModelTraining:
             key_value = ('test_' + str(key))
             scores = cv_results[key_value]
             values = "%0.4f (+/- %0.4f)" % (scores.mean(), scores.std() * 2)
-            print(
-                str(key) + ": " +
-                str(values)
-            )
+            if self.printIntermediateResults is True:
+                print(
+                    str(key) + ": " +
+                    str(values)
+                )
             # save scores to save it later in model object
             scores_to_save[key] = values
 
@@ -257,7 +273,7 @@ class ModelTraining:
                 # save score in dict, to evalute each model type
                 # at the end of the function
                 self._nested_set(
-                    scoreStatistics, 
+                    scoreStatistics,
                     [modelObj.modelName, labelName],
                     best_score
                 )
@@ -291,28 +307,32 @@ class ModelTraining:
         # best over all labels
         # meaning good scores in all dimensions for this model type
         # helps with model selection and avoid overfitting
-        print("\nOverall average performance (might help with model selection):")
-        meanScores = {}
-        for modelType in scoreStatistics:
-            scores = 0
-            counter = 0
-            for label, score in scoreStatistics[modelType].items():
-                scores = scores + float(score)
-                counter = counter + 1
-            mean = scores / counter
-            meanScores[modelType] = mean
+        if self.printIntermediateResults is True:
             print(
-                "Mean score over all dimensions for model type " +
-                str(modelType) +
-                " is :" +
-                str(mean)
+                "\nOverall average performance " +
+                "(might help with model selection):"
             )
-        # best mean score
-        meanBest = max(
-            meanScores.keys(),
-            key=(lambda k: meanScores[k])
-        )
-        print("Mean best is " + str(meanBest))
+            meanScores = {}
+            for modelType in scoreStatistics:
+                scores = 0
+                counter = 0
+                for label, score in scoreStatistics[modelType].items():
+                    scores = scores + float(score)
+                    counter = counter + 1
+                mean = scores / counter
+                meanScores[modelType] = mean
+                print(
+                    "Mean score over all dimensions for model type " +
+                    str(modelType) +
+                    " is :" +
+                    str(mean)
+                )
+            # best mean score
+            meanBest = max(
+                meanScores.keys(),
+                key=(lambda k: meanScores[k])
+            )
+            print("Mean best is " + str(meanBest))
 
         return globalBestModels
 
@@ -334,7 +354,7 @@ class ModelTraining:
 
         for labelName in self.labelsGlobalList:
             print(
-                "\nFull Model Training currently for label: " +
+                "Full Model Training currently for label: " +
                 str(labelName)
             )
             # extract labels for prediction (e.g. values for Extraversion)

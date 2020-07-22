@@ -38,12 +38,13 @@ class Features:
             # create row
             liwc_data = []
             # get names of liwc categories
-            for attr in Profile.liwc_category_list:
+            for attrName in Profile.liwc_category_list:
                 # get value of current category
-                attr = getattr(profile, attr)
+                attr = getattr(profile, attrName)
                 # append to current profile
                 # and convert to float
                 liwc_data.append(np.float(attr))
+
             outputList.append(liwc_data)
 
         # create numpy array, as scikit needs this format

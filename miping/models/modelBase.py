@@ -17,13 +17,13 @@ class ModelBase:
         be aware of security issues
         """
         print("Do not import pickle models from unknown sources!")
+        # import model from pickle file
+        print(
+            "Importing pickle from path " +
+            str(path)
+        )
         answer = input("Confirm action by typing yes: ")
         if answer == "yes":
-            # import model from pickle file
-            print(
-                "Importing pickle from path " +
-                str(path)
-            )
             model = load(path)
             return model
         else:
@@ -84,10 +84,14 @@ class ModelBase:
 
     def exportModelONNX(
         self,
-        path
+        path,
+        numDim,
+        inputName,
     ):
         """
         TODO doc exportModelONNX
+        numDim e.g. 93
+        inputName e.g. liwc_input
         """
         print(
             "Exporting ONNX of " +
@@ -96,10 +100,11 @@ class ModelBase:
             str(path)
         )
 
-        # The following line means we have a 93-Dimensional
+        # The following line means for example we have a 93-Dimensional
         # float feature vector (-> the LIWC values)
         # and its name is "liwc_input" in ONNX.
-        initial_type = [('liwc_input', FloatTensorType([None, 93]))]
+        # depends on input variables
+        initial_type = [(inputName, FloatTensorType([None, numDim]))]
 
         # Convert model to ONNX format
         onnx_model = onnxmltools.convert_sklearn(

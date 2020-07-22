@@ -142,6 +142,20 @@ class Profile:
         'OtherP'
     ]
 
+    def __str__(
+        self
+    ):
+        """
+        TODO doc __str__
+        """
+
+        returnString = (
+            "\nProfile with\nuserID " +
+            str(self.userID)
+        )
+
+        return returnString
+
     def __init__(
         self,
         userID=None,

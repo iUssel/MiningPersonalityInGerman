@@ -1,9 +1,12 @@
 import miping.models as mipingModels
 
 from pathlib import Path
+import numpy as np
 
 from miping.training.features import Features
 from miping.training.modelTraining import ModelTraining
+from miping.models.profileCollection import ProfileCollection
+from miping.interfaces.helper import Helper
 
 
 class TrainingProcess:
@@ -36,16 +39,12 @@ class TrainingProcess:
         # this will contain all model instances that we want to train
         modelList = []
 
+        # get model names from config
         # list of models to be created
-        # easier to do it dynamically
-        loadModels = [
-            'BayesianRidge',
-            'DecisionTree',
-            'GaussianProcessRegressor',
-            'RandomForest',
-            'RidgeRegression',
-            'SupportVectorMachine'
-        ]
+        # not safe, but this is
+        loadModels = []
+        for model in self.modelConfig["liwcModelSelection"]:
+            loadModels.append(model)
 
         # gridsearch parameters from config
         gridParams = self.modelConfig['liwcModelSelection']
@@ -55,6 +54,15 @@ class TrainingProcess:
         for loadModel in loadModels:
             # load config for this model
             params = gridParams[loadModel]
+            # check if model class exists
+            if hasattr(mipingModels, loadModel) is False:
+                exceptString = (
+                    "Model " +
+                    str(loadModel) +
+                    " does not exist in MiPInG." +
+                    "Check config_models.yml."
+                )
+                raise Exception(exceptString)
             # get model class
             class_ = getattr(mipingModels, loadModel)
             modelInstance = class_(
@@ -163,7 +171,8 @@ class TrainingProcess:
 
             # begin training
             modelTraining = ModelTraining(
-                labelsGlobalList=self.config['labelsGlobalList']
+                labelsGlobalList=self.config['labelsGlobalList'],
+                printIntermediateResults=self.config['printDetailResults']
             )
             globalBestModels = modelTraining.startModelSelection(
                 modelObjList=modelList,
@@ -181,6 +190,8 @@ class TrainingProcess:
 
             # only export models if specified
             if writePickleFiles is True:
+                # create new line
+                print("")
                 # path for saving trained models
                 file_directory_string = (
                     'data/trainedModels/'
@@ -201,6 +212,8 @@ class TrainingProcess:
 
             # export to ONNX
             if writeONNXModel is True:
+                # create new line
+                print("")
                 # path for saving trained models
                 file_directory_string = (
                     'data/trainedModels/'
@@ -215,10 +228,149 @@ class TrainingProcess:
                         ".ONNX"
                     )
                     # call export function for model
+                    # since it's LIWC model, 93 is input dimension
                     model.exportModelONNX(
-                        file_path
+                        path=file_path,
+                        numDim=93,
+                        inputName='liwc_input',
                     )
 
             print("\nEnd of LIWC Model Training\n")
 
-        return
+        return globalTrainedModels
+
+    def predictPersonalitiesLIWC(
+        self,
+        profileCol,
+        country,
+        globalLIWCModels,
+        ibmList,
+        readFiles=False,
+        writeFiles=False,
+    ):
+        """
+        TODO predictPersonalities
+        ibmList list of countries we already got profiles
+        """
+        if writeFiles is True and readFiles is True:
+            raise Exception(
+                "readFiles and writeFiles cannot be True at the same time."
+            )
+
+        returnProfileCol = ProfileCollection()
+
+        if readFiles is True:
+            print("\nReading files for predict personalities with LIWC")
+            print(
+                "Loading for country: " +
+                country
+            )
+
+            # path for saved profiles
+            file_directory_string = (
+                'data/07' +
+                country +
+                'full_profiles.csv'
+            )
+            file_path = Path(file_directory_string)
+
+            returnProfileCol.read_profile_list_file(
+                full_path=file_path
+            )
+
+            print("Files successfully loaded")
+        else:
+            print("\nBegin predicting personalities with LIWC")
+            print(
+                "Country: " +
+                country
+            )
+
+            # check if already predicted via IBM
+            if country in ibmList:
+                print("Personalities already retrieved via IBM")
+                # just return passed collection
+                returnProfileCol = profileCol
+
+            else:
+                # for the remaining countries do prediction
+
+                # create feature pipeline
+                features = Features()
+                liwcFeaturePipeline = features.createLIWCFeaturePipeline()
+                profileList = profileCol.profileList
+                features = liwcFeaturePipeline.fit_transform(profileList)
+                print(
+                    "Feature shape " +
+                    str(features.shape)
+                )
+
+                # initialize progress bar
+                helper = Helper()
+                numProfiles = len(profileCol.profileList)
+                helper.printProgressBar(
+                    0,
+                    numProfiles,
+                    prefix='Progress:',
+                    suffix='Complete',
+                    length=50
+                )
+
+                # iterate over all profiles
+                # and enrich profiles with prediction
+                for num, profile in enumerate(profileCol.profileList):
+                    # we just take the row with this profile's features
+                    singleFeature = np.array([features[num]])
+                    # for each dimension use respective model
+                    for dimension, modelBase in globalLIWCModels.items():
+                        profile = self.predict_profile(
+                            profile=profile,
+                            features=singleFeature,
+                            dimension=dimension,
+                            model=modelBase.model
+                        )
+
+                    # add filled profile to collection
+                    returnProfileCol.add_profile(profile)
+
+                    # Update Progress Bar
+                    helper.printProgressBar(
+                        num + 1,
+                        numProfiles,
+                        prefix='Progress:',
+                        suffix='Complete',
+                        length=50
+                    )
+
+            # only write file if specified
+            if writeFiles is True:
+                # path for saving profileCollection
+                file_directory_string = (
+                    'data/07' +
+                    country +
+                    'full_profiles.csv'
+                )
+                file_path = Path(file_directory_string)
+
+                returnProfileCol.write_profile_list_file(
+                    full_path=file_path
+                )
+            print("End predicting personalities")
+
+        return returnProfileCol
+
+    def predict_profile(
+        self,
+        profile,
+        features,
+        dimension,
+        model,
+    ):
+        """
+        TODO doc predict_profile
+        """
+
+        result = model.predict(features)
+        setattr(profile, dimension, float(result))
+
+        return profile

@@ -1,8 +1,9 @@
 # controls which steps to do when starting main.py
 process:
   scraping: False
-  dataPreparation: True
-  modelTrainingLIWC: True
+  dataPreparation: False
+  modelTrainingLIWC: False
+  derivePersonalities: True
 
 scraping:
   # number of seconds to stream tweet data
@@ -46,7 +47,7 @@ scraping:
   validateLocation: True
 
 preparationProcess:
-  printStatistics: True
+  printStatistics: False
 
   # list of countries (subset of countries defined under twitter)
   # for these countries we will get profiles from ibm
@@ -85,6 +86,17 @@ modelTraining:
     - big5_extraversion
     - big5_agreeableness
     - big5_neuroticism
+  # print details about training scores etc
+  printDetailResults: False
+  # binary files
+  writePickleFiles: False
+  readPickleFiles: False # TODO change
+  # ONNX model
+  writeONNXModel: False
+  readONNXModel: True
+  # predicted personalities (German)
+  writeFile: False
+  readFile: True
 
 twitter:
 

@@ -42,7 +42,7 @@ class LiwcAPI:
 
             for rowNum, row in enumerate(reader):
                 # due to next(), we do not need
-                # to explicitly skip the reader
+                # to explicitly skip the header
 
                 # first column must contain userID
                 userID = row[0]
@@ -71,5 +71,17 @@ class LiwcAPI:
                         value = row[colIdx].replace(',', '.')
                         # convert value to decimal
                         setattr(profileInst, columnName, Decimal(value))
+                    elif columnName == 'you_total':
+                        # German LIWC category has different name for 'you'
+                        # replace comma with dot, for american number format
+                        value = row[colIdx].replace(',', '.')
+                        # convert value to decimal
+                        setattr(profileInst, 'you', Decimal(value))
+                    elif columnName == 'achiev':
+                        # in the German LIWC achiev is spelled wrong
+                        # replace comma with dot, for american number format
+                        value = row[colIdx].replace(',', '.')
+                        # convert value to decimal
+                        setattr(profileInst, 'achieve', Decimal(value))
 
         return profileCol
