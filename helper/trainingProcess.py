@@ -28,14 +28,24 @@ class TrainingProcess:
 
         return
 
-    def createLIWCModels(
+    def createModels(
         self,
+        step='LIWC',
     ):
         """
         TODO docstring createModels
 
         returns modelList
         """
+
+        if step == 'LIWC':
+            configString = 'liwcModelSelection'
+        elif step == 'glove':
+            # glove
+            configString = 'gloveModelSelection'
+        else:
+            raise Exception("Unknown step in createModels")
+
         # this will contain all model instances that we want to train
         modelList = []
 
@@ -43,11 +53,11 @@ class TrainingProcess:
         # list of models to be created
         # not safe, but this is
         loadModels = []
-        for model in self.modelConfig["liwcModelSelection"]:
+        for model in self.modelConfig[configString]:
             loadModels.append(model)
 
         # gridsearch parameters from config
-        gridParams = self.modelConfig['liwcModelSelection']
+        gridParams = self.modelConfig[configString]
 
         # create model instances with grid search parameters
         # loaded from config
@@ -167,7 +177,7 @@ class TrainingProcess:
 
             # create list of models with parameters
             # this list will be used for model selection
-            modelList = self.createLIWCModels()
+            modelList = self.createModels(step='LIWC')
 
             # begin training
             modelTraining = ModelTraining(
@@ -374,3 +384,178 @@ class TrainingProcess:
         setattr(profile, dimension, float(result))
 
         return profile
+
+    def doGloVeModelTraining(
+        self,
+        profileCol,
+        writePickleFiles=False,
+        readPickleFiles=False,
+        writeONNXModel=False,
+        readONNXModel=False,
+    ):
+        """
+        TODO doGloVeModelTraining
+        """
+
+        if writePickleFiles is True and readPickleFiles is True:
+            raise Exception(
+                "readFiles and writeFiles cannot be True at the same time."
+            )
+
+        if writeONNXModel is True and readONNXModel is True:
+            raise Exception(
+                "writeONNXModel and readONNXModel cannot be " +
+                "True at the same time."
+            )
+
+        if readPickleFiles is True and readONNXModel is True:
+            raise Exception(
+                "readPickleFiles and readONNXModel cannot be " +
+                "True at the same time."
+            )
+
+        if readPickleFiles is True:
+            print("\nReading files for GloVe model training from pickle")
+            # load models in this dict
+            globalTrainedModels = {}
+            # load models (one for each label (big 5 dimension))
+            for label in self.config['labelsGlobalList']:
+                # path for saved trained models
+                file_directory_string = (
+                    'data/trainedModels/glove'
+                )
+                # concatenate file path
+                file_path = Path(
+                    file_directory_string +
+                    label +
+                    ".pickle"
+                )
+                # call import function for model
+                impModel = mipingModels.ModelBase.importModelPickle(
+                    file_path
+                )
+                globalTrainedModels[label] = impModel
+
+            for key, model in globalTrainedModels.items():
+                # print model names to confirm which models are loaded
+                print(model.__str__())
+            print("Pickle import finished")
+
+        elif readONNXModel is True:
+            print("\nReading files for GloVe model training from ONNX")
+            # load models in this dict
+            globalTrainedModels = {}
+            # load models (one for each label (big 5 dimension))
+            for label in self.config['labelsGlobalList']:
+                # path for saved trained models
+                file_directory_string = (
+                    'data/trainedModels/glove'
+                )
+                # concatenate file path
+                file_path = Path(
+                    file_directory_string +
+                    label +
+                    ".ONNX"
+                )
+                # import onnx model
+                onnx = mipingModels.OnnxModel(
+                    modelName="ONNX Model",
+                    labelName=label,
+                )
+                onnx.importModelONNX(file_path)
+                globalTrainedModels[label] = onnx
+
+            for key, model in globalTrainedModels.items():
+                # print model names to confirm which models are loaded
+                print(model.__str__())
+
+            print("ONNX import finished")
+        else:
+            print("\nStart of GloVe Model Training")
+
+            # path for GloVe vectors
+            file_path = Path(
+                'data/glove/glove_vectors.txt'
+            )
+            # create feature pipeline
+            features = Features(
+                glovePath=file_path
+            )
+            gloveFeaturePipeline = features.createGloVeFeaturePipeline()
+
+            # create list of models with parameters
+            # this list will be used for model selection
+            modelList = self.createModels(step='glove')
+
+            # begin training
+            modelTraining = ModelTraining(
+                labelsGlobalList=self.config['labelsGlobalList'],
+                printIntermediateResults=self.config['printDetailResults']
+            )
+            globalBestGloVeModels = modelTraining.startModelSelection(
+                modelObjList=modelList,
+                featurePipeline=gloveFeaturePipeline,
+                profileColTraining=profileCol,
+            )
+
+            # fully train model in different method of modelTraining
+            print("\nFull model training for selected models")
+            globalTrainedModels = modelTraining.completeModelTraining(
+                modelCollection=globalBestGloVeModels,
+                featurePipeline=gloveFeaturePipeline,
+                profileColTraining=profileCol,
+            )
+
+            # TODO word coverage analysis
+            print(features.coverageStatistics)
+
+            # only export models if specified
+            if writePickleFiles is True:
+                # create new line
+                print("")
+                # path for saving trained models
+                file_directory_string = (
+                    'data/trainedModels/glove'
+                )
+
+                # save models
+                for key, model in globalTrainedModels.items():
+                    # concatenate file path
+                    file_path = Path(
+                        file_directory_string +
+                        model.labelName +
+                        ".pickle"
+                    )
+                    # call export function for model
+                    model.exportModelPickle(
+                        file_path
+                    )
+
+            # export to ONNX
+            if writeONNXModel is True:
+                # create new line
+                print("")
+                # path for saving trained models
+                file_directory_string = (
+                    'data/trainedModels/glove'
+                )
+
+                # save models
+                for key, model in globalTrainedModels.items():
+                    # concatenate file path
+                    file_path = Path(
+                        file_directory_string +
+                        model.labelName +
+                        ".ONNX"
+                    )
+                    # call export function for model
+                    # since it's GloVe model, 900 is input dimension
+                    model.exportModelONNX(
+                        path=file_path,
+                        numDim=900,
+                        inputName='glove_input',
+                    )
+
+            print("\nEnd of GloVe Model Training\n")
+
+        return globalTrainedModels

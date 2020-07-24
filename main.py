@@ -169,16 +169,16 @@ def main():
             config=trainConf,
             modelConfig=config_models
         )
+        # set variables to None, if we read files,
+        # because they are not needed
+        if trainConf["readFile"] is True:
+            globalLIWCModels = None
+            locProfileCollection = None
+            globalProfileCollection = {}
+        else:
+            locProfileCollection = globalProfileCollection[country]
         # loop over all available countries
         for country in globalConfig['twitter']['coordinates']:
-            # set variables to None, if we read files,
-            # because they are not needed
-            if trainConf["readFile"] is True:
-                globalLIWCModels = None
-                locProfileCollection = None
-                globalProfileCollection = {}
-            else:
-                locProfileCollection = globalProfileCollection[country]
 
             # for all countries we did not get IBM profiles for
             # we will fill profile with trained LIWC model
@@ -192,6 +192,32 @@ def main():
             )
 
             globalProfileCollection[country] = filledProfileCollection
+
+        if globalConfig["preparationProcess"]["printStatistics"] is True:
+            # print again statistics
+            preparation = helper.PreparationProcess(
+                config=None,
+                ibm=None
+            )
+            preparation.print_statistics(globalProfileCollection)
+
+
+    if globalConfig["process"]["modelTrainingGloVe"] is True:
+        trainConf = globalConfig["modelTraining"]
+        # init helper class
+        trainingSteps = helper.TrainingProcess(
+            config=trainConf,
+            modelConfig=config_models
+        )
+        # build GloVe model based on German texts
+        globalLIWCModels = trainingSteps.doGloVeModelTraining(
+            profileCol=globalProfileCollection['Germany'],
+            writePickleFiles=trainConf["writePickleFilesG"],
+            readPickleFiles=trainConf["readPickleFilesG"],
+            writeONNXModel=trainConf["writeONNXModelG"],
+            readONNXModel=trainConf["readONNXModelG"]
+        )
+
 
 def initialize():
     """

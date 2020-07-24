@@ -4,6 +4,7 @@ process:
   dataPreparation: False
   modelTrainingLIWC: False
   derivePersonalities: True
+  modelTrainingGloVe: True
 
 scraping:
   # number of seconds to stream tweet data
@@ -87,16 +88,23 @@ modelTraining:
     - big5_agreeableness
     - big5_neuroticism
   # print details about training scores etc
-  printDetailResults: False
+  printDetailResults: True
   # binary files
   writePickleFiles: False
   readPickleFiles: False # TODO change
   # ONNX model
   writeONNXModel: False
   readONNXModel: True
-  # predicted personalities (German)
+  # csv files after liwc prediction
   writeFile: False
   readFile: True
+
+  # binary files for glove
+  writePickleFilesG: False
+  readPickleFilesG: False # TODO change
+  # ONNX model for glove
+  writeONNXModelG: False
+  readONNXModelG: False
 
 twitter:
 
