@@ -1,14 +1,13 @@
 import numpy as np
-import pandas
 
 from sklearn.preprocessing import FunctionTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.pipeline import FeatureUnion
 from sklearn.preprocessing import StandardScaler
-from os import path
 
 from ..models.profile import Profile
 from ..interfaces.helper import Helper
+from ..interfaces.glove import GloVe
 
 
 class Features:
@@ -18,14 +17,10 @@ class Features:
 
     def __init__(
         self,
-        glovePath=None,
     ):
         """
         TODO init func Class Features
         """
-
-        self.glovePath = glovePath
-
         return
 
     def featureLIWC(
@@ -86,45 +81,6 @@ class Features:
 
         return featurePipeline
 
-    def loadGloVe(
-        self,
-    ):
-        """
-        TODO func featureGloVe
-        from profileList as input in pipeline
-        extract the relevant GloVe features
-        """
-
-        if self.glovePath is None:
-            eString = "No GloVe path passed in Features class"
-            raise Exception(eString)
-
-        if path.exists(self.glovePath) is False:
-            # file does not exist
-            eString = "Did not find GloVe file passed in Features class"
-            raise Exception(eString)
-
-        print("\nLoading GloVe")
-
-        # file exists, so we load it
-        glove_df = pandas.read_csv(
-            filepath_or_buffer=self.glovePath,
-            sep=" ",
-            header=None,
-            encoding='utf_8',
-        )
-        # set words as index
-        glove_df.set_index(0, inplace=True)
-        glove_df.rename_axis("words", axis="index", inplace=True)
-
-        print(
-            "GloVe loaded with " +
-            str(len(glove_df)) +
-            " as count of words."
-        )
-
-        return glove_df
-
     def _condenseGloVeVectors(
         self,
         vectorList,
@@ -140,8 +96,8 @@ class Features:
         # for each dimension identify mean,max,min
         # and save in separate vector
         meanVector = vectorList.mean(axis=0)
-        maxVector = np.amax(a=vectorList,axis=0)
-        minVector = np.amin(a=vectorList,axis=0)
+        maxVector = np.amax(a=vectorList, axis=0)
+        minVector = np.amin(a=vectorList, axis=0)
 
         # combine all 300 dim vectors in 900 dim vector
         returnVector = []
@@ -163,11 +119,15 @@ class Features:
         from profileList as input in pipeline
         extract the relevant GloVe features
         """
+
+        if self.glove is None:
+            raise Exception("GloVe not loaded.")
+
         # will contain the GloVe measures for each profile
         outputList = []
-        
-        # load pre trained GloVe word embedding
-        glove_df = self.loadGloVe()
+
+        # get index as list, for faster lookup
+        index_as_list = self.glove.get_index_list()
 
         # initialize progress bar
         helper = Helper()
@@ -189,23 +149,29 @@ class Features:
             # separated by space
             tokens = profile.text.split(' ')
 
+            profile_vectors = []
+
             # for each word lookup glove vector
             # if no match -> ignore it
-            profile_vectors = []
-            for token in tokens:
-                if token in glove_df.index:
-                    # token is in glove
-                    glove_values = glove_df.loc[token]
-                    converted_vals = np.array(glove_values)
-                    # add vector to list of this profile's vectors
-                    profile_vectors.append(converted_vals)
-                else:
-                    # token is not in glove
-                    continue
+            # first identify set of words not in glove
+            not_in_glove = set(np.setdiff1d(tokens, index_as_list))
+
+            # get words in glove, indcluding duplicates
+            # so if words exist n times in text, they will be n times in list
+            in_glove = [word for word in tokens if word not in not_in_glove]
+
+            # lookup glove vectors
+            # should return duplicates!
+            glove_values = self.glove.getGloVeByWordList(
+                wordList=in_glove
+            )
+            converted_vals = np.array(glove_values)
+            # add vectors to list of this profile's vectors
+            profile_vectors.append(converted_vals)
 
             # fill coverage statistics as share of tokens (=words)
             # that exist in glove in comparison to total tokens
-            profile_coverage =  len(profile_vectors) / len(tokens)
+            profile_coverage = len(profile_vectors) / len(tokens)
             # add to global list
             coverageStatistics.append(profile_coverage)
 
@@ -233,13 +199,23 @@ class Features:
 
     def createGloVeFeaturePipeline(
         self,
+        glovePath='data/glove/glove.db',
+        dataBaseMode=True,
     ):
         """
         TODO func createGloVeFeaturePipeline
         create pipeline that can be passed into multiple training procceses
         this is just a blueprint for calculating the features
         no features are calculated yet!
+
+        no parallelization due to GloVe lookup
         """
+
+        glove = GloVe(
+            filePath=glovePath,
+            dataBaseMode=dataBaseMode,
+        )
+        self.glove = glove
 
         # Create skicit-learn compatible FunctionTransformers
         # for usage with other sklearn functions
@@ -250,7 +226,7 @@ class Features:
         # Combine feature(s) with FeatureUnion
         featureTransformer = FeatureUnion([
                                 ('glove', glove_Trans),
-                                ], n_jobs=-1)  # parallelize via multiprocess
+                                ], n_jobs=1)  # no parallelization
 
         # combine into a pipeline, no scaling since GloVe is scaled
         featurePipeline = Pipeline([

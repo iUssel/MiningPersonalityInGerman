@@ -201,7 +201,6 @@ def main():
             )
             preparation.print_statistics(globalProfileCollection)
 
-
     if globalConfig["process"]["modelTrainingGloVe"] is True:
         trainConf = globalConfig["modelTraining"]
         # init helper class

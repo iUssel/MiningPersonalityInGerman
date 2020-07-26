@@ -475,13 +475,14 @@ class TrainingProcess:
 
             # path for GloVe vectors
             file_path = Path(
-                'data/glove/glove_vectors.txt'
+                'data/glove/glove.db'
             )
             # create feature pipeline
-            features = Features(
-                glovePath=file_path
+            features = Features()
+            gloveFeaturePipeline = features.createGloVeFeaturePipeline(
+                glovePath=file_path,
+                dataBaseMode=True
             )
-            gloveFeaturePipeline = features.createGloVeFeaturePipeline()
 
             # create list of models with parameters
             # this list will be used for model selection
