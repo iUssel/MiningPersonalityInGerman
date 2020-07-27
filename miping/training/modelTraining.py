@@ -214,18 +214,30 @@ class ModelTraining:
         modelObjList,
         featurePipeline,
         profileColTraining,
+        saveFeatures=False,
+        precalculatedFeatures=None,
     ):
         """
         TODO doc func startModelSelection
         take modellist and do training
-        """
 
-        # calculate features once
-        print("Calculating features")
+        saveFeatures in instance
+        """
         profileList = profileColTraining.profileList
-        features = featurePipeline.fit_transform(profileList)
+
+        if precalculatedFeatures is None:
+            # calculate features once
+            print("Calculating features")
+            features = featurePipeline.fit_transform(profileList)
+        else:
+            print("Features from passed variable")
+            features = precalculatedFeatures
+
+        if saveFeatures is True:
+            self.features = features
 
         print("Feature shape: " + str(features.shape))
+        self.features = features
 
         globalBestModels = {}
         scoreStatistics = {}
@@ -341,16 +353,27 @@ class ModelTraining:
         modelCollection,
         featurePipeline,
         profileColTraining,
+        saveFeatures=False,
+        precalculatedFeatures=None,
     ):
         """
         TODO doc func completeModelTraining
         take modellist and do training
-        """
 
-        # calculate features once
-        print("Calculating features for complete training")
+        saveFeatures -> access from außerhalb
+        """
         profileList = profileColTraining.profileList
-        features = featurePipeline.fit_transform(profileList)
+
+        if precalculatedFeatures is None:
+            # calculate features once
+            print("Calculating features for complete training")
+            features = featurePipeline.fit_transform(profileList)
+        else:
+            print("Features from passed variable")
+            features = precalculatedFeatures
+
+        if saveFeatures is True:
+            self.features = features
 
         for labelName in self.labelsGlobalList:
             print(

@@ -392,6 +392,8 @@ class TrainingProcess:
         readPickleFiles=False,
         writeONNXModel=False,
         readONNXModel=False,
+        writeFeatureFile=False,
+        readFeatureFile=False,
     ):
         """
         TODO doGloVeModelTraining
@@ -411,6 +413,12 @@ class TrainingProcess:
         if readPickleFiles is True and readONNXModel is True:
             raise Exception(
                 "readPickleFiles and readONNXModel cannot be " +
+                "True at the same time."
+            )
+
+        if writeFeatureFile is True and readFeatureFile is True:
+            raise Exception(
+                "writeFeatureFile and readFeatureFile cannot be " +
                 "True at the same time."
             )
 
@@ -473,16 +481,40 @@ class TrainingProcess:
         else:
             print("\nStart of GloVe Model Training")
 
-            # path for GloVe vectors
-            file_path = Path(
-                'data/glove/glove.db'
-            )
-            # create feature pipeline
-            features = Features()
-            gloveFeaturePipeline = features.createGloVeFeaturePipeline(
-                glovePath=file_path,
-                dataBaseMode=True
-            )
+            if readFeatureFile is True:
+                print("reading featureFile")
+                print("\nImporting calculated features")
+                # path for saved features
+                file_directory_string = (
+                    'data/08gloveFeatures'
+                )
+                # concatenate file path
+                file_path = Path(
+                    file_directory_string +
+                    ".npy"
+                )
+                # call numpy load function
+                calc_features = np.load(
+                    file=file_path,
+                    allow_pickle=False
+                )
+                print("Feature shape: " + str(calc_features.shape))
+                gloveFeaturePipeline = None
+            else:
+                # set to None
+                calc_features = None
+                # path for GloVe vectors
+                file_path = Path(
+                    #'data/glove/glove.db'
+                    'data/glove/glove_vectors.txt'
+                    #'data/glove/first_100000.txt'
+                )
+                # create feature pipeline
+                features = Features()
+                gloveFeaturePipeline = features.createGloVeFeaturePipeline(
+                    glovePath=file_path,
+                    dataBaseMode=False # TODO make flexible
+                )
 
             # create list of models with parameters
             # this list will be used for model selection
@@ -497,6 +529,8 @@ class TrainingProcess:
                 modelObjList=modelList,
                 featurePipeline=gloveFeaturePipeline,
                 profileColTraining=profileCol,
+                saveFeatures=writeFeatureFile,
+                precalculatedFeatures=calc_features,
             )
 
             # fully train model in different method of modelTraining
@@ -505,10 +539,32 @@ class TrainingProcess:
                 modelCollection=globalBestGloVeModels,
                 featurePipeline=gloveFeaturePipeline,
                 profileColTraining=profileCol,
+                saveFeatures=False,
+                precalculatedFeatures=calc_features,
             )
 
             # TODO word coverage analysis
-            print(features.coverageStatistics)
+            #print(features.coverageStatistics)
+
+            # write feature file
+            if writeFeatureFile is True:
+                print("\nExporting calculated features")
+                calc_features = modelTraining.features
+                # path for saving features
+                file_directory_string = (
+                    'data/08gloveFeatures'
+                )
+                # concatenate file path
+                file_path = Path(
+                    file_directory_string +
+                    ".npy"
+                )
+                # call numpy save function
+                np.save(
+                    file=file_path,
+                    arr=calc_features,
+                    allow_pickle=False
+                )
 
             # only export models if specified
             if writePickleFiles is True:

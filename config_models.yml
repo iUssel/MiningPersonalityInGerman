@@ -85,13 +85,13 @@ gloveModelSelection:
   # Ridge
   RidgeRegression:
     alpha:
-      - 0
-      - 0.0001
-      - 0.001
-      - 0.01
-      - 0.1
-      - 1.0
-      - 10.0
+       - 0
+       - 0.0001
+       - 0.001
+       - 0.01
+       - 0.1
+       - 1.0
+       - 10.0
     random_state:
       - 0
   # GaussianProcessRegressor

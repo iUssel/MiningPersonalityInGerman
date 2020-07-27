@@ -8,6 +8,7 @@ from sklearn.preprocessing import StandardScaler
 from ..models.profile import Profile
 from ..interfaces.helper import Helper
 from ..interfaces.glove import GloVe
+from .noGloveValueError import NoGloveValueError
 
 
 class Features:
@@ -93,6 +94,9 @@ class Features:
         # convert to np array for mean,max,min functions
         vectorList = np.array(vectorList)
 
+        # correct structure from (1,x,300) to (x,300)
+        vectorList = vectorList[0]
+
         # for each dimension identify mean,max,min
         # and save in separate vector
         meanVector = vectorList.mean(axis=0)
@@ -160,27 +164,36 @@ class Features:
             # so if words exist n times in text, they will be n times in list
             in_glove = [word for word in tokens if word not in not_in_glove]
 
-            # lookup glove vectors
-            # should return duplicates!
-            glove_values = self.glove.getGloVeByWordList(
-                wordList=in_glove
-            )
-            converted_vals = np.array(glove_values)
-            # add vectors to list of this profile's vectors
-            profile_vectors.append(converted_vals)
+            if len(in_glove) == 0:
+                # es konnte kein wort in glove gefunden werden
+                # raise Exception
+                eString = (
+                    "Could not find any glove values for given words"
+                )
+                raise NoGloveValueError(eString)
+            else:
+                # mind. ein Wort wurde gefunden
+                # lookup glove vectors
+                # should return duplicates!
+                glove_values = self.glove.getGloVeByWordList(
+                    wordList=in_glove
+                )
+                converted_vals = np.array(glove_values)
+                # add vectors to list of this profile's vectors
+                profile_vectors.append(converted_vals)
 
-            # fill coverage statistics as share of tokens (=words)
-            # that exist in glove in comparison to total tokens
-            profile_coverage = len(profile_vectors) / len(tokens)
-            # add to global list
-            coverageStatistics.append(profile_coverage)
+                # fill coverage statistics as share of tokens (=words)
+                # that exist in glove in comparison to total tokens
+                profile_coverage = len(profile_vectors) / len(tokens)
+                # add to global list
+                coverageStatistics.append(profile_coverage)
 
-            # after all vectors for this profile are retrieved
-            # condense with maximum, minimum, average in 900 dim vector
-            final_vector = self._condenseGloVeVectors(profile_vectors)
+                # after all vectors for this profile are retrieved
+                # condense with maximum, minimum, average in 900 dim vector
+                final_vector = self._condenseGloVeVectors(profile_vectors)
 
-            # add 900 dim to output list
-            outputList.append(final_vector)
+                # add 900 dim to output list
+                outputList.append(final_vector)
 
             # Update Progress Bar
             helper.printProgressBar(
