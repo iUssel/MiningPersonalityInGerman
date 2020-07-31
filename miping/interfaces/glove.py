@@ -1,6 +1,8 @@
 import sqlite3
 import pandas
 from os import path
+# this line logs an error, because the module contains a C libray
+# which is not inspected, but the code works as it is
 from sqlite3 import Error
 
 
@@ -30,7 +32,8 @@ class GloVe:
         if dataBaseMode is True:
             print("Using GloVe database")
             self.connection = self._create_connection(
-                db_file=filePath
+                # sql lite needs string as path
+                db_file=str(filePath)
             )
         else:
             print("Using GloVe file")
@@ -128,7 +131,7 @@ class GloVe:
     ):
         """ TODO create a database connection to the SQLite database
             specified by db_file
-            :param db_file: database file
+            :param db_file: database file (as string)
             :return: Connection object or None
         """
         conn = None

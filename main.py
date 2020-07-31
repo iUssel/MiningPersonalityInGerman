@@ -215,8 +215,8 @@ def main():
             readPickleFiles=trainConf["readPickleFilesG"],
             writeONNXModel=trainConf["writeONNXModelG"],
             readONNXModel=trainConf["readONNXModelG"],
-            writeFeatureFile=False,  # TODO config
-            readFeatureFile=True,
+            writeFeatureFile=trainConf["writeFeatureFile"],
+            readFeatureFile=trainConf["readFeatureFile"],
         )
 
 

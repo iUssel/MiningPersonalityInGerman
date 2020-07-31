@@ -150,6 +150,12 @@ class ModelTraining:
                     "Model's coefficients: " +
                     str(bestModel.coef_)
                 )
+            if hasattr(bestModel, 'kernel_'):
+                # gaussian proccesses have kernel parameters
+                print(
+                    "Kernel parameters: " +
+                    str(bestModel.kernel_)
+                )
 
         endTime = datetime.datetime.now()
         runTime = endTime - startTime
@@ -191,7 +197,7 @@ class ModelTraining:
         scores_to_save = {}
 
         # Printing scores for each model
-        for i, key in enumerate(scoring):
+        for key in scoring.keys():
             # get results, these are prefixed with test_
             key_value = ('test_' + str(key))
             scores = cv_results[key_value]
@@ -328,7 +334,7 @@ class ModelTraining:
             for modelType in scoreStatistics:
                 scores = 0
                 counter = 0
-                for label, score in scoreStatistics[modelType].items():
+                for score in scoreStatistics[modelType].values():
                     scores = scores + float(score)
                     counter = counter + 1
                 mean = scores / counter

@@ -91,7 +91,7 @@ modelTraining:
   printDetailResults: True
   # binary files
   writePickleFiles: False
-  readPickleFiles: False # TODO change
+  readPickleFiles: False
   # ONNX model
   writeONNXModel: False
   readONNXModel: True
@@ -101,10 +101,25 @@ modelTraining:
 
   # binary files for glove
   writePickleFilesG: False
-  readPickleFilesG: False # TODO change
+  readPickleFilesG: False
   # ONNX model for glove
   writeONNXModelG: False
-  readONNXModelG: False
+  readONNXModelG: False # TODO CHANGE
+
+  # calculated glove features can be exported
+  # or read; if read is False, features are calculated
+  # on the fly
+  writeFeatureFile: False
+  readFeatureFile: False
+
+  # file or data base file for glove data
+  # only relevant if features are not loaded from file
+  # data/glove/glove.db for data base
+  # data/glove/glove_vectors.txt for plain text file
+  glove_path: 'data/glove/glove_vectors.txt'
+  # if path points to data base file set to True
+  # otherwise False
+  glove_database: False
 
 twitter:
 

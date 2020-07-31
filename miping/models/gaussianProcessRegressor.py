@@ -1,5 +1,6 @@
 from .modelBase import ModelBase
 from sklearn.gaussian_process import GaussianProcessRegressor as skGPR
+from sklearn.gaussian_process.kernels import RBF
 
 
 class GaussianProcessRegressor(ModelBase):
@@ -15,6 +16,8 @@ class GaussianProcessRegressor(ModelBase):
         TODO init func Class GaussianProcessRegressor
         gridSearchParams: dict
         """
+        # standard kernel
+        kernel = 1.0 * RBF(1.0)
 
         if gridSearchParams is not None:
             gridSearch = gridSearchParams
@@ -29,7 +32,7 @@ class GaussianProcessRegressor(ModelBase):
 
         super().__init__(
             modelName='GaussianProcessRegressor',
-            model=skGPR(),
+            model=skGPR(kernel=kernel),
             gridSearchParams=gridSearch
         )
 
