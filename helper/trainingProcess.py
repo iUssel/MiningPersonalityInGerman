@@ -510,6 +510,7 @@ class TrainingProcess:
             )
             print("Feature shape: " + str(calc_features.shape))
             gloveFeaturePipeline = None
+            features = None
         else:
             # set to None
             calc_features = None
