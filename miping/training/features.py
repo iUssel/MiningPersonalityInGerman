@@ -184,7 +184,7 @@ class Features:
 
                 # fill coverage statistics as share of tokens (=words)
                 # that exist in glove in comparison to total tokens
-                profile_coverage = len(profile_vectors) / len(tokens)
+                profile_coverage = len(converted_vals) / len(tokens)
                 # add to global list
                 coverageStatistics.append(profile_coverage)
 

@@ -607,8 +607,16 @@ class TrainingProcess:
             # feature generation, which is only true
             # if features are not read from file
             if readFeatureFile is False:
-                # TODO word coverage analysis
-                print(featuresClass.coverageStatistics)
+                # average word coverage
+                print(
+                    "Average word coverage: " +
+                    str(np.mean(featuresClass.coverageStatistics))
+                )
+                # min word coverage
+                print(
+                    "Minimum word coverage: " +
+                    str(np.min(featuresClass.coverageStatistics))
+                )
 
             # write feature file
             if writeFeatureFile is True:
