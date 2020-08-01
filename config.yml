@@ -110,7 +110,7 @@ modelTraining:
   # or read; if read is False, features are calculated
   # on the fly
   writeFeatureFile: False
-  readFeatureFile: False
+  readFeatureFile: True
 
   # file or data base file for glove data
   # only relevant if features are not loaded from file

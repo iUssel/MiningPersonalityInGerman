@@ -583,7 +583,8 @@ class TrainingProcess:
             # begin training
             modelTraining = ModelTraining(
                 labelsGlobalList=self.config['labelsGlobalList'],
-                printIntermediateResults=self.config['printDetailResults']
+                printIntermediateResults=self.config['printDetailResults'],
+                printCoefficients=True, #TODO false
             )
             globalBestGloVeModels = modelTraining.startModelSelection(
                 modelObjList=modelList,
@@ -611,6 +612,11 @@ class TrainingProcess:
                 print(
                     "Average word coverage: " +
                     str(np.mean(featuresClass.coverageStatistics))
+                )
+                # max word coverage
+                print(
+                    "Maximum word coverage: " +
+                    str(np.max(featuresClass.coverageStatistics))
                 )
                 # min word coverage
                 print(
