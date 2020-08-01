@@ -584,7 +584,7 @@ class TrainingProcess:
             modelTraining = ModelTraining(
                 labelsGlobalList=self.config['labelsGlobalList'],
                 printIntermediateResults=self.config['printDetailResults'],
-                printCoefficients=True, #TODO false
+                printCoefficients=False,
             )
             globalBestGloVeModels = modelTraining.startModelSelection(
                 modelObjList=modelList,
