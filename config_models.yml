@@ -153,8 +153,6 @@ gloveModelSelection:
       - 10
   SupportVectorMachine:
     kernel:
-      - 'rbf'
-      - 'sigmoid'
       - 'linear'
     C: 
       - 0.001
