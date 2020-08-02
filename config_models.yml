@@ -124,23 +124,15 @@ gloveModelSelection:
     n_iter: 
       - 25
     alpha_1:
-      - 0.0000001
-      - 0.000001
       - 1
       - 10
     alpha_2:
-      - 0.0000001
-      - 0.000001
       - 1
       - 10
     lambda_1:
-      - 0.0000001
-      - 0.000001
       - 1
       - 10
     lambda_2:
-      - 0.0000001
-      - 0.000001
       - 1
       - 10
   SupportVectorMachine:
