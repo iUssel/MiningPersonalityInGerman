@@ -65,80 +65,62 @@ gloveModelSelection:
     splitter:
       - 'best'
     max_depth:
+      - 3
       - 4
-      - 5
-      - 7
-      - 10
     min_samples_split:
       - 2
     min_samples_leaf:
-      - 5
-      - 10
-      - 15
       - 20
+      - 50
     random_state:
       - 0
   # Ridge
   RidgeRegression:
     alpha:
       - 20
-      - 25
-      - 30
-      - 40
-      - 45
-      - 50
     random_state:
       - 0
   # GaussianProcessRegressor
   GaussianProcessRegressor:
     n_restarts_optimizer:
-      - 0
-      - 3
-      - 5
-      - 10
+      - 50
     random_state:
       - 0
-#  # RandomForest
-#  RandomForest:
-#    criterion:
-#      - 'mse'
-#    n_estimators:
-#      - 100
-#    max_depth:
-#      - 10
-#    min_samples_split:
-#      - 2
-#    min_samples_leaf:
-#      - 10
-#      - 20
-#    max_leaf_nodes:
-#      -  # None
-#    max_features:
-#      - 100
-#      - 200
-#      - 450
-#    random_state:
-#      - 0
+  # RandomForest
+  RandomForest:
+    criterion:
+      - 'mse'
+    n_estimators:
+      - 50
+    max_depth:
+      - 5
+    min_samples_split:
+      - 2
+    min_samples_leaf:
+      - 10
+      - 20
+      - 30
+    max_leaf_nodes:
+      -  # None
+    max_features:
+      - 450
+      -  # None
+    random_state:
+      - 0
   # BayesianRidge
   BayesianRidge:
     n_iter: 
       - 25
   SupportVectorMachine:
     kernel:
+      - 'rbf'
       - 'linear'
     C: 
-      - 0.001
       - 0.01
-      - 0.1
-      - 1
-      - 10
-      - 25
+      - 100
     epsilon:
       - 0.001
       - 0.1
-      - 1
-      - 10
-      - 25
-    max_iter: 
       - 100
-      - 300
+    max_iter:
+      - 1000
