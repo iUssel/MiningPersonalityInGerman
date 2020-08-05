@@ -209,7 +209,7 @@ def main():
             modelConfig=config_models
         )
         # build GloVe model based on German texts
-        globalLIWCModels = trainingSteps.doGloVeModelTraining(
+        globalGloVeModels = trainingSteps.doGloVeModelTraining(
             profileCol=globalProfileCollection['Germany'],
             writePickleFiles=trainConf["writePickleFilesG"],
             readPickleFiles=trainConf["readPickleFilesG"],
