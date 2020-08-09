@@ -1,11 +1,10 @@
 from flask import Flask
 from flask import request
 from flask import jsonify
-from flask import g
-import requests
 
 from .requestHandler import RequestHandler
 from .invalidUsage import InvalidUsage
+
 
 app = Flask(__name__)
 # set config for app
@@ -18,6 +17,13 @@ app.config['twitter_consumer_key'] = (
 app.config['twitter_consumer_secret'] = (
     RequestHandler.loadKey(name="twitter_consumer_secret")
 )
+app.config['glove_file_path'] = (
+    RequestHandler.loadKey(name="glove_file_path")
+)
+app.config['glove_database_mode'] = (
+    RequestHandler.loadKey(name="glove_database_mode")
+)
+
 
 @app.route("/test")
 def testAPI():
@@ -32,13 +38,13 @@ def testAPI():
     returnString = (
         "<h1 style='color:Black'>MiPing Backend is up and running. " +
         "reCaptcha is set to: " +
-        str(captcha) +        
+        str(captcha) +
         "</h1>"
     )
     return returnString
 
 
-@app.route('/personality', methods=['GET', 'POST'])
+@app.route('/personality', methods=['POST'])
 def parse_request():
     """
     TODO accept user name and return personality profile
@@ -65,7 +71,7 @@ def parse_request():
 
         if result is False:
             raise InvalidUsage('Invalid reCaptcha', status_code=400)
-    
+
     # captcha is valid (if check was performed)
     # now validate user name input
     userName = requestHandler.validate_username_input(data)
@@ -75,11 +81,13 @@ def parse_request():
 
     return returnDict
 
+
 @app.errorhandler(InvalidUsage)
 def handle_invalid_usage(error):
     response = jsonify(error.to_dict())
     response.status_code = error.status_code
     return response
+
 
 if __name__ == "__main__":
     app.run(host='127.0.0.1')

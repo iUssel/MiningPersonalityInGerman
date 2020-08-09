@@ -139,6 +139,7 @@ class TwitterAPI:
         self,
         userID,
         limit=0,
+        reRaiseExceptions=False,
     ):
         """
         TODO docstring funcGetTweetListByUser
@@ -147,6 +148,8 @@ class TwitterAPI:
         limit including RTs! 3200 is max limit
 
         will be empty if error occured
+
+        reRaiseExceptions for webapplicaton
         """
 
         # holds tweets with attributes as TweetObj
@@ -156,8 +159,11 @@ class TwitterAPI:
         try:
             self.api.get_user(user_id=userID)
         except tweepy.error.TweepError as e:
-            print("An error occured, probably your user does not exist.")
-            print(str(e))
+            if reRaiseExceptions is True:
+                raise(e)
+            else:
+                print("An error occured, probably your user does not exist.")
+                print(str(e))
         else:
             # check if getting tweets is possible
             # private users will raise an exception
@@ -187,9 +193,11 @@ class TwitterAPI:
                     tweetCol.funcAddTweet(twInstance)
 
             except tweepy.error.TweepError as e:
-                print("An error occured, probably your user is private.")
-                print(str(e))
-                print('UserID = ' + str(userID))
+                if reRaiseExceptions is True:
+                    raise(e)
+                else:
+                    print("An error occured, probably your user is private.")
+                    print(str(e))
 
         return tweetCol
 

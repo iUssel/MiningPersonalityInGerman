@@ -218,6 +218,7 @@ def main():
             writeFeatureFile=trainConf["writeFeatureFile"],
             readFeatureFile=trainConf["readFeatureFile"],
         )
+        print(type(globalGloVeModels))
 
 
 def initialize():
