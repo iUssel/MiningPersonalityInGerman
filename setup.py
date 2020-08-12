@@ -28,5 +28,12 @@ setuptools.setup(
     python_requires='>=3.6',
     install_requires=requirements,
     setup_requires=['flake8'],
+    package_data={
+        b'miping': [
+            '.env.example',
+            'trainedModels/*.ONNX',
+            'webapp/webfiles/*',
+        ]
+    },
     include_package_data=True
 )
