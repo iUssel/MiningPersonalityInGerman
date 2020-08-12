@@ -8,7 +8,7 @@ with open('requirements.txt') as f:
 
 setuptools.setup(
     name="miping",
-    version="0.0.4",
+    version="0.0.5",
     author="Henning Usselmann",
     author_email="miping@uber.space",
     description=(
@@ -33,6 +33,13 @@ setuptools.setup(
             '.env.example',
             'trainedModels/*.ONNX',
             'webapp/webfiles/*',
+            'webapp/webfiles/sites-available/*',
+            'webapp/webfiles/www/*',
+            'webapp/webfiles/www/js/*',
+            'webapp/webfiles/www/images/*',
+            'webapp/webfiles/www/html/*',
+            'webapp/webfiles/www/downloads/*',
+            'webapp/webfiles/www/css/*',
         ]
     },
     include_package_data=True
