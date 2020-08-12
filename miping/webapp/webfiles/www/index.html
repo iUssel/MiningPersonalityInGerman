@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/skeleton.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" type="image/svg" href="images/favicon.svg">
+    <title>MiPing Home</title>
+
+    <meta name="description" content="Mining Personality In German">
+    <meta name="author" content="Henning Usselmann">
+</head>
+
+<body>
+  <div class="container">
+  
+    <div class="row headerMenu">
+      <div class="twelve columns" style="margin-top: 2%; margin-left: 2%;">
+        <div>
+            <div id="headerImgDiv"><img src="images/favicon.svg" alt="MiPinG Logo" /></div>
+            <div id="headerTextDiv"><h5> <b>Mi</b>ning <b>P</b>ersonality <b>In</b> <b>G</b>erman</h5></div>
+        </div>
+      </div>
+    </div>
+    <div class="row headerMenu">
+      <div class="eight columns offset-by-two">
+        <ul class="nav">
+            <li class="active"><a href="index.html">Home</a></li>
+            <li><a href="html/about.html">About</a></li>
+            <li><a href="html/big5.html">Big Five Personality</a></li>
+            <li><a href="html/privacy.html">Privacy</a></li>
+            <li><a href="html/impressum.html">Impressum – Legal Notice</a></li>
+      </div>
+    </div>
+
+    <div class="row description">
+        <div class="six columns offset-by-three headerText">
+            <h6>Introduction</h6>
+        </div>
+    </div>
+    <div class="row description">
+        <div class="six columns offset-by-three">
+            <p>Once the website is finished, we will introduce you to the functionality.</p>
+        </div>
+    </div>
+
+    <div class="row input">
+        <div class="six columns offset-by-three">
+            <h6>Get Your Twitter Personality</h6>
+        </div>
+    </div>
+    
+    <div class="row input">
+        <form action="#" id="my_captcha_form" >
+            <div class="six columns offset-by-three">
+                <label for="twitterHandle">Username</label>
+                @<input type="text" placeholder="esmuellert_" id="twitterHandleInput" required minlength="1" maxlength="30" required autofocus pattern="^[A-Za-z0-9_]+$"><button class="button-primary" type="button" id="agree_button" onclick="agreeButton()">Agree</button>
+                <p class="smallprint">By pressing the "Agree" button you agree to the following terms: This website is offered as-is by a private person. You use it at your own risk. There is no guarantee for correct results. Provide only user names of which you have consent to use it on this site. To derive the personality, public Tweets are temporarily saved on the server and immediately deleted afterwards. Please read the <a href="html/privacy.html">Privacy page</a>. reCaptcha is loaded once you press the button.</p>
+                <div class="g-recaptcha" data-sitekey="6LdhprwZAAAAACyZ7gc7HCISPdZ6ye1tooYgQLk4" ></div>
+                <button class="button-primary" type="submit" id="send_button">Send</button><div class="lds-dual-ring" id="loading"></div>
+            </div>
+        </form>
+    </div>
+
+    <div class="row result" id="resultDiv" style="padding-bottom: 3%">
+        <div class="six columns offset-by-three">
+            <div id="resultHeader">Your Personality for</div>
+            <div>
+                <p class="resultValues">
+                    <dfn class="tooltip">Openness<span role="tooltip">Explanation for Openness: Openness describes the degree of openness for new experiences. People with high degrees are often describe as creative, artistic and imaginative.</span></dfn>
+                </p>
+                <div class="percentageBar">
+                    <div class="big5" id="big5_openness">X%</div>
+                </div>
+            </div>
+            <div>
+                <p class="resultValues">
+                    <dfn class="tooltip">Conscientiousness<span role="tooltip">Explanation for Conscientiousness: High Conscientiousness is represented by sense of duty, discipline and reliability. Persons with strong Conscientiousness tend to strictly follow rules.</span></dfn>
+                </p>
+                <div class="percentageBar">
+                    <div class="big5" id="big5_conscientiousness">X%</div>
+                </div>
+            </div>
+            <div>
+                <p class="resultValues">
+                    <dfn class="tooltip">Extraversion<span role="tooltip">Explanation for Extraversion: People with a high degree of Extraversion are typically more outgoing, talkative and energetic. They tend to have a larger social network.</span></dfn>
+                </p>
+                <div class="percentageBar">
+                    <div class="big5" id="big5_extraversion">X%</div>
+                </div>
+            </div>
+            <div>
+                <p class="resultValues">
+                    <dfn class="tooltip">Agreeableness<span role="tooltip">Explanation for Agreeableness: A high degree of Agreeableness might be expressed by modesty, trustworthiness and willingness to compromise. People with lower values show signs of the exact opposite.</span></dfn>
+                </p>
+                <div class="percentageBar">
+                    <div class="big5" id="big5_agreeableness">X%</div>
+                </div>
+            </div>
+            <div>
+                <p class="resultValues">
+                    <dfn class="tooltip">Neuroticism<span role="tooltip">Explanation for Neuroticism: Neuroticism is a scale for emotional stability. Nervous, and anxious people score high values in Neuroticism. Recovery from stressful events tends to take longer.</span></dfn>
+                </p>
+                <div class="percentageBar">
+                    <div class="big5" id="big5_neuroticism">X%</div>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+
+    <script src="js/scripts.js"></script>
+
+</body>
+</html>

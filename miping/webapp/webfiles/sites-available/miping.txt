@@ -1,0 +1,51 @@
+server {
+        listen 443 ssl http2;
+        # listen [::]:443;
+
+        ssl_certificate /etc/ssl/certs/cert.pem;
+        ssl_certificate_key /etc/ssl/private/key.pem;
+
+        root /miping/webapp/webfiles/www;
+        index index.html index.htm index.nginx-debian.html;
+
+        server_name miping.uber.space www.miping.uber.space;
+
+        location / {
+                try_files $uri $uri/ =404;
+        }
+
+        location ~* /download/(.+\.zip)$ {
+            add_header Content-disposition "attachment; filename=$1";
+        }
+
+        # define error page
+        error_page 404 = @myownredirect;
+
+        # error page location redirect 302
+        location @myownredirect {
+          return 302 /index.html;
+        }
+
+        # Configure NGINX to reverse proxy HTTP requests to the upstream server (Gunicorn (WSGI server))
+        location /api {
+            # Define the location of the proxy server to send the request to
+            proxy_pass http://127.0.0.1:8000/; #http://localhost:8000;#http://unix:/tmp/backend.socket:/;
+        
+            # Redefine the header fields that NGINX sends to the upstream server
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        
+            # Define the maximum file size on file uploads
+            client_max_body_size 5M;
+        }
+
+}
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name miping.uber.space www.miping.uber.space;
+    
+    return 301 https://$host$request_uri;
+}

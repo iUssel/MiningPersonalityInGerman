@@ -1,0 +1,196 @@
+body {
+  font-size: 1.8em;
+}
+
+a {
+    color: #000000;
+}
+
+body h6{
+  font-size: 1em;
+  font-weight: bold;
+}
+
+p {
+  text-align: justify;
+}
+
+.smallprint {
+  font-size: 1.1rem;
+}
+
+form{
+margin:0;
+padding:0;
+}
+
+#headerImgDiv{
+  float: left;
+  height: 100%;
+  width: 3rem;
+}
+
+#headerImgDiv img{
+  height: 3rem;
+  padding: 0.67rem 5px 0em 0em;
+}
+
+#headerTextDiv {
+    float: left;
+    width: 80%;
+}
+
+.headerMenu {
+  background-color: rgba(0,115,183,0.7);
+}
+
+.nav{
+    list-style:none;
+    background-color: #333;
+    margin:0;
+    padding:0;
+    text-align:center;
+    border: solid black 1px;
+}
+.nav li{
+    margin:0;
+    padding:0;
+    display:inline-block;
+    background-color: #333;
+}
+.nav a{
+    margin:0;
+    display:inline-block;
+    color: white;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+/* Change the link color to #111 (black) on hover */
+.nav li a:hover {
+  background-color: #111;
+}
+
+.nav .active {
+  background-color: rgb(76,157,204)/*#4CAF50*/;
+}
+
+.description {
+  background-color: rgba(0,109,173,0.6);
+}
+
+.headerText {
+    text-algin: right;
+    margin-right: 5px;
+    height: 100%;
+
+}
+
+.paragraph{
+    float: left;
+    width: 95%;
+}
+
+.input, .result {
+  background-color: rgba(0,109,173,0.3);
+}
+
+#agree_button {
+  margin-left: 5px;
+}
+
+#send_button {
+    margin-top: 1.5rem;
+    visibility: hidden;
+}
+
+
+/*result  presentation*/
+.result {
+  visibility: hidden;
+}
+
+.resultValues {
+    display: inline-block;
+    width: 9em;
+    text-align: left;
+    padding-top: 5px; /* Add top padding */
+    padding-bottom: 5px; /* Add bottom padding */
+}
+
+/* Make sure that padding behaves as expected */
+* {box-sizing:border-box}
+
+/* percentageBar */
+.percentageBar {
+  width: calc(100% - 9em); /* Full width - label*/
+  background-color: #ddd; /* Grey background */
+  float: right;
+  border: solid black 1px;
+}
+
+/*Big 5 dimensions container*/
+.big5 {
+  text-align: right; /* Right-align text */
+  padding-top: 5px; /* Add top padding */
+  padding-bottom: 5px; /* Add bottom padding */
+  color: black; /* White text color */
+  padding-right: 5px;
+}
+/*individual values*/
+#big5_openness {width: 100%; background-color: #4CAF50;} /* Green */
+#big5_conscientiousness {width: 100%; background-color:  #F4A460;} /* brown */
+#big5_extraversion {width: 100%; background-color: #2196F3;} /* Blue */
+#big5_agreeableness {width: 100%; background-color: #f44336;} /* Red */
+#big5_neuroticism {width: 100%; background-color: #808080;} /* Dark Grey */
+
+
+/* explanation via mouse hover for big 5 dimensions*/
+.tooltip {
+  position: relative;
+}
+
+.tooltip span[role=tooltip] {
+  display: none;
+}
+
+.tooltip:hover span[role=tooltip] {
+  display: block;  
+  position: absolute; 
+  bottom: 2em;
+  left: -6em;
+  width: 15em;
+  padding: 0.5em;
+  z-index: 100;
+  color: #000; 
+  background-color: #ffebe6;
+  border: solid 1px #c32e04;
+  border-radius: 0.2em;
+}
+
+/*loading animation*/
+.lds-dual-ring {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  visibility: hidden;
+}
+.lds-dual-ring:after {
+  content: " ";
+  display: block;
+  width: 32px;
+  height: 32px;
+  margin: 8px;
+  border-radius: 50%;
+  border: 6px solid #fff;
+  border-color: #fff transparent #fff transparent;
+  animation: lds-dual-ring 1.2s linear infinite;
+}
+@keyframes lds-dual-ring {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

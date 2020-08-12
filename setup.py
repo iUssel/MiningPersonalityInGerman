@@ -3,9 +3,12 @@ import setuptools
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
+with open('requirements.txt') as f:
+    requirements = f.read().splitlines()
+
 setuptools.setup(
     name="miping",
-    version="0.0.1",
+    version="0.0.2",
     author="Henning Usselmann",
     author_email="miping@uber.space",
     description=(
@@ -20,7 +23,10 @@ setuptools.setup(
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: Apache Software License",
-        "Operating System :: OS Independent",
+        "Operating System :: Unix",
     ],
     python_requires='>=3.6',
+    install_requires=requirements,
+    setup_requires=['flake8'],
+    include_package_data=True
 )
