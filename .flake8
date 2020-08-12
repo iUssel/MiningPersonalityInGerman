@@ -3,4 +3,8 @@ max-line-length = 79
 exclude =
     docs/*
     */__init__.py,
+    .eggs/*,
+    miping.egg-info/*,
+    build/*,
+    dist/*
 max-complexity = 15

@@ -14,37 +14,13 @@ from shutil import which
 
 
 def main(
-    argv
+    setup_webserver,
+    domain
 ):
     """
     TODO main
     """
     webserver = False
-
-    try:
-        opts, args = getopt.getopt(
-            argv,
-            "hi:d:",
-            ["setup_webserver=", "domain="]
-        )
-    except getopt.GetoptError:
-        print(
-            'one_time_setup.py --setup_webserver <Boolean> ' +
-            '--domain localhost'
-        )
-        sys.exit(2)
-    for opt, arg in opts:
-        if opt == '-h':
-            print(
-                 'usage: sudo python3 miping/one_time_setup.py ' +
-                 '--setup_webserver True ' +
-                 '-d "localhost"'
-            )
-            sys.exit()
-        elif opt in ("-i", "--setup_webserver"):
-            setup_webserver = arg
-        elif opt in ("-d", "--domain"):
-            domain = arg
 
     print("Setting up miping")
     if setup_webserver == 'True' or setup_webserver is True:
@@ -93,9 +69,15 @@ def main(
         # cp to data and modify root in config file
         print("Copy and modify nginx")
         # .txt is necessary so files get properly copied
+        src = (
+            currentDir +
+            '/miping/webapp/webfiles/sites-available/' +
+            domain +
+            '.txt'
+        )
         copyfile(
-                    currentDir + '/miping/webapp/webfiles/sites-available/' + domain + '.txt',
-                    currentDir + '/data/' + domain + ".txt"
+            src,
+            currentDir + '/data/' + domain + ".txt"
         )
         modify_nginx_conf(
             confPath=(currentDir + '/data/' + domain + ".txt"),
@@ -104,11 +86,15 @@ def main(
 
         try:
             print("Copy nginx sites-available")
-            src=os.path.realpath(currentDir + '/data/' + domain + ".txt")
-            trg=os.path.realpath('/etc/nginx/sites-available/' + domain + ".txt")
+            src = os.path.realpath(currentDir + '/data/' + domain + ".txt")
+            trg = (
+                os.path.realpath(
+                    '/etc/nginx/sites-available/' + domain + ".txt"
+                )
+            )
             if not os.path.exists('/etc/nginx/sites-available/' + domain):
                 # only copy if file not already exists
-                copyfile(src,trg)
+                copyfile(src, trg)
                 # remove .txt ending
                 os.rename(
                     trg,
@@ -116,13 +102,14 @@ def main(
                 )
             else:
                 print("Exists already")
-        except:
+        except Exception as e:
+            print(e)
             print("Try to run script as root")
 
         try:
             print("Copy nginx sites-enabled")
-            src= ('/etc/nginx/sites-available/' + domain)
-            dst=('/etc/nginx/sites-enabled/localhost')
+            src = ('/etc/nginx/sites-available/' + domain)
+            dst = ('/etc/nginx/sites-enabled/localhost')
             if not os.path.exists(dst):
                 # only create symlink if not already exists
                 os.symlink(src, dst)
@@ -142,8 +129,10 @@ def main(
         gunicornPath = which('gunicorn')
         if gunicornPath is None or gunicornPath == 'None':
             raise Exception(
-                "Please make sure gunicorn is installed. Try to NOT run as root."
+                "Please make sure gunicorn is installed. " +
+                "Try to NOT run as root."
             )
+
         modify_supervisor_conf(
             confPath=(currentDir + '/data/miping-gunicorn.conf'),
             currentDir=currentDir,
@@ -313,4 +302,32 @@ def makeDir(
 
 
 if __name__ == "__main__":
-    main(sys.argv[1:])
+    argv = sys.argv[1:]
+    try:
+        opts, args = getopt.getopt(
+            argv,
+            "hi:d:",
+            ["setup_webserver=", "domain="]
+        )
+    except getopt.GetoptError:
+        print(
+            'one_time_setup.py --setup_webserver <Boolean> ' +
+            '--domain localhost'
+        )
+        sys.exit(2)
+    for opt, arg in opts:
+        if opt == '-h':
+            print(
+                 'usage: sudo python3 miping/one_time_setup.py ' +
+                 '--setup_webserver True ' +
+                 '-d "localhost"'
+            )
+            sys.exit()
+        elif opt in ("-i", "--setup_webserver"):
+            setup_webserver = arg
+        elif opt in ("-d", "--domain"):
+            domain = arg
+    main(
+        setup_webserver=setup_webserver,
+        domain=domain
+    )
