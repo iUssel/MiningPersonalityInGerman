@@ -2,7 +2,7 @@
 /build/*
 .eggs
 miping.egg-info/
-
+/dist/*
 ## Visual Studio code temp file
 tempCodeRunnerFile.py
 
