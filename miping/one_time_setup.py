@@ -30,8 +30,8 @@ def main(
             print("Domain will be: " + str(domain))
             webserver = True
         else:
-            # check if config file exists
-            path = os.getcwd()
+            # check if config file exists in miping for domain
+            path = os.path.dirname(os.path.abspath(__file__))
             fullPath = path + 'webapp/webfiles/' + domain
             exists = os.path.isfile(fullPath)
             if exists is True:
@@ -42,11 +42,13 @@ def main(
     else:
         print('Will not setup webserver')
 
-    # current dir
+    # current working dir
     path = os.getcwd()
     # create data, glove dirs
     makeDir(path, '/data')
     makeDir((path + '/data'), '/glove')
+    # log files
+    makeDir('/var/log', '/miping')
 
     # download glove
     downloadGloVe(path + '/data/glove/', 'glove.db')
@@ -55,7 +57,8 @@ def main(
     if webserver is True:
         user = getpass.getuser()
         print("Setting up webserver")
-        currentDir = os.getcwd()
+        mipingDir = os.path.dirname(os.path.abspath(__file__))
+        workingDir = os.getcwd()
         # make sure nginx is installed
         print("Making sure nginx webserver is installed")
         if is_tool('nginx') is True:
@@ -70,23 +73,23 @@ def main(
         print("Copy and modify nginx")
         # .txt is necessary so files get properly copied
         src = (
-            currentDir +
-            '/miping/webapp/webfiles/sites-available/' +
+            mipingDir +
+            '/webapp/webfiles/sites-available/' +
             domain +
             '.txt'
         )
         copyfile(
             src,
-            currentDir + '/data/' + domain + ".txt"
+            workingDir + '/data/' + domain + ".txt"
         )
         modify_nginx_conf(
-            confPath=(currentDir + '/data/' + domain + ".txt"),
-            wwwRoot=(currentDir + '/miping/webapp/webfiles/www')
+            confPath=(workingDir + '/data/' + domain + ".txt"),
+            wwwRoot=(mipingDir + '/webapp/webfiles/www')
         )
 
         try:
             print("Copy nginx sites-available")
-            src = os.path.realpath(currentDir + '/data/' + domain + ".txt")
+            src = os.path.realpath(workingDir + '/data/' + domain + ".txt")
             trg = (
                 os.path.realpath(
                     '/etc/nginx/sites-available/' + domain + ".txt"
@@ -121,41 +124,132 @@ def main(
         # cp to data and modify supervisor config
         print("Copy and modify supervisor config")
         copyfile(
-            currentDir + '/miping/webapp/webfiles/miping-gunicorn.conf',
-            currentDir + '/data/miping-gunicorn.conf'
+            mipingDir + '/webapp/webfiles/miping-gunicorn.conf',
+            workingDir + '/data/miping-gunicorn.conf'
         )
 
         user = getpass.getuser()
         gunicornPath = which('gunicorn')
         if gunicornPath is None or gunicornPath == 'None':
-            raise Exception(
+            print(
                 "Please make sure gunicorn is installed. " +
                 "Try to NOT run as root."
             )
-
-        modify_supervisor_conf(
-            confPath=(currentDir + '/data/miping-gunicorn.conf'),
-            currentDir=currentDir,
-            user=user,
-            gunicornPath=gunicornPath
-        )
+        else:
+            modify_supervisor_conf(
+                confPath=(workingDir + '/data/miping-gunicorn.conf'),
+                currentDir=workingDir,
+                user=user,
+                gunicornPath=gunicornPath
+            )
 
         # cp start_webserver and modify
         print("Copy and modify start_webserver.sh")
-        copyfile(
-                    currentDir + '/miping/webapp/webfiles/start_webserver.sh',
-                    currentDir + '/data/start_webserver.sh'
-        )
-        modify_web_sh(
-            confPath=(currentDir + '/data/start_webserver.sh'),
-            pythonBinaryDir=which('supervisord')
-        )
+        if which('supervisord') is None or which('supervisord') == "None":
+            print("Try to run not as root. supervisord not found.")
+        else:
+            copyfile(
+                        mipingDir + '/webapp/webfiles/start_webserver.sh',
+                        workingDir + '/data/start_webserver.sh'
+            )
+            modify_web_sh(
+                confPath=(workingDir + '/data/start_webserver.sh'),
+                pythonBinaryDir=which('supervisord')
+            )
 
-        # cp stop_webserver and modify
-        print("Copy and modify stop_webserver.sh")
-        copyfile(
-                    currentDir + '/miping/webapp/webfiles/stop_webserver.sh',
-                    currentDir + '/data/stop_webserver.sh'
+            # cp stop_webserver and modify
+            print("Copy and modify stop_webserver.sh")
+            copyfile(
+                        mipingDir + '/webapp/webfiles/stop_webserver.sh',
+                        workingDir + '/data/stop_webserver.sh'
+            )
+        # prepare files for ssl
+        prepare_ssl(workingDir)
+
+
+def prepare_ssl(
+    workingDir
+):
+    """
+    TODO prepare_ssl
+    """
+    # check and create ssl keys
+    # check if certificate exists
+    existsCert = os.path.isfile('/etc/ssl/certs/cert.pem')
+    existsKey = os.path.isfile('/etc/ssl/private/key.pem')
+    if existsCert is False or existsKey is False:
+        CERT_FILE = workingDir + "cert.pem"
+        KEY_FILE = workingDir + "key.pem"
+        # check if local keys exist
+        existsCert = os.path.isfile(workingDir + "cert.pem")
+        existsKey = os.path.isfile(workingDir + "key.pem")
+        if existsCert is False or existsKey is False:
+            # one of both does not exist
+            print("Creating SSL key and certificate")
+            # create files in local directory
+            # and move later
+            create_self_signed_cert(
+                CERT_FILE=CERT_FILE,
+                KEY_FILE=KEY_FILE
+            )
+
+        # try to move, only possible if sufficient permissions
+        destCert = "/etc/ssl/certs/cert.pem"
+        destKey = "/etc/ssl/private/key.pem"
+        try:
+            print("Copying certificate to /etc/ssl/certs")
+            copyfile(CERT_FILE, destCert)
+        except Exception as e:
+            print(e)
+            print("Try with root")
+
+        try:
+            print("Copying key to /etc/ssl/private")
+            copyfile(KEY_FILE, destKey)
+        except Exception as e:
+            print(e)
+            print("Try with root")
+
+    else:
+        print("SSL key and certificate exist")
+
+
+def create_self_signed_cert(
+    CERT_FILE,
+    KEY_FILE,
+):
+    """
+    TODO create_self_signed_cert
+    """
+    from OpenSSL import crypto
+    from socket import gethostname
+
+    # create a key pair
+    k = crypto.PKey()
+    k.generate_key(crypto.TYPE_RSA, 4096)
+
+    # create a self-signed cert
+    cert = crypto.X509()
+    cert.get_subject().C = "DE"
+    cert.get_subject().ST = "Braunschweig"
+    cert.get_subject().L = "Braunschweig"
+    cert.get_subject().O = "Dummy Company Ltd"
+    cert.get_subject().OU = "Dummy Company Ltd"
+    cert.get_subject().CN = gethostname()
+    cert.set_serial_number(1000)
+    cert.gmtime_adj_notBefore(0)
+    cert.gmtime_adj_notAfter(10*365*24*60*60)
+    cert.set_issuer(cert.get_subject())
+    cert.set_pubkey(k)
+    cert.sign(k, 'sha512')
+
+    with open(CERT_FILE, "wt") as f:
+        f.write(
+            crypto.dump_certificate(crypto.FILETYPE_PEM, cert).decode("utf-8")
+        )
+    with open(KEY_FILE, "wt") as f:
+        f.write(
+            crypto.dump_privatekey(crypto.FILETYPE_PEM, k).decode("utf-8")
         )
 
 
