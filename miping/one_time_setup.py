@@ -32,7 +32,10 @@ def main(
         else:
             # check if config file exists in miping for domain
             path = os.path.dirname(os.path.abspath(__file__))
-            fullPath = path + 'webapp/webfiles/' + domain
+            fullPath = (
+                path + '/webapp/webfiles/sites-available/' + domain + ".txt"
+            )
+            print(fullPath)
             exists = os.path.isfile(fullPath)
             if exists is True:
                 print("Domain will be: " + str(domain))
