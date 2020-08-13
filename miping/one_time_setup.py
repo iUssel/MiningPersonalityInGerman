@@ -72,23 +72,27 @@ def main(
                 ['apt-get', 'install', '-y', 'nginx']
             )
 
-        # cp to data and modify root in config file
-        print("Copy and modify nginx")
-        # .txt is necessary so files get properly copied
-        src = (
-            mipingDir +
-            '/webapp/webfiles/sites-available/' +
-            domain +
-            '.txt'
-        )
-        copyfile(
-            src,
-            workingDir + '/data/' + domain + ".txt"
-        )
-        modify_nginx_conf(
-            confPath=(workingDir + '/data/' + domain + ".txt"),
-            wwwRoot=(mipingDir + '/webapp/webfiles/www')
-        )
+        try:
+            # cp to data and modify root in config file
+            print("Copy and modify nginx")
+            # .txt is necessary so files get properly copied
+            src = (
+                mipingDir +
+                '/webapp/webfiles/sites-available/' +
+                domain +
+                '.txt'
+            )
+            copyfile(
+                src,
+                workingDir + '/data/' + domain + ".txt"
+            )
+
+            modify_nginx_conf(
+                confPath=(workingDir + '/data/' + domain + ".txt"),
+                wwwRoot=(mipingDir + '/webapp/webfiles/www')
+            )
+        except Exception as e:
+            print(e)
 
         try:
             print("Copy nginx sites-available")
