@@ -173,7 +173,8 @@ def main(
         prepare_ssl(workingDir)
 
         # copy .env
-        if not exists(workingDir + '/.env'):
+        exists = os.path.isfile(workingDir + '/.env')
+        if not exists:
             copyfile(
                         mipingDir + '/.env.example',
                         workingDir + '/.env'
