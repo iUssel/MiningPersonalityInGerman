@@ -35,10 +35,20 @@ def testAPI():
         captcha = False
     else:
         captcha = True
+    if (
+        app.config['twitter_consumer_key'] == "" or
+        app.config['twitter_consumer_secret'] == ""
+    ):
+        twitterString = "Twitter keys are missing in .env."
+    else:
+        twitterString = "Twitter keys are set."
+
     returnString = (
         "<h1 style='color:Black'>MiPing Backend is up and running. " +
         "reCaptcha is set to: " +
         str(captcha) +
+        " . " +
+        twitterString +
         "</h1>"
     )
     return returnString

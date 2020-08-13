@@ -124,27 +124,30 @@ def main(
         except FileExistsError as e:
             print(e)
 
-        # cp to data and modify supervisor config
-        print("Copy and modify supervisor config")
-        copyfile(
-            mipingDir + '/webapp/webfiles/miping-gunicorn.conf',
-            workingDir + '/data/miping-gunicorn.conf'
-        )
+        try:
+            # cp to data and modify supervisor config
+            print("Copy and modify supervisor config")
+            copyfile(
+                mipingDir + '/webapp/webfiles/miping-gunicorn.conf',
+                workingDir + '/data/miping-gunicorn.conf'
+            )
 
-        user = getpass.getuser()
-        gunicornPath = which('gunicorn')
-        if gunicornPath is None or gunicornPath == 'None':
-            print(
-                "Please make sure gunicorn is installed. " +
-                "Try to NOT run as root."
-            )
-        else:
-            modify_supervisor_conf(
-                confPath=(workingDir + '/data/miping-gunicorn.conf'),
-                currentDir=workingDir,
-                user=user,
-                gunicornPath=gunicornPath
-            )
+            user = getpass.getuser()
+            gunicornPath = which('gunicorn')
+            if gunicornPath is None or gunicornPath == 'None':
+                print(
+                    "Please make sure gunicorn is installed. " +
+                    "Try to NOT run as root."
+                )
+            else:
+                modify_supervisor_conf(
+                    confPath=(workingDir + '/data/miping-gunicorn.conf'),
+                    currentDir=workingDir,
+                    user=user,
+                    gunicornPath=gunicornPath
+                )
+        except Exception as e:
+            print(e)
 
         # cp start_webserver and modify
         print("Copy and modify start_webserver.sh")
@@ -168,6 +171,15 @@ def main(
             )
         # prepare files for ssl
         prepare_ssl(workingDir)
+
+        # copy .env
+        if not exists(workingDir + '/.env'):
+            copyfile(
+                        mipingDir + '/.env.example',
+                        workingDir + '/.env'
+            )
+
+            print("Please fill .env with keys and config")
 
 
 def prepare_ssl(
