@@ -50,9 +50,12 @@ def main(
             print("nginx is already installed")
         else:
             print("Installing nginx via apt-get")
-            check_call(
-                ['apt-get', 'install', '-y', 'nginx']
-            )
+            try:
+                check_call(
+                    ['apt-get', 'install', '-y', 'nginx']
+                )
+            except Exception as e:
+                print(e)
 
         try:
             # cp to data and modify root in config file
@@ -135,12 +138,46 @@ def main(
         # copy .env
         exists = os.path.isfile(workingDir + '/.env')
         if not exists:
-            copyfile(
-                        mipingDir + '/.env.example',
-                        workingDir + '/.env'
+            modify_env(
+                mipingDir=mipingDir,
+                workingDir=workingDir,
+                glove_path=(workingDir + '/data/glove/', 'glove.db')
             )
-
             print("Please fill .env with keys and config")
+
+
+def modify_env(
+    mipingDir,
+    workingDir,
+    glove_path,
+):
+    """
+    TODO modify_env
+    """
+    # push glove file data to .env
+    env_path = workingDir + '/.env'
+    # copy file
+    copyfile(
+        mipingDir + '/.env.example',
+        env_path
+    )
+    print("Modify .env")
+    # Read in the file
+    with open(env_path, 'r') as file:
+        filedata = file.read()
+
+    # Replace the target string
+    # user name
+    filedata = filedata.replace(
+        'glove_file_path=data/glove/glove.db',
+        'glove_file_path=' + glove_path
+    )
+
+    # Write the file out again
+    with open(env_path, 'w') as file:
+        file.write(filedata)
+
+    return
 
 
 def determine_if_webserver(
