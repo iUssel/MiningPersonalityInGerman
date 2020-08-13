@@ -23,27 +23,10 @@ def main(
     webserver = False
 
     print("Setting up miping")
-    if setup_webserver == 'True' or setup_webserver is True:
-        print('Will setup webserver')
-        if domain in ("miping", "localhost"):
-            # domain is in preconfigured files
-            print("Domain will be: " + str(domain))
-            webserver = True
-        else:
-            # check if config file exists in miping for domain
-            path = os.path.dirname(os.path.abspath(__file__))
-            fullPath = (
-                path + '/webapp/webfiles/sites-available/' + domain + ".txt"
-            )
-            print(fullPath)
-            exists = os.path.isfile(fullPath)
-            if exists is True:
-                print("Domain will be: " + str(domain))
-                webserver = True
-            else:
-                print("No config file for domain " + str(domain))
-    else:
-        print('Will not setup webserver')
+    webserver = determine_if_webserver(
+        setup_webserver=setup_webserver,
+        domain=domain
+    )
 
     # current working dir
     path = os.getcwd()
@@ -58,7 +41,6 @@ def main(
 
     # setup webserver if specified
     if webserver is True:
-        user = getpass.getuser()
         print("Setting up webserver")
         mipingDir = os.path.dirname(os.path.abspath(__file__))
         workingDir = os.getcwd()
@@ -82,10 +64,18 @@ def main(
                 domain +
                 '.txt'
             )
-            copyfile(
-                src,
-                workingDir + '/data/' + domain + ".txt"
-            )
+            dest = workingDir + '/data/' + domain + ".txt"
+
+            exists = os.path.isfile(dest)
+            if not exists:
+                copyfile(
+                    src,
+                    dest
+                )
+                # change permissions as open as possible
+                os.chmod(dest, 0o0777)
+            else:
+                print("file exists")
 
             modify_nginx_conf(
                 confPath=(workingDir + '/data/' + domain + ".txt"),
@@ -128,14 +118,80 @@ def main(
         except FileExistsError as e:
             print(e)
 
-        try:
-            # cp to data and modify supervisor config
-            print("Copy and modify supervisor config")
+        prepare_supervisor(
+            mipingDir=mipingDir,
+            workingDir=workingDir
+        )
+
+        # cp start_webserver and modify
+        prepare_bash_scripts(
+            mipingDir=mipingDir,
+            workingDir=workingDir
+        )
+
+        # prepare files for ssl
+        prepare_ssl(workingDir)
+
+        # copy .env
+        exists = os.path.isfile(workingDir + '/.env')
+        if not exists:
             copyfile(
-                mipingDir + '/webapp/webfiles/miping-gunicorn.conf',
-                workingDir + '/data/miping-gunicorn.conf'
+                        mipingDir + '/.env.example',
+                        workingDir + '/.env'
             )
 
+            print("Please fill .env with keys and config")
+
+
+def determine_if_webserver(
+    setup_webserver,
+    domain
+):
+    """
+    """
+    if setup_webserver == 'True' or setup_webserver is True:
+        print('Will setup webserver')
+        if domain in ("miping", "localhost"):
+            # domain is in preconfigured files
+            print("Domain will be: " + str(domain))
+            webserver = True
+        else:
+            # check if config file exists in miping for domain
+            path = os.path.dirname(os.path.abspath(__file__))
+            fullPath = (
+                path + '/webapp/webfiles/sites-available/' + domain + ".txt"
+            )
+            print(fullPath)
+            exists = os.path.isfile(fullPath)
+            if exists is True:
+                print("Domain will be: " + str(domain))
+                webserver = True
+            else:
+                print("No config file for domain " + str(domain))
+    else:
+        print('Will not setup webserver')
+
+    return webserver
+
+
+def prepare_supervisor(
+    mipingDir,
+    workingDir
+):
+    """
+    TODO prepare_supervisor
+    """
+    try:
+        # cp to data and modify supervisor config
+        print("Copy and modify supervisor config")
+        dest = workingDir + '/data/miping-gunicorn.conf'
+        exists = os.path.isfile(dest)
+        if not exists:
+            # file does not exist
+            copyfile(
+                mipingDir + '/webapp/webfiles/miping-gunicorn.conf',
+                dest
+            )
             user = getpass.getuser()
             gunicornPath = which('gunicorn')
             if gunicornPath is None or gunicornPath == 'None':
@@ -150,11 +206,27 @@ def main(
                     user=user,
                     gunicornPath=gunicornPath
                 )
-        except Exception as e:
-            print(e)
+        else:
+            print("file already exists")
 
-        # cp start_webserver and modify
-        print("Copy and modify start_webserver.sh")
+    except Exception as e:
+        print(e)
+
+    return
+
+
+def prepare_bash_scripts(
+    mipingDir,
+    workingDir
+):
+    """
+    TODO prepare_bash_scripts
+    """
+    existsStart = os.path.isfile(workingDir + '/data/start_webserver.sh')
+    existsStop = os.path.isfile(workingDir + '/data/stop_webserver.sh')
+    print("Copy and modify start_webserver.sh")
+    if existsStart is False or existsStop is False:
+        # one file is at least missing
         if which('supervisord') is None or which('supervisord') == "None":
             print("Try to run not as root. supervisord not found.")
         else:
@@ -173,18 +245,10 @@ def main(
                         mipingDir + '/webapp/webfiles/stop_webserver.sh',
                         workingDir + '/data/stop_webserver.sh'
             )
-        # prepare files for ssl
-        prepare_ssl(workingDir)
+    else:
+        print("Files already exist")
 
-        # copy .env
-        exists = os.path.isfile(workingDir + '/.env')
-        if not exists:
-            copyfile(
-                        mipingDir + '/.env.example',
-                        workingDir + '/.env'
-            )
-
-            print("Please fill .env with keys and config")
+    return
 
 
 def prepare_ssl(
@@ -233,6 +297,8 @@ def prepare_ssl(
     else:
         print("SSL key and certificate exist")
 
+    return
+
 
 def create_self_signed_cert(
     CERT_FILE,
@@ -271,6 +337,7 @@ def create_self_signed_cert(
         f.write(
             crypto.dump_privatekey(crypto.FILETYPE_PEM, k).decode("utf-8")
         )
+    return
 
 
 def modify_web_sh(
