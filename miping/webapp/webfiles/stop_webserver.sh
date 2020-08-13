@@ -1,4 +1,5 @@
 #!/bin/bash
+echo "Nginx";
 sudo service nginx stop
 # kill supervisor
 supervisorpid=$(cat "/tmp/supervisord.pid");
