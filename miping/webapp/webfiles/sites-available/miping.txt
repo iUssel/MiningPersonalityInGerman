@@ -8,7 +8,7 @@ server {
         root /miping/webapp/webfiles/www;
         index index.html index.htm index.nginx-debian.html;
 
-        server_name miping.uber.space www.miping.uber.space;
+        server_name miping.de www.miping.de;
 
         location / {
                 try_files $uri $uri/ =404;
@@ -45,7 +45,7 @@ server {
 server {
     listen 80 default_server;
     listen [::]:80 default_server;
-    server_name miping.uber.space www.miping.uber.space;
+    server_name miping.de www.miping.de;
     
     return 301 https://$host$request_uri;
 }
