@@ -8,9 +8,9 @@ with open('requirements.txt') as f:
 
 setuptools.setup(
     name="miping",
-    version="0.1.1",
+    version="0.1.2",
     author="Henning Usselmann",
-    author_email="miping@uber.space",
+    author_email="info@miping.de",
     description=(
         "MiningPersonalityInGerman enables users to train and apply " +
         "machine learning models on tweets to predict a user's " +
