@@ -95,16 +95,15 @@ def main(
                     '/etc/nginx/sites-available/' + domain + ".txt"
                 )
             )
-            if not os.path.exists('/etc/nginx/sites-available/' + domain):
-                # only copy if file not already exists
-                copyfile(src, trg)
-                # remove .txt ending
-                os.rename(
-                    trg,
-                    '/etc/nginx/sites-available/' + domain
-                )
-            else:
-                print("Exists already")
+
+            # only copy if file not already exists
+            copyfile(src, trg)
+            # remove .txt ending
+            os.rename(
+                trg,
+                '/etc/nginx/sites-available/' + domain
+            )
+
         except Exception as e:
             print(e)
             print("Try to run script as root")
