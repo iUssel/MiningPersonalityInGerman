@@ -117,7 +117,7 @@ def main(
                 os.symlink(src, dst)
             else:
                 print("Exists already")
-        except FileExistsError as e:
+        except Exception as e:
             print(e)
 
         prepare_supervisor(
@@ -140,7 +140,7 @@ def main(
             modify_env(
                 mipingDir=mipingDir,
                 workingDir=workingDir,
-                glove_path=(workingDir + '/data/glove/', 'glove.db')
+                glove_path=(workingDir + '/data/glove/' + 'glove.db')
             )
             print("Please fill .env with keys and config")
 
@@ -153,28 +153,31 @@ def modify_env(
     """
     TODO modify_env
     """
-    # push glove file data to .env
-    env_path = workingDir + '/.env'
-    # copy file
-    copyfile(
-        mipingDir + '/.env.example',
-        env_path
-    )
-    print("Modify .env")
-    # Read in the file
-    with open(env_path, 'r') as file:
-        filedata = file.read()
+    try:
+        # push glove file data to .env
+        env_path = workingDir + '/.env'
+        # copy file
+        copyfile(
+            mipingDir + '/.env.example',
+            env_path
+        )
+        print("Modify .env")
+        # Read in the file
+        with open(env_path, 'r') as file:
+            filedata = file.read()
+        print("Glove path: " + str(glove_path))
+        # Replace the target string
+        # user name
+        filedata = filedata.replace(
+            'glove_file_path=data/glove/glove.db',
+            'glove_file_path=' + str(glove_path)
+        )
 
-    # Replace the target string
-    # user name
-    filedata = filedata.replace(
-        'glove_file_path=data/glove/glove.db',
-        'glove_file_path=' + glove_path
-    )
-
-    # Write the file out again
-    with open(env_path, 'w') as file:
-        file.write(filedata)
+        # Write the file out again
+        with open(env_path, 'w') as file:
+            file.write(filedata)
+    except Exception as e:
+        print(e)
 
     return
 
@@ -258,31 +261,34 @@ def prepare_bash_scripts(
     """
     TODO prepare_bash_scripts
     """
-    existsStart = os.path.isfile(workingDir + '/data/start_webserver.sh')
-    existsStop = os.path.isfile(workingDir + '/data/stop_webserver.sh')
-    print("Copy and modify start_webserver.sh")
-    if existsStart is False or existsStop is False:
-        # one file is at least missing
-        if which('supervisord') is None or which('supervisord') == "None":
-            print("Try to run not as root. supervisord not found.")
-        else:
-            copyfile(
-                        mipingDir + '/webapp/webfiles/start_webserver.sh',
-                        workingDir + '/data/start_webserver.sh'
-            )
-            modify_web_sh(
-                confPath=(workingDir + '/data/start_webserver.sh'),
-                pythonBinaryDir=which('supervisord')
-            )
+    try:
+        existsStart = os.path.isfile(workingDir + '/data/start_webserver.sh')
+        existsStop = os.path.isfile(workingDir + '/data/stop_webserver.sh')
+        print("Copy and modify start_webserver.sh")
+        if existsStart is False or existsStop is False:
+            # one file is at least missing
+            if which('supervisord') is None or which('supervisord') == "None":
+                print("Try to run not as root. supervisord not found.")
+            else:
+                copyfile(
+                            mipingDir + '/webapp/webfiles/start_webserver.sh',
+                            workingDir + '/data/start_webserver.sh'
+                )
+                modify_web_sh(
+                    confPath=(workingDir + '/data/start_webserver.sh'),
+                    pythonBinaryDir=which('supervisord')
+                )
 
-            # cp stop_webserver and modify
-            print("Copy and modify stop_webserver.sh")
-            copyfile(
-                        mipingDir + '/webapp/webfiles/stop_webserver.sh',
-                        workingDir + '/data/stop_webserver.sh'
-            )
-    else:
-        print("Files already exist")
+                # cp stop_webserver and modify
+                print("Copy and modify stop_webserver.sh")
+                copyfile(
+                            mipingDir + '/webapp/webfiles/stop_webserver.sh',
+                            workingDir + '/data/stop_webserver.sh'
+                )
+        else:
+            print("Files already exist")
+    except Exception as e:
+        print(e)
 
     return
 
@@ -293,45 +299,48 @@ def prepare_ssl(
     """
     TODO prepare_ssl
     """
-    # check and create ssl keys
-    # check if certificate exists
-    existsCert = os.path.isfile('/etc/ssl/certs/cert.pem')
-    existsKey = os.path.isfile('/etc/ssl/private/key.pem')
-    if existsCert is False or existsKey is False:
-        CERT_FILE = workingDir + "cert.pem"
-        KEY_FILE = workingDir + "key.pem"
-        # check if local keys exist
-        existsCert = os.path.isfile(workingDir + "cert.pem")
-        existsKey = os.path.isfile(workingDir + "key.pem")
+    try:
+        # check and create ssl keys
+        # check if certificate exists
+        existsCert = os.path.isfile('/etc/ssl/certs/cert.pem')
+        existsKey = os.path.isfile('/etc/ssl/private/key.pem')
         if existsCert is False or existsKey is False:
-            # one of both does not exist
-            print("Creating SSL key and certificate")
-            # create files in local directory
-            # and move later
-            create_self_signed_cert(
-                CERT_FILE=CERT_FILE,
-                KEY_FILE=KEY_FILE
-            )
+            CERT_FILE = workingDir + "cert.pem"
+            KEY_FILE = workingDir + "key.pem"
+            # check if local keys exist
+            existsCert = os.path.isfile(workingDir + "cert.pem")
+            existsKey = os.path.isfile(workingDir + "key.pem")
+            if existsCert is False or existsKey is False:
+                # one of both does not exist
+                print("Creating SSL key and certificate")
+                # create files in local directory
+                # and move later
+                create_self_signed_cert(
+                    CERT_FILE=CERT_FILE,
+                    KEY_FILE=KEY_FILE
+                )
 
-        # try to move, only possible if sufficient permissions
-        destCert = "/etc/ssl/certs/cert.pem"
-        destKey = "/etc/ssl/private/key.pem"
-        try:
-            print("Copying certificate to /etc/ssl/certs")
-            copyfile(CERT_FILE, destCert)
-        except Exception as e:
-            print(e)
-            print("Try with root")
+            # try to move, only possible if sufficient permissions
+            destCert = "/etc/ssl/certs/cert.pem"
+            destKey = "/etc/ssl/private/key.pem"
+            try:
+                print("Copying certificate to /etc/ssl/certs")
+                copyfile(CERT_FILE, destCert)
+            except Exception as e:
+                print(e)
+                print("Try with root")
 
-        try:
-            print("Copying key to /etc/ssl/private")
-            copyfile(KEY_FILE, destKey)
-        except Exception as e:
-            print(e)
-            print("Try with root")
+            try:
+                print("Copying key to /etc/ssl/private")
+                copyfile(KEY_FILE, destKey)
+            except Exception as e:
+                print(e)
+                print("Try with root")
 
-    else:
-        print("SSL key and certificate exist")
+        else:
+            print("SSL key and certificate exist")
+    except Exception as e:
+        print(e)
 
     return
 
@@ -355,7 +364,6 @@ def create_self_signed_cert(
     cert.get_subject().C = "DE"
     cert.get_subject().ST = "Braunschweig"
     cert.get_subject().L = "Braunschweig"
-    cert.get_subject().O = "Dummy Company Ltd"
     cert.get_subject().OU = "Dummy Company Ltd"
     cert.get_subject().CN = gethostname()
     cert.set_serial_number(1000)
@@ -383,27 +391,30 @@ def modify_web_sh(
     """
     TODO modify_web_sh
     """
-    print("Modify webserver.sh")
-    print("Supervisor binary " + str(pythonBinaryDir))
-    # Read in the file
-    with open(confPath, 'r') as file:
-        filedata = file.read()
+    try:
+        print("Modify webserver.sh")
+        print("Supervisor binary " + str(pythonBinaryDir))
+        # Read in the file
+        with open(confPath, 'r') as file:
+            filedata = file.read()
 
-    # Replace the target string
-    # user name
-    filedata = filedata.replace(
-        'supervisorctl',
-        pythonBinaryDir
-    )
+        # Replace the target string
+        # user name
+        filedata = filedata.replace(
+            'supervisorctl',
+            pythonBinaryDir
+        )
 
-    filedata = filedata.replace(
-        'supervisord',
-        pythonBinaryDir
-    )
+        filedata = filedata.replace(
+            'supervisord',
+            pythonBinaryDir
+        )
 
-    # Write the file out again
-    with open(confPath, 'w') as file:
-        file.write(filedata)
+        # Write the file out again
+        with open(confPath, 'w') as file:
+            file.write(filedata)
+    except Exception as e:
+        print(e)
 
     return
 
@@ -415,30 +426,33 @@ def modify_nginx_conf(
     """
     TODO modify_supervisor_conf
     """
-    print("Modify nginx config")
-    # Read in the file
-    with open(confPath, 'r') as file:
-        filedata = file.read()
-
-    # Replace the target string
-    # user name
-    filedata = filedata.replace(
-        'root /miping/webapp/webfiles/www',
-        'root ' + str(wwwRoot)
-    )
-
-    # Write the file out again
-    with open(confPath, 'w') as file:
-        file.write(filedata)
-
-    # remove default server from nginx config sites enabled
-    print("Removing nginx default server from sites enabled")
     try:
-        path = '/etc/nginx/sites-enabled/default'
-        exists = os.path.isfile(path)
-        if exists is True:
-            # remove if exists
-            os.remove(path) 
+        print("Modify nginx config")
+        # Read in the file
+        with open(confPath, 'r') as file:
+            filedata = file.read()
+
+        # Replace the target string
+        # user name
+        filedata = filedata.replace(
+            'root /miping/webapp/webfiles/www',
+            'root ' + str(wwwRoot)
+        )
+
+        # Write the file out again
+        with open(confPath, 'w') as file:
+            file.write(filedata)
+
+        # remove default server from nginx config sites enabled
+        print("Removing nginx default server from sites enabled")
+        try:
+            path = '/etc/nginx/sites-enabled/default'
+            exists = os.path.isfile(path)
+            if exists is True:
+                # remove if exists
+                os.remove(path)
+        except Exception as e:
+            print(e)
     except Exception as e:
         print(e)
 
@@ -454,31 +468,35 @@ def modify_supervisor_conf(
     """
     TODO modify_supervisor_conf
     """
-    print("Modify supervisor config")
-    # Read in the file
-    with open(confPath, 'r') as file:
-        filedata = file.read()
+    try:
+        print("Modify supervisor config")
+        # Read in the file
+        with open(confPath, 'r') as file:
+            filedata = file.read()
 
-    # Replace the target string
-    # user name
-    filedata = filedata.replace(
-        'user=root',
-        'user=' + str(user)
-    )
-    # directory
-    filedata = filedata.replace(
-        'directory=MiningPersonalityInGerman',
-        'directory=' + str(currentDir)
-    )
-    # gunicorn binary
-    filedata = filedata.replace(
-        'command=/bin/gunicorn',
-        'command=' + str(gunicornPath)
-    )
+        # Replace the target string
+        # user name
+        filedata = filedata.replace(
+            'user=root',
+            'user=' + str(user)
+        )
+        # directory
+        filedata = filedata.replace(
+            'directory=MiningPersonalityInGerman',
+            'directory=' + str(currentDir)
+        )
+        # gunicorn binary
+        filedata = filedata.replace(
+            'command=/bin/gunicorn',
+            'command=' + str(gunicornPath)
+        )
 
-    # Write the file out again
-    with open(confPath, 'w') as file:
-        file.write(filedata)
+        # Write the file out again
+        with open(confPath, 'w') as file:
+            file.write(filedata)
+
+    except Exception as e:
+        print(e)
 
     return
 
@@ -497,17 +515,21 @@ def downloadGloVe(
     """
     TODO downloadGloVe
     """
-    # check if already exists
-    exists = os.path.isfile(path + filename)
-    if exists is True:
-        print("GloVe database file already exists")
-    else:
-        # download glove file
-        print("Downloading GloVe file, this takes a while")
-        r = requests.get(zip_file_url, stream=True)
-        z = zipfile.ZipFile(io.BytesIO(r.content))
-        # unzip file
-        z.extractall(path)
+    try:
+        # check if already exists
+        exists = os.path.isfile(path + filename)
+        if exists is True:
+            print("GloVe database file already exists")
+        else:
+            # download glove file
+            print("Downloading GloVe file, this takes a while")
+            r = requests.get(zip_file_url, stream=True)
+            z = zipfile.ZipFile(io.BytesIO(r.content))
+            # unzip file
+            z.extractall(path)
+    except Exception as e:
+        print(e)
+        print("Important! Download GloVe file before starting server")
 
 
 def makeDir(

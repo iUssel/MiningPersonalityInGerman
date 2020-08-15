@@ -8,7 +8,7 @@ with open('requirements.txt') as f:
 
 setuptools.setup(
     name="miping",
-    version="0.1.0",
+    version="0.1.1",
     author="Henning Usselmann",
     author_email="miping@uber.space",
     description=(
