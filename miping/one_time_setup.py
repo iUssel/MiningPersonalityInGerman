@@ -111,7 +111,7 @@ def main(
         try:
             print("Copy nginx sites-enabled")
             src = ('/etc/nginx/sites-available/' + domain)
-            dst = ('/etc/nginx/sites-enabled/localhost')
+            dst = ('/etc/nginx/sites-enabled/' + domain)
             if not os.path.exists(dst):
                 # only create symlink if not already exists
                 os.symlink(src, dst)
