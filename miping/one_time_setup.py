@@ -431,6 +431,17 @@ def modify_nginx_conf(
     with open(confPath, 'w') as file:
         file.write(filedata)
 
+    # remove default server from nginx config sites enabled
+    print("Removing nginx default server from sites enabled")
+    try:
+        path = '/etc/nginx/sites-enabled/default'
+        exists = os.path.isfile(path)
+        if exists is True:
+            # remove if exists
+            os.remove(path) 
+    except Exception as e:
+        print(e)
+
     return
 
 

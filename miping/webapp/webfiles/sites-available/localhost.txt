@@ -43,8 +43,8 @@ server {
 }
 
 server {
-    listen 80;
-    listen [::]:80;
+    listen 80 default_server;
+    listen [::]:80 default_server;
     server_name localhost www.localhost.com localhost.com 127.0.0.1;
     
     return 301 https://$host$request_uri;
