@@ -7,6 +7,9 @@ from miping.training.features import Features
 from miping.training.modelTraining import ModelTraining
 from miping.models.profileCollection import ProfileCollection
 from miping.interfaces.helper import Helper
+from miping.application import ModelApplication
+from .preparationProcess import PreparationProcess
+from scipy.stats.stats import pearsonr
 
 
 class TrainingProcess:
@@ -694,3 +697,101 @@ class TrainingProcess:
             print("\nEnd of GloVe Model Training\n")
 
         return globalTrainedModels
+
+    def do_prediction(
+        self,
+        profileCol,
+        globalGloVeModels,
+        readFeatureFile=False,
+    ):
+        """
+        TODO do_prediction
+        """
+        print("Now doing prediction")
+        # depending on configuration load pre calculated
+        # features from file or prepare feature pipeline
+        calc_features, gloveFeaturePipeline, featuresClass = (
+            self.prepareFeaturesGloVe(
+                readFeatureFile
+            )
+        )
+
+        # extract profile list
+        profileList = profileCol.profileList
+
+        if calc_features is None:
+            # no features loaded from file
+            # we calculate them now
+            print("Calculating features for complete prediction")
+            calc_features = gloveFeaturePipeline.fit_transform(profileList)
+
+        # dimensions to predict
+        labelsGlobalList=self.config['labelsGlobalList']
+
+        # return dict
+        prediction = {}
+
+        for labelName in labelsGlobalList:
+            print(
+                "Prediction currently for label: " +
+                str(labelName)
+            )
+
+            # select the model for this trait
+            baseModel = globalGloVeModels[labelName]
+            model = baseModel.model
+
+            # for each model, we will get prediction
+            prediction[labelName] = model.predict(calc_features)
+
+        # print statistics
+        print("\nStatistics for predicted values")
+        dataPrep = PreparationProcess(config=None)
+        for label in labelsGlobalList:
+            print(label)
+            dataPrep.print_min_max_mean_std(prediction[label])
+
+        # calculate pearson correlation between prediction and actual value
+        # average over each dimension
+        print("\nCalculate Pearson correlation")
+        pearson = {}
+        for label in labelsGlobalList:
+            print(label)
+            predictionVal = prediction[label]
+            # extract labels (e.g. values for Extraversion)
+            labels = self.extractLabels(
+                profileList=profileList,
+                labelName=label
+            )
+            actualVal = labels
+            pearson[label] = pearsonr(predictionVal, actualVal)
+            print(
+                "Correlation is " +
+                str(pearson[label][0]) +
+                " and p-value " +
+                str(pearson[label][1])
+            )
+
+        return prediction
+
+    def extractLabels(
+        self,
+        profileList,
+        labelName,
+    ):
+        """
+        TODO func extractLabels
+        extract values for one specific labelName
+        labels are the percentages value to predict
+        e.g. for Extraversion value
+        """
+        # initialize return variable
+        labels = []
+
+        # loop over profile collection
+        for profile in profileList:
+            value = getattr(profile, labelName)
+            labels.append(np.float(value))
+
+        return labels
+

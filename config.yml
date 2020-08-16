@@ -5,6 +5,7 @@ process:
   modelTrainingLIWC: False
   derivePersonalities: True
   modelTrainingGloVe: True
+  modelPredictionGloVe: True
 
 scraping:
   # number of seconds to stream tweet data
@@ -48,7 +49,7 @@ scraping:
   validateLocation: True
 
 preparationProcess:
-  printStatistics: False
+  printStatistics: True
 
   # list of countries (subset of countries defined under twitter)
   # for these countries we will get profiles from ibm
@@ -89,10 +90,10 @@ modelTraining:
     - big5_neuroticism
   # print details about training scores etc
   printDetailResults: True
-  # binary files
+  # binary files liwc
   writePickleFiles: False
   readPickleFiles: False
-  # ONNX model
+  # ONNX model liwc
   writeONNXModel: False
   readONNXModel: True
   # csv files after liwc prediction
@@ -104,7 +105,7 @@ modelTraining:
   readPickleFilesG: False
   # ONNX model for glove
   writeONNXModelG: False
-  readONNXModelG: False # TODO CHANGE
+  readONNXModelG: True
 
   # calculated glove features can be exported
   # or read; if read is False, features are calculated

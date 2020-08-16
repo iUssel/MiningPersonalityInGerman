@@ -394,7 +394,7 @@ class PreparationProcess:
             print("MIN: " + str(min(printList)))
             print("MAX: " + str(max(printList)))
             print("Mean: " + str(numpy.mean(printList)))
-            print("Standard Deviation" + str(numpy.std(printList)))
+            print("Standard Deviation: " + str(numpy.std(printList)))
         else:
             print('No value in list')
 
