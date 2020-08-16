@@ -4,7 +4,6 @@ import getopt
 import os
 import requests
 import zipfile
-import io
 import getpass
 
 from subprocess import check_call

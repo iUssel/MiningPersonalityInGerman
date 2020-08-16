@@ -219,14 +219,7 @@ def main():
             readFeatureFile=trainConf["readFeatureFile"],
         )
 
-    if globalConfig["process"]["modelPredictionGloVe"] is True:
         # predict whole training set and print statistics
-        trainConf = globalConfig["modelTraining"]
-        # init helper class
-        trainingSteps = helper.TrainingProcess(
-            config=trainConf,
-            modelConfig=config_models
-        )
         # do prediction and print statistics
         trainingSteps.do_prediction(
             profileCol=globalProfileCollection['Germany'],

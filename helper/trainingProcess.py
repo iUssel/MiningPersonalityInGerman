@@ -7,7 +7,6 @@ from miping.training.features import Features
 from miping.training.modelTraining import ModelTraining
 from miping.models.profileCollection import ProfileCollection
 from miping.interfaces.helper import Helper
-from miping.application import ModelApplication
 from .preparationProcess import PreparationProcess
 from scipy.stats.stats import pearsonr
 
@@ -726,7 +725,7 @@ class TrainingProcess:
             calc_features = gloveFeaturePipeline.fit_transform(profileList)
 
         # dimensions to predict
-        labelsGlobalList=self.config['labelsGlobalList']
+        labelsGlobalList = self.config['labelsGlobalList']
 
         # return dict
         prediction = {}
@@ -794,4 +793,3 @@ class TrainingProcess:
             labels.append(np.float(value))
 
         return labels
-

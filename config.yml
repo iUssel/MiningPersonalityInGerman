@@ -5,7 +5,6 @@ process:
   modelTrainingLIWC: False
   derivePersonalities: True
   modelTrainingGloVe: True
-  modelPredictionGloVe: True
 
 scraping:
   # number of seconds to stream tweet data
