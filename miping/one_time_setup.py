@@ -8,7 +8,7 @@ import io
 import getpass
 
 from subprocess import check_call
-from shutil import copyfile
+from shutil import copyfile, copyfileobj
 # from whichcraft import which
 from shutil import which
 
@@ -523,10 +523,16 @@ def downloadGloVe(
         else:
             # download glove file
             print("Downloading GloVe file, this takes a while")
-            r = requests.get(zip_file_url, stream=True)
-            z = zipfile.ZipFile(io.BytesIO(r.content))
-            # unzip file
-            z.extractall(path)
+            with open('tempGlove.zip', 'wb') as f:
+                # write zip to file
+                with requests.get(zip_file_url, stream=True) as r:
+                    copyfileobj(r.raw, f)
+
+            with open('tempGlove.zip', 'rb') as f:
+                z = zipfile.ZipFile(f)
+                # unzip file
+                z.extractall(path)
+
     except Exception as e:
         print(e)
         print("Important! Download GloVe file before starting server")
