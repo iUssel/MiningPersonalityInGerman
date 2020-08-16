@@ -510,7 +510,7 @@ def is_tool(name):
 def downloadGloVe(
     path,
     filename,
-    zip_file_url='https://miping.uber.space/downloads/glove.zip'
+    zip_file_url='https://miping-glove.s3.eu-central-1.amazonaws.com/glove.zip'
 ):
     """
     TODO downloadGloVe
