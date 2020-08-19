@@ -280,7 +280,8 @@ class ModelApplication:
             'big5_extraversion': None,
             'big5_agreeableness': None,
             'big5_neuroticism': None,
-            'coverage': ModelApplication.featuresObj.coverageStatistics
+            'coverage': ModelApplication.featuresObj.coverageStatistics,
+            'wordCount': ModelApplication.featuresObj.wordCounts
         }
 
         # for every big5 dimension apply prediction

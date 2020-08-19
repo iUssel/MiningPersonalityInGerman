@@ -78,6 +78,8 @@ function showResult(jsonResponse) {
     coverage = personalities['coverage'];
     // convert to percentage for display (round to 1 decimal point)
     coverage = Math.round(coverage * 1000) / 10 + "%";
+    // word count
+    wordCount = personalities['wordCount'];
     // loop over items and assign values
     big5List.forEach(function (item, index) {
       var big5html = document.getElementById(item);
@@ -90,7 +92,7 @@ function showResult(jsonResponse) {
     
     var resultHeader = document.getElementById("resultHeader");
     var userName = personalities['userName'];
-    resultHeader.innerHTML = "<h6>Your Personality for <a href='https://twitter.com/" + userName + "'>@" + userName + "</a>. Word coverage: " + coverage + ".</h6>";
+    resultHeader.innerHTML = "<h6>Your Personality for <a href='https://twitter.com/" + userName + "'>@" + userName + "</a>. Word coverage: " + coverage + " of " + wordCount + " words.</h6>";
 
     //make loading animation hidden
     var loadingAnimation = document.getElementById("loading");

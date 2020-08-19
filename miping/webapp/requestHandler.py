@@ -192,5 +192,8 @@ class RequestHandler:
         # get coverage statistics (first entry)
         coverage = resultDict['coverage'][0]
         personalityDict['coverage'] = coverage
+        # word count, also first entry
+        coverage = resultDict['wordCount'][0]
+        personalityDict['wordCount'] = coverage
 
         return personalityDict

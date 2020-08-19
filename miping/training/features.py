@@ -146,6 +146,8 @@ class Features:
 
         # list for saving coverage statistics
         coverageStatistics = []
+        # word count, that are included, for profiles
+        wordCounts = []
 
         # loop over profileList
         for num, profile in enumerate(profileList):
@@ -187,6 +189,7 @@ class Features:
                 profile_coverage = len(converted_vals) / len(tokens)
                 # add to global list
                 coverageStatistics.append(profile_coverage)
+                wordCounts.append(len(tokens))
 
                 # after all vectors for this profile are retrieved
                 # condense with maximum, minimum, average in 900 dim vector
@@ -206,6 +209,7 @@ class Features:
 
         # save coverage statistics in class attribute to be accessible
         self.coverageStatistics = coverageStatistics
+        self.wordCounts = wordCounts
 
         # create numpy array, as scikit needs this format
         return np.array(outputList)
