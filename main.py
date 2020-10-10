@@ -81,7 +81,8 @@ def main():
 
         preparation = helper.PreparationProcess(
             config=globalConfig,
-            ibm=ibmApi
+            ibm=ibmApi,
+            twitter=twitter
         )
 
         # contains profile collections for each country
@@ -90,7 +91,10 @@ def main():
 
         for country in globalConfig['twitter']['coordinates']:
             countryConf = globalConfig['twitter']['coordinates'][country]
-            if preparationConfig["condenseTweets"]["readFile"] is True:
+            if (
+                preparationConfig["condenseTweets"]["readFile"] is True or
+                preparationConfig["hydrateUserID"] is True
+            ):
                 # if we read from file, we do not need any input
                 finalTweets[country] = None
                 finalUsers[country] = None
@@ -101,7 +105,8 @@ def main():
                 language=countryConf['lang'],
                 country=country,
                 readFiles=preparationConfig["condenseTweets"]["readFile"],
-                writeFiles=preparationConfig["condenseTweets"]["writeFile"]
+                writeFiles=preparationConfig["condenseTweets"]["writeFile"],
+                hydrateUsers=preparationConfig["hydrateUserID"]
             )
 
             # for desginated countries fill profiles with ibm data
@@ -154,7 +159,7 @@ def main():
         )
         # build LIWC model based on English texts
         globalLIWCModels = trainingSteps.doLIWCModelTraining(
-            profileCol=globalProfileCollection['USA'],
+            profileCol=globalProfileCollection,
             writePickleFiles=trainConf["writePickleFiles"],
             readPickleFiles=trainConf["readPickleFiles"],
             writeONNXModel=trainConf["writeONNXModel"],

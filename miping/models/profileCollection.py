@@ -66,6 +66,7 @@ class ProfileCollection:
     def read_profile_list_file(
         self,
         full_path='profilelist.csv',
+        idsonly=False,
     ):
         """
         TODO docstring read_profile_list_file
@@ -84,25 +85,30 @@ class ProfileCollection:
                 # convert to profile object
                 profileInst = Profile()
 
-                # we will read all attributes column by column
-                # via the profiles attribute list
-                counter = 0
-                for num, attr in enumerate(Profile.attributeNameList):
-                    # 0 based index
-                    # read column as attribute
-                    setattr(profileInst, attr, row[num])
-                    counter = num
+                if idsonly is False:
+                    # standard read in
+                    # we will read all attributes column by column
+                    # via the profiles attribute list
+                    counter = 0
+                    for num, attr in enumerate(Profile.attributeNameList):
+                        # 0 based index
+                        # read column as attribute
+                        setattr(profileInst, attr, row[num])
+                        counter = num
 
-                # counter indicates the column index already read
-                # we will add 1, since that is the next column we
-                # want to read
-                counter = counter + 1
+                    # counter indicates the column index already read
+                    # we will add 1, since that is the next column we
+                    # want to read
+                    counter = counter + 1
 
-                # read liwc categories column by column
-                for num, attr in enumerate(Profile.liwc_category_list):
-                    # 0 based index
-                    # read column as attribute
-                    setattr(profileInst, attr, row[num+counter])
+                    # read liwc categories column by column
+                    for num, attr in enumerate(Profile.liwc_category_list):
+                        # 0 based index
+                        # read column as attribute
+                        setattr(profileInst, attr, row[num+counter])
+                else:
+                    # idsonly is True, so the file contains only userIDs
+                    profileInst.userID = row[0]
 
                 # add profile to collection
                 self.add_profile(profileInst)

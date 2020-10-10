@@ -173,6 +173,9 @@ class TrainingProcess:
         else:
             print("\nStart of LIWC Model Training")
 
+            # extract USA from profile collection
+            profileCol = profileCol['USA']
+
             # create feature pipeline
             features = Features()
             liwcFeaturePipeline = features.createLIWCFeaturePipeline()

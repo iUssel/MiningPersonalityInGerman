@@ -6,6 +6,7 @@ from miping.models.profileCollection import ProfileCollection
 from miping.training.dataPreparation import DataPreparation
 from miping.interfaces.helper import Helper
 from miping.interfaces.liwc import LiwcAPI
+from miping.models import TweetCollection
 
 
 class PreparationProcess:
@@ -17,6 +18,7 @@ class PreparationProcess:
         self,
         config,
         ibm=None,
+        twitter=None,
     ):
         """
         TODO init func Class PreparationProcess
@@ -27,7 +29,55 @@ class PreparationProcess:
         # save ibm object
         self.ibm = ibm
 
+        # save twitter api object
+        self.twitter = twitter
+
         return
+
+    def hydrate_users(
+        self,
+        country,
+    ):
+        """
+        TODO
+        """
+        # load user ids from file
+        # path for saved profiles
+        file_directory_string = (
+            'data/04' +
+            country +
+            'UserIDs.csv'
+        )
+        file_path = Path(file_directory_string)
+
+        # read in user ids
+        profileCol = ProfileCollection()
+        profileCol.read_profile_list_file(
+            full_path=file_path,
+            idsonly=True
+        )
+
+        # extract userIDs as list
+        idList = [obj.userID for obj in profileCol.profileList]
+        # create user object
+        usersCol = self.twitter.getUsersByList(idList)
+
+        # create tweet collection for return
+        tweetCol = TweetCollection(
+            additionalAttributes=self.config["twitter"]["add_attributes"]
+        )
+        for user in usersCol.userList:
+            # get tweets for given user
+            singleTweetCol = self.twitter.funcGetTweetListByUser(
+                    userID=user.id_str,
+                    limit=250,
+            )
+            # add to total collection
+            tweetCol.add_tweet_collection(singleTweetCol)
+
+        print("Hydration finished")
+
+        return tweetCol, usersCol
 
     def do_condense_tweets(
         self,
@@ -37,6 +87,7 @@ class PreparationProcess:
         country,
         readFiles=False,
         writeFiles=False,
+        hydrateUsers=False,
     ):
         """
         TODO do_condense_tweets
@@ -76,6 +127,12 @@ class PreparationProcess:
         else:
             print("\nBegin condensing tweets")
             print("Country: " + str(country))
+
+            if hydrateUsers is True:
+                print("Hydrating user ids from file")
+                verifiedTweetCol, verifiedUsers = self.hydrate_users(
+                    country=country
+                )
 
             # iterate over all users to condense their tweets
             # and create a profile to add to profileCollection
@@ -386,12 +443,16 @@ class PreparationProcess:
     def print_min_max_mean_std(
         self,
         printList,
+        percentile=False
     ):
         """
         TODO docstring
         """
         if len(printList) > 0:
             print("MIN: " + str(min(printList)))
+            if percentile is True:
+                print("25th percentile: ", numpy.percentile(printList, 25))
+                print("75th percentile: ", numpy.percentile(printList, 75))
             print("MAX: " + str(max(printList)))
             print("Mean: " + str(numpy.mean(printList)))
             print("Standard Deviation: " + str(numpy.std(printList)))

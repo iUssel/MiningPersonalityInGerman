@@ -50,11 +50,18 @@ scraping:
 preparationProcess:
   printStatistics: True
 
+  # if this is set true, the country specific user file (e.g. 03verifiedGermanytweets.csv)
+  # contains only one column with user IDs
+  # the programm will then retrieve the user objects and corresponding tweets
+  # read files should be set to false for this
+  hydrateUserID: True
+
   # list of countries (subset of countries defined under twitter)
   # for these countries we will get profiles from ibm
   # e.g. USA (or NONE, if nothing should be retrieved)
   countriesIBM:
-    - USA
+    - NONE
+    # - USA
 
   # determines if files are written during the process or read
   # helps to recreate steps with the same data
@@ -116,10 +123,10 @@ modelTraining:
   # only relevant if features are not loaded from file
   # data/glove/glove.db for data base
   # data/glove/glove_vectors.txt for plain text file
-  glove_path: 'data/glove/glove_vectors.txt'
+  glove_path: 'data/glove/glove.db'
   # if path points to data base file set to True
   # otherwise False
-  glove_database: False
+  glove_database: True
 
 twitter:
 

@@ -148,6 +148,7 @@ padding:0;
 /* explanation via mouse hover for big 5 dimensions*/
 .tooltip {
   position: relative;
+  border-bottom: 1px dotted;
 }
 
 .tooltip span[role=tooltip] {
