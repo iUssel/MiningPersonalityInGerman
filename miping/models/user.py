@@ -1,13 +1,13 @@
 class User:
     """
-    TODO docstring Class user
+    Data model class for user objects.
     """
 
     def __str__(
         self
     ):
         """
-        TODO ensuring that printing the object, prints id
+        When printing, user id and screen name will be printed.
         """
         returnString = (
             "User with ID " +
@@ -22,9 +22,12 @@ class User:
         user_entity=None,
     ):
         """
-        TODO init func Class user
-        Creates user object, which can be manually filled
-        or via init function
+        Fill attributes with user_entity or intialize empty values.
+
+        Parameters
+        ----------
+        user_entity : Tweepy user_entity, default=None
+            Object type in Tweepy 'user_entity'.
         """
 
         if user_entity is not None:

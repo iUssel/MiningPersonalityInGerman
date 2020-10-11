@@ -7,8 +7,10 @@ from miping.models.userCollection import UserCollection
 
 class Scraping:
     """
-    TODO docstring Class Scraping
-    coordinates the initial scraping of streaming data from twitter
+    Wrapper class for data collection process (1st step).
+    Contains all functions needed for collection. Calls mostly miping
+    module functions and allows imports and exports of data via csv.
+    Coordinates scraping of data via Twitter API.
     """
 
     def __init__(
@@ -18,10 +20,16 @@ class Scraping:
         maps=None,
     ):
         """
-        TODO init func Class Scraping
-        config of main
-        initialized twitter class
+        Init function for configuration and APIs.
 
+        Parameters
+        ----------
+        config : dict, default=None, required
+            Configuration object as returned from ConfigLoader class.
+        twitter : miping.interfaces.TwitterAPI, default=None, required
+            Initialized TwitterAPI object, ready for calls.
+        maps : miping.interfaces.MapsAPI, default=None
+            Initialized Google Maps API, ready for calls, optional.
         """
         self.config = config
 
@@ -35,9 +43,31 @@ class Scraping:
         writeFiles=False,
     ):
         """
-        TODO  docstring doScrapingByLocation
+        Return scraped tweets based on GPS coordinates.
 
-        return dict of [tweetCollection] (by country)
+        Allows imports and exports of results via CSV. Expected path is
+        'data/01streamed' + countryConf['name'] + 'tweet.csv'.
+        Based on coordinates from configuration, Twitter API's
+        stream_tweets_by_location() by location is called. This streams
+        tweets in these coordinates for the given time limit (from config).
+        Additionally, selection criteria from config regarding
+        maximum and minimum follower count, as well as minimum status
+        count are passed.
+
+        Parameters
+        ----------
+        readFiles : boolean, default=False
+            If True, CSV files will be read instead of following program
+            logic.
+        writeFiles : boolean, default=False
+            Can only be True, if readFiles is False. If True, will export
+            results to CSV files. Allows to read files in the next program
+            run.
+
+        Returns
+        -------
+        returnDictCollection : dict
+            Dictionary containing one TweetCollection for each country.
         """
         if writeFiles is True and readFiles is True:
             raise Exception(
@@ -135,12 +165,44 @@ class Scraping:
         writeFiles=False,
     ):
         """
-        TODO  docstring doFollowerSelection
+        Read YML file in given path.
 
-        tweetSampleCol contains users that are already in the right
-        location, have the right number of tweets and followers
+        Allows imports and exports of results via CSV. Expected path is
+        'data/02streamed' + countryName + 'users_location_verified.csv'.
+        Based on given tweet collection (retrieved via streaming), user
+        profiles will be retrieved. From these profiles users
+        will be randomly selected (number is based on config). From these
+        selected users, the first 5000 follower user ids will be retrieved.
+        First 5000 due to API limitations. Duplicates will be removed.
+        Then for all selected follower user ids their full profile
+        will be retrieved via Twitter API. Selection criteria for status
+        and follower count according to config will be applied.
+        In the end lists will be shuffled for more random selection.
 
-        returns locationScrapedUsersCol, eligibleFollowersCol
+        Parameters
+        ----------
+        tweetSampleCol : TweetCollection, default=None, required
+            TweetCollection with users from whom followers should be
+            selected.
+        countryName : string, default=None, required
+            Country name of where the passed users are collected from
+            (as specified in config)
+        readFiles : boolean, default=False
+            If True, CSV files will be read instead of following program
+            logic.
+        writeFiles : boolean, default=False
+            Can only be True, if readFiles is False. If True, will export
+            results to CSV files. Allows to read files in the next program
+            run.
+
+        Returns
+        -------
+        locationUsersCol : UserCollection
+            Full user objects previously collected via streaming.
+            Location for these users is already verified via GPS.
+        eligibleFollowersCol : UserCollection
+            Eligible users selected from followers of location users.
+            Their location has yet to be verified.
         """
         if writeFiles is True and readFiles is True:
             raise Exception(
@@ -233,7 +295,6 @@ class Scraping:
 
             # select eligible followers
             # tweet count and follower count will be checked
-            # TODO CHECK If this step creates duplicates
             eligibleFollowersCol = self.twitter.getUsersByList(
                 userIDList=followers,
                 maxFollowerCount=scrapeConfig['user_max_followers'],
@@ -284,7 +345,46 @@ class Scraping:
         writeFiles=False,
     ):
         """
-        TODO Docstring doUserSelection
+        Returns final selected users and tweets based on verified
+        location and language.
+
+        Allows imports and exports of results via CSV. Expected path is
+        'data/03verified' + country + 'users.csv'.
+        In configuration it is defined how big the sample size should
+        be and how many users should be selected from which collection.
+        For users, whose location has been verified, the language criteria
+        have to be checked. If they are met, the user and fitting tweets
+        are included in the collection.
+        For other users both location and language have to be checked.
+        In the end, a combined user collection and combined tweet collection
+        is returned, which will be used as input for data preparation.
+
+        Parameters
+        ----------
+        country : string, default=None, required
+            Country name of where the passed users are collected from
+            (as specified in config)
+        locationUsersCol : UserCollection, default=None, required
+            User collection of location verified users (typically
+            retrieved via streaming).
+        eligibleFolCol : UserCollection, default=None, required
+            User collection of users whose location is not verified
+            yet. Typically those are retrieved via doFollowerSelection().
+        readFiles : boolean, default=False
+            If True, CSV files will be read instead of following program
+            logic.
+        writeFiles : boolean, default=False
+            Can only be True, if readFiles is False. If True, will export
+            results to CSV files. Allows to read files in the next program
+            run.
+
+        Returns
+        -------
+        verifiedUsers : UserCollection
+            Final verified sample of users as collection.
+        verifiedTweetCol : TweetCollection
+            Final verified sample of tweets as collection (tweets are
+            written by users in verifiedUsers).
         """
         if writeFiles is True and readFiles is True:
             raise Exception(
@@ -396,11 +496,39 @@ class Scraping:
         verifyLocation=True,
     ):
         """
-        TODO  docstring verifyUserLocAndLang
-        limit defined how many successful verification we aim for
+        Return language and location verified users from collection up
+        to given limit.
 
+        A sample should be drawn from the given usersCol. The maximum of
+        users to select is given by userLimit. Based on countryID the
+        target language and target language criteria are loaded from
+        config. `checkUserLanguage` is called and returns eligible tweets,
+        that match target language and result if user matches given criteria.
+        If not, user is skipped. If yes, location is checked (if flag is True).
+        This is done via `checkUserLocation`. If location checks out, user
+        is added to verifiedUsers and its tweets to verifiedTweetCol. Counter
+        is increased. Process repeated until counter matches limit or all users
+        processed.
+
+        Parameters
+        ----------
+        countryID : string, default=None, required
+            Country name of where the passed users are collected from
+            (as specified in config)
+        usersCol : UserCollection, default=None, required
+            User collection from which to draw and verify the sample.
+        userLimit : integer, default=10
+            Full absolute path for file to be loaded via yaml.safe_load().
+        verifyLocation : boolean, default=True
+            Full absolute path for file to be loaded via yaml.safe_load().
+
+        Returns
+        -------
+        verifiedUsers : UserCollection
+            Location and language verified users up to userLimit numbers.
+        verifiedTweetCol : TweetCollection
+            Tweets of verifiedUsers which match the target language.
         """
-
         countryConf = self.config['twitter']['coordinates'][countryID]
         countryName = countryConf['name']
         targetLanguage = countryConf['lang']
@@ -495,12 +623,38 @@ class Scraping:
         limit=3200,
     ):
         """
-        TODO docstring checkUserLanguage
+        Check if user timeline matches criteria and return results.
 
-        tweetCol contains only tweets matching language
-        otherLangThreshold = language not target and not undefined (und)
+        Based on user ID from user object, tweets are retrieved from
+        timeline up to the given limit. Retweets are excluded afterwards.
+        Tweets' language tags are analyzed and counted for target language,
+        unknown language and forein language. In the end, percentages
+        are calcualted and if the meet the thresholds result is True,
+        otherwise False. Result and Tweetcollection are returned.
 
-        limit including RTs
+        Parameters
+        ----------
+        user : miping.models.User, default=None, required
+            User object to check.
+        targetLanguage : string, default=None, required
+            Target language to check user timeline for.
+        langThreshold : float, default=1
+            Minimum percentage of tweets in timeline that should be tagged
+            with target language in order for user to be verified.
+        otherLangThreshold : float, default=0
+            Maximum percentage of tweets in timeline that have a language
+            tag other than the target lanugage and not undefined.
+        limit : integer, default=3200
+            Maximum number of tweets to select from user. 3200 is
+            API limit set by Twitter for free API. This limit includes
+            retweets, but those are excluded in the process.
+
+        Returns
+        -------
+        languageVerified : boolean
+            True if user timeline matches language criteria, otherwise false.
+        tweetCol : TweetCollection
+            Selected tweets from user timeline.
         """
         languageVerified = False
         targetTweetCollection = TweetCollection(
@@ -562,8 +716,25 @@ class Scraping:
         targetLocation,
     ):
         """
-        TODO  docstring checkUserLocation
-        Maybe put in maps interface
+        Return True if userLocation is a real location and lies inside
+        the targetLocation.
+
+        E.g. the city Brunswick, lies withing Brunswick, Lower Saxony State,
+        Germany, and Europe. So if the targetLocation is one of the above
+        the result will be True.
+
+        Parameters
+        ----------
+        userLocation : string, default=None, required
+            User location as given in Twitter profile.
+        targetLocation : string, default=None, required
+            Country name as in config file. Has to be country name
+            that is valid for Google Maps API.
+
+        Returns
+        -------
+        locationVerified : boolean
+            True if userLocation is within targetLocation, otherwise False.
         """
         locationVerified = False
 
@@ -572,7 +743,7 @@ class Scraping:
             userLocation
         )
 
-        # take first result cancidate
+        # take first result candidate
         # (google might return multiple)
         if len(result['candidates']) > 0:
             address = result['candidates'][0]['formatted_address']
@@ -593,6 +764,18 @@ class Scraping:
             numberOfElements=1,
     ):
         """
-        TODO  docstring getRandomItemsFromList
+        Based on itemList returns a random sample.
+
+        Parameters
+        ----------
+        itemList : list, default=None, required
+            List of items to draw sample from.
+        numberOfElements : integer, default=1
+            Number of samples to draw from list.
+
+        Returns
+        -------
+        list : list
+            Randomly drawn sample.
         """
         return random.sample(itemList, numberOfElements)

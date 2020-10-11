@@ -4,7 +4,7 @@ from sklearn import linear_model
 
 class BayesianRidge(ModelBase):
     """
-    TODO docstring Class BayesianRidge
+    BayesianRidge Subclass of ModelBase
     """
 
     def __init__(
@@ -12,16 +12,21 @@ class BayesianRidge(ModelBase):
         gridSearchParams=None,
     ):
         """
-        TODO init func Class BayesianRidge
-        gridSearchParams: dict
+        Init function calling super constructor and setting the model.
+
+        Parameters
+        ----------
+        gridSearchParams : dict, default=None
+            Dictionary containing all parameters that should be
+            considered during grid search.
         """
 
         if gridSearchParams is not None:
             gridSearch = gridSearchParams
         else:
-            # TODO applying best default parameters
+            # applying default parameters
             defaultParams = {
-                'n_iterint': [100, 300, 500],
+                'n_iterint': [25],
             }
 
             gridSearch = defaultParams

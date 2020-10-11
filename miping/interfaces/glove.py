@@ -8,7 +8,8 @@ from sqlite3 import Error
 
 class GloVe:
     """
-    TODO docstring Class GloVe
+    GloVe API class encloses communication related to GloVe data.
+    Either GloVe SQLite database or direct flat file.
     """
 
     def __init__(
@@ -17,9 +18,18 @@ class GloVe:
         dataBaseMode=True,
     ):
         """
-        TODO init func Class GloVe
-        dataBaseMode uses SQLite database instead of direct file
-        direct file uses more memory but is independent of external database
+        Initialization of GloVe to establish DB connection
+        or load flat file into memory. DB connection is more
+        memory efficient.
+
+        Parameters
+        ----------
+        filePath : string, default=None, required
+            Full path to GloVe vector file (either database or
+            plain text file).
+        dataBaseMode : boolean, default=True
+            If True, glove_file_path points to SQLite database file.
+            If False, flat vector file.
         """
         # save in instance
         self.dataBaseMode = dataBaseMode
@@ -51,10 +61,26 @@ class GloVe:
         wordList
     ):
         """
-        TODO getGloVeByWordList doc
-        :param conn: the Connection object
-        :param wordList:
-        :return:
+        For each word in wordList get the corresponding GloVe vector.
+
+        If none exists just ignore the word. Since SQLite database
+        is limited in query length, the query is split into 999er chunks.
+        If flat file is use, the approach is more simple.
+        The returned DataFrame includes duplicates, to represent the
+        input list as close as possible (for personality prediciton this
+        is usually the preferred approach, because it caputes word
+        reptitions).
+
+        Parameters
+        ----------
+        wordList : list, default=None, required
+            List of words to get GloVe vector values for.
+
+        Returns
+        -------
+        glove_val_df : DataFrame
+            Pandas Dataframe containing the glove vector values for
+            the given word list.
         """
 
         if self.dataBaseMode is True:
@@ -105,7 +131,16 @@ class GloVe:
         self,
     ):
         """
-        TODO get_index_list
+        Return words existing in GloVe.
+
+        This helps to make more efficient queries, by sorting out
+        words that do not have a vector value before getting
+        the actual values.
+
+        Returns
+        -------
+        index_list : list
+            List containing only the words existing in GloVe.
         """
 
         # depending on data if data base mode or not
@@ -129,10 +164,18 @@ class GloVe:
         self,
         db_file
     ):
-        """ TODO create a database connection to the SQLite database
-            specified by db_file
-            :param db_file: database file (as string)
-            :return: Connection object or None
+        """
+        Initialize database connection based on file path.
+
+        Parameters
+        ----------
+        db_file : string, default=None, required
+            File path to SQLite database file.
+
+        Returns
+        -------
+        conn : sqlite3 connection
+            Initialized connection ready for queries.
         """
         conn = None
         try:
@@ -149,7 +192,17 @@ class GloVe:
         glovePath
     ):
         """
-        TODO func loadGloVe
+        Load GloVe from flat file and return DataFrame.
+
+        Parameters
+        ----------
+        glovePath : string, default=None, required
+            Full path to glove flat vector file.
+
+        Returns
+        -------
+        glove_df : DataFrame
+            Pandas DataFrame containing all words and vectors.
         """
 
         print("\nLoading GloVe")

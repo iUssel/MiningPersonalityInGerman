@@ -1,14 +1,11 @@
 class Helper:
     """
-    TODO docstring Class Helper
+    Helper class for central reused functions
     """
 
     def __init__(
         self,
     ):
-        """
-        TODO init func Class helper
-        """
         pass
 
     def printProgressBar(
@@ -23,18 +20,26 @@ class Helper:
         printEnd="\r"
     ):
         """
-        TODO Docstring
-        Call in a loop to create terminal progress bar
-        @params:
-            iteration   - Required  : current iteration (Int)
-            total       - Required  : total iterations (Int)
-            prefix      - Optional  : prefix string (Str)
-            suffix      - Optional  : suffix string (Str)
-            decimals    - Optional  : positive number of decimals
-                                      in percent complete (Int)
-            length      - Optional  : character length of bar (Int)
-            fill        - Optional  : bar fill character (Str)
-            printEnd    - Optional  : end character (e.g. "\r", "\r\n") (Str)
+        Print progress bar to terminal, e.g. in a loop.
+
+        Parameters
+        ----------
+        iteration : integer, default=None, required
+            current iteration (Int).
+        total : integer, default=None, required
+            total iterations (Int).
+        prefix : string, default=None
+            prefix string (Str).
+        suffix : string, default=None
+            suffix string (Str).
+        decimals : integer, default=None
+            positive number of decimals in percent complete (Int).
+        length : integer, default=None
+            character length of bar (Int).
+        fill : string, default=None
+            bar fill character (Str).
+        printEnd : string, default=None
+            end character (e.g. "\r", "\r\n") (Str).
         """
         percent = (
             ("{0:." + str(decimals) + "f}").format(

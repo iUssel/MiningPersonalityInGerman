@@ -11,7 +11,7 @@ from ..models import UserCollection
 
 class TwitterAPI:
     """
-    TODO docstring Class Twitter
+    Class to wrap Twitter API functions.
     """
 
     def __init__(
@@ -27,7 +27,42 @@ class TwitterAPI:
         ignoreRetweets=True
     ):
         """
-        TODO init func Class Twitter, check which keys are mandatory
+        Initialization function to establish Authentication.
+
+        Depending on what access tokens are passed, streaming
+        is enabled or disabled.
+
+        Parameters
+        ----------
+        consumer_key : string, default=None, required
+            Developer API key consumer key. Needed to query the Twitter API.
+        consumer_secret : string, default=None, required
+            Developer API key consumer key secret. Needed to query the
+            Twitter API.
+        access_token : string, default=None
+            Developer API key, access token. Needed for streaming and
+            user actions.
+        access_token_secret : string, default=None
+            Developer API key, access token secret. Needed for streaming and
+            user actions.
+        wait_on_rate_limit : boolean, default=True
+            Will automatically wait if rate limit is reached.
+        wait_on_rate_limit_notify : boolean, default=True
+            Passed to Tweepy. Prints warning if rate limit is reached.
+        additionalAttributes : list, default=None
+            Additional attributes that should be included when querying
+            tweets. Such as 'lang' attribute, for language.
+            Usually configured in global config file.
+        removeNewLineChar : boolean, default=True
+            Remove new line characters (\n or \r) from tweet texts.
+            This is useful for CSV exports
+        ignoreRetweets : boolean, default=True
+            For all tweet queries exclude retweets.
+
+        Returns
+        -------
+        config : dict
+            The parsed dict containing all config values.
         """
 
         if access_token is None or access_token_secret is None:
@@ -65,7 +100,17 @@ class TwitterAPI:
         screen_name,
     ):
         """
-        TODO docstring funcGetUserID
+        Return corresponding user id to screen_name.
+
+        Parameters
+        ----------
+        screen_name : string, default=None, required
+            Twitter user name.
+
+        Returns
+        -------
+        user.id_str : string
+            User id fitting the screen_name.
         """
         user = self.api.get_user(screen_name=screen_name)
 
@@ -80,7 +125,35 @@ class TwitterAPI:
         skipPrivateUsers=True,
     ):
         """
-        TODO docstring funcGetUsersByList
+        Select users based in passed user id list and given criteria.
+
+        With the passed user id list, user objects are retrieved and
+        tested against the criteria. If users match the criteria,
+        a new user object is created and included in the return user
+        collection.
+
+        Parameters
+        ----------
+        userIDList : list, default=None
+            List of strings of user ids.
+        maxFollowerCount : integer, default=0
+            Selection criteria - if user has more than given number
+            of maximum follower, he/she is excluded. If 0, not applied.
+        minStatusesCount : integer, default=0
+            Selection criteria - if user has less than minimum number
+            of status counts, he/she is excluded. If 0, not applied.
+        minFollowerCount : integer, default=0
+            Selection criteria - if user has less than minimum number
+            of followers, he/she is excluded. If 0, not applied.
+        skipPrivateUsers : boolean, default=True
+            Protected user accounts are not accessible to the public,
+            so usually those should be excluded.
+
+        Returns
+        -------
+        userCol : UserCollection
+            User collection of user objects fitting the passed
+            user id list.
         """
         userCol = UserCollection()
 
@@ -142,14 +215,23 @@ class TwitterAPI:
         reRaiseExceptions=False,
     ):
         """
-        TODO docstring funcGetTweetListByUser
-        Return id list and tweet col
-        limit=0 -> no limit
-        limit including RTs! 3200 is max limit
+        Get tweets for given user id and return TweetCollection.
 
-        will be empty if error occured
+        Parameters
+        ----------
+        userID : string, default=None, required
+            user id to get tweets for.
+        limit : integer, default=0
+            Limit tweets to retrieve. Limit = 0 means no limit.
+            Free API limit including retweets is 3200.
+        reRaiseExceptions : boolean, default=False
+            If exceptions are encountered, reRaise them.
 
-        reRaiseExceptions for webapplicaton
+        Returns
+        -------
+        tweetCol : TweetCollection
+            TweetCollection containing retrieved tweets for given
+            user id. Will be empty if error occured and reRaise is False.
         """
 
         # holds tweets with attributes as TweetObj
@@ -207,9 +289,22 @@ class TwitterAPI:
         limit=0,
     ):
         """
-        TODO docstring get_tweets_by_list
-        """
+        Get tweet object for list of tweet ids and return collection.
 
+        Parameters
+        ----------
+        idList : list, default=None, required
+            List of tweet ids to hydrate.
+        limit : integer, default=0
+            Obsolete - exists for historic reasons.
+
+        Returns
+        -------
+        tweetCol : TweetCollection
+            TweetCollection with tweets for tweet ids.
+        invalidIDs : integer
+            Number of invalid IDs.
+        """
         # list length for error count
         listLength = len(idList)
 
@@ -264,8 +359,22 @@ class TwitterAPI:
         limit=0
     ):
         """
-        TODO doctstring get_followers_of_user
-        # 5000 is recommended in limit, to minimize API calls
+        Get user ids of followers for given user ids in list.
+
+        Parameters
+        ----------
+        userIDList : list, default=None, required
+            List of user ids to get followers from.
+        limit : integer, default=0
+            Number of followers to get for each user id.
+            5000 is recommended, as the Twitter API returns 5000
+            followers per request per user.
+            0 means no limit.
+
+        Returns
+        -------
+        followerIDs : list
+            List of user ids of followers.
         """
 
         followerIDs = []
@@ -320,14 +429,38 @@ class TwitterAPI:
         minFollowerCount=0,
     ):
         """
-        TODO docstring stream_tweets_by_location
-        timeLimit in seconds
+        Get live tweet via streaming API matching location and other criteria.
 
-        location
-        # southwest corner of the bounding box coming first
-        # order longitude (Länge), latitude (Breite)
+        Parameters
+        ----------
+        location : list, default=None, required
+            List of location GPS coordinates that should be passed as filter
+            to streaming API. Following structure is expected (start with
+            southwest corner):
+            location = [
+                    countryConf['southwest']['lng'],
+                    countryConf['southwest']['lat'],
+                    countryConf['northeast']['lng'],
+                    countryConf['northeast']['lat']
+            ]
+        timeLimit : integer, default=5
+            Time in seconds the stream will be running.
+        maxFollowerCount : integer, default=0
+            Selection criteria - if user has more than given number
+            of maximum follower, he/she is excluded. If 0, not applied.
+        minStatusesCount : integer, default=0
+            Selection criteria - if user has less than minimum number
+            of status counts, he/she is excluded. If 0, not applied.
+        minFollowerCount : integer, default=0
+            Selection criteria - if user has less than minimum number
+            of followers, he/she is excluded. If 0, not applied.
+
+        Returns
+        -------
+        myStreamListener.tweetCollect : TweetCollection
+            All tweets that were streamed during the time limit and matched
+            the given criteria.
         """
-
         # holds tweets with attributes as TweetObj
         # passed in streamListener to save tweets
         tweetCol = TweetCollection(self.additionalAttributes)
@@ -368,7 +501,7 @@ class _MyStreamListener(
     tweepy.StreamListener
 ):
     """
-    TODO docstring _MyStreamListener
+    Private class stream listener for wrapping streaming functions
     """
     def __init__(
         self,
@@ -382,7 +515,7 @@ class _MyStreamListener(
         minFollowerCount=0,
     ):
         """
-        TODO docstring __init__
+        Init function for streamer class
         """
         # set time for time limit
         self.start_time = time.time()
@@ -409,7 +542,8 @@ class _MyStreamListener(
         tweet
     ):
         """
-        TODO docstring on_status
+        Function that is run on each streamed tweet.
+        Checks criteria and saves to TweetCollection.
         """
         # check time limit
         if (time.time() - self.start_time) < self.limit:
@@ -473,7 +607,7 @@ class _MyStreamListener(
         status_code
     ):
         """
-        TODO docstring on_error
+        Called for handling errors in streaming.
         """
         print("Error while streaming with status code:")
         print(status_code)

@@ -4,7 +4,7 @@ from sklearn.ensemble import RandomForestRegressor
 
 class RandomForest(ModelBase):
     """
-    TODO docstring Class RandomForest
+    RandomForest Subclass of ModelBase
     """
 
     def __init__(
@@ -12,21 +12,26 @@ class RandomForest(ModelBase):
         gridSearchParams=None,
     ):
         """
-        TODO init func Class RandomForest
-        gridSearchParams: dict
+        Init function calling super constructor and setting the model.
+
+        Parameters
+        ----------
+        gridSearchParams : dict, default=None
+            Dictionary containing all parameters that should be
+            considered during grid search.
         """
 
         if gridSearchParams is not None:
             gridSearch = gridSearchParams
         else:
-            # TODO applying best default parameters
+            # applying default parameters
             defaultParams = {
                 'criterion': ['mse'],
-                'n_estimators': [10, 50, 100, 200],
-                'max_depth': [2, 5, 10, None],
-                'min_samples_split': [2, 5, 10],
-                'min_samples_leaf': [1, 2, 5, 10],
-                'max_leaf_nodes': [100, 500, None],
+                'n_estimators': [50],
+                'max_depth': [5],
+                'min_samples_split': [2],
+                'min_samples_leaf': [10],
+                'max_leaf_nodes': [None],
                 'max_features': [None],  # recommended for Regression
                 'random_state': [0]
             }

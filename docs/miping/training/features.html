@@ -1,0 +1,976 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.9.1" />
+<title>miping.training.features API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>miping.training.features</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">import numpy as np
+
+from sklearn.preprocessing import FunctionTransformer
+from sklearn.pipeline import Pipeline
+from sklearn.pipeline import FeatureUnion
+from sklearn.preprocessing import StandardScaler
+
+from ..models.profile import Profile
+from ..interfaces.helper import Helper
+from ..interfaces.glove import GloVe
+from .noGloveValueError import NoGloveValueError
+
+
+class Features:
+    &#34;&#34;&#34;
+    Contains all pipeline functions for both LIWC and glove.
+    &#34;&#34;&#34;
+
+    def __init__(
+        self,
+    ):
+        return
+
+    def featureLIWC(
+        self,
+        profileCol,
+    ):
+        &#34;&#34;&#34;
+        Extract LIWC features (namely LIWC categories) from
+        each profile in list as feature.
+
+        Parameters
+        ----------
+        profileCol : list, default=None, required
+            List with profiles to generate features for.
+
+        Returns
+        -------
+        np.array(outputList) : numpy.array
+            Generated features in numpy format.
+        &#34;&#34;&#34;
+        # will contain the LIWC measures for each profile
+        outputList = []
+
+        # loop over profileCollection
+        for profile in profileCol:
+            # create row
+            liwc_data = []
+            # get names of liwc categories
+            for attrName in Profile.liwc_category_list:
+                # get value of current category
+                attr = getattr(profile, attrName)
+                # append to current profile
+                # and convert to float
+                liwc_data.append(np.float(attr))
+
+            outputList.append(liwc_data)
+
+        # create numpy array, as scikit needs this format
+        return np.array(outputList)
+
+    def createLIWCFeaturePipeline(
+        self,
+    ):
+        &#34;&#34;&#34;
+        Create pipeline that can be passed into multiple training procceses
+        this is just a blueprint for calculating the features
+        no features are calculated yet!
+
+        Returns
+        -------
+        featurePipeline : Pipeline
+            Pipeline containing feature generation and scaling.
+        &#34;&#34;&#34;
+
+        # Create skicit-learn compatible FunctionTransformers
+        # for usage with other sklearn functions
+        # featureLIWC is the name of the function to be called to
+        # extract features
+        liwc_Trans = FunctionTransformer(self.featureLIWC, validate=False)
+
+        # Combine feature(s) with FeatureUnion
+        featureTransformer = FeatureUnion([
+                                (&#39;liwc&#39;, liwc_Trans),
+                                ], n_jobs=-1)  # parallelize via multiprocess
+
+        # combine into a pipeline including scaling
+        featurePipeline = Pipeline([
+                (&#39;features&#39;, featureTransformer),
+                (&#34;stdScaler&#34;, StandardScaler())
+        ])
+
+        return featurePipeline
+
+    def _condenseGloVeVectors(
+        self,
+        vectorList,
+    ):
+        &#34;&#34;&#34;
+        For each user a vectorList is passed in with different length.
+        This will be condensed into a single 900 dim vector.
+        &#34;&#34;&#34;
+
+        # convert to np array for mean,max,min functions
+        vectorList = np.array(vectorList)
+
+        # correct structure from (1,x,300) to (x,300)
+        vectorList = vectorList[0]
+
+        # for each dimension identify mean,max,min
+        # and save in separate vector
+        meanVector = vectorList.mean(axis=0)
+        maxVector = np.amax(a=vectorList, axis=0)
+        minVector = np.amin(a=vectorList, axis=0)
+
+        # combine all 300 dim vectors in 900 dim vector
+        returnVector = []
+        returnVector.extend(meanVector)
+        returnVector.extend(maxVector)
+        returnVector.extend(minVector)
+
+        # convert to numpy array for scikit
+        returnVector = np.array(returnVector)
+
+        return returnVector
+
+    def featureGloVe(
+        self,
+        profileList,
+    ):
+        &#34;&#34;&#34;
+        For each profile in profile list generate GloVe features.
+
+        Each profile contains text and for this text the glove vectors
+        are retrieved and condensed into one single vector for this user.
+        All user vectors are appended into the outputList.
+
+        The word coverageStatistics and wordCounts for each user
+        are saved in this feature object instance to be retrieved later.
+
+        Parameters
+        ----------
+        profileList : list, default=None, required
+            List containing relevant profiles for which to extract features.
+
+        Returns
+        -------
+        np.array(outputList) : numpy.array
+            Features in correct output format.
+        &#34;&#34;&#34;
+
+        if self.glove is None:
+            raise Exception(&#34;GloVe not loaded.&#34;)
+
+        # will contain the GloVe measures for each profile
+        outputList = []
+
+        # get index as list, for faster lookup
+        index_as_list = self.glove.get_index_list()
+
+        # initialize progress bar
+        helper = Helper()
+        numProfiles = len(profileList)
+        helper.printProgressBar(
+            0,
+            numProfiles,
+            prefix=&#39;Progress:&#39;,
+            suffix=&#39;Complete&#39;,
+            length=50
+        )
+
+        # list for saving coverage statistics
+        coverageStatistics = []
+        # word count, that are included, for profiles
+        wordCounts = []
+
+        # loop over profileList
+        for num, profile in enumerate(profileList):
+            # tokenize text in tweets
+            # separated by space
+            tokens = profile.text.split(&#39; &#39;)
+
+            profile_vectors = []
+
+            # for each word lookup glove vector
+            # if no match -&gt; ignore it
+            # first identify set of words not in glove
+            not_in_glove = set(np.setdiff1d(tokens, index_as_list))
+
+            # get words in glove, indcluding duplicates
+            # so if words exist n times in text, they will be n times in list
+            in_glove = [word for word in tokens if word not in not_in_glove]
+
+            if len(in_glove) == 0:
+                # es konnte kein wort in glove gefunden werden
+                # raise Exception
+                eString = (
+                    &#34;Could not find any glove values for given words&#34;
+                )
+                raise NoGloveValueError(eString)
+            else:
+                # mind. ein Wort wurde gefunden
+                # lookup glove vectors
+                # should return duplicates!
+                glove_values = self.glove.getGloVeByWordList(
+                    wordList=in_glove
+                )
+                converted_vals = np.array(glove_values)
+                # add vectors to list of this profile&#39;s vectors
+                profile_vectors.append(converted_vals)
+
+                # fill coverage statistics as share of tokens (=words)
+                # that exist in glove in comparison to total tokens
+                profile_coverage = len(converted_vals) / len(tokens)
+                # add to global list
+                coverageStatistics.append(profile_coverage)
+                wordCounts.append(len(tokens))
+
+                # after all vectors for this profile are retrieved
+                # condense with maximum, minimum, average in 900 dim vector
+                final_vector = self._condenseGloVeVectors(profile_vectors)
+
+                # add 900 dim to output list
+                outputList.append(final_vector)
+
+            # Update Progress Bar
+            helper.printProgressBar(
+                num + 1,
+                numProfiles,
+                prefix=&#39;Progress:&#39;,
+                suffix=&#39;Complete&#39;,
+                length=50
+            )
+
+        # save coverage statistics in class attribute to be accessible
+        self.coverageStatistics = coverageStatistics
+        self.wordCounts = wordCounts
+
+        # create numpy array, as scikit needs this format
+        return np.array(outputList)
+
+    def createGloVeFeaturePipeline(
+        self,
+        glovePath=&#39;data/glove/glove.db&#39;,
+        dataBaseMode=True,
+    ):
+        &#34;&#34;&#34;
+        Create pipeline that can be passed into multiple training procceses
+        this is just a blueprint for calculating the features
+        no features are calculated yet!
+
+        No parallelization (n_jobs=1) due to GloVe lookup in database.
+
+        Parameters
+        ----------
+        glovePath : string, default=&#39;data/glove/glove.db&#39;
+            Path to GloVe flat or database file.
+        dataBaseMode : boolean, default=True
+            If True path points to SQLite database file.
+
+        Returns
+        -------
+        featurePipeline : Pipeline
+            Pipeline containing feature generation.
+        &#34;&#34;&#34;
+
+        glove = GloVe(
+            filePath=glovePath,
+            dataBaseMode=dataBaseMode,
+        )
+        self.glove = glove
+
+        # Create skicit-learn compatible FunctionTransformers
+        # for usage with other sklearn functions
+        # featureGloVe is the name of the function to be called to
+        # extract features
+        glove_Trans = FunctionTransformer(self.featureGloVe, validate=False)
+
+        # Combine feature(s) with FeatureUnion
+        featureTransformer = FeatureUnion([
+                                (&#39;glove&#39;, glove_Trans),
+                                ], n_jobs=1)  # no parallelization
+
+        # combine into a pipeline, no scaling since GloVe is scaled
+        featurePipeline = Pipeline([
+                (&#39;features&#39;, featureTransformer)
+        ])
+
+        return featurePipeline</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="miping.training.features.Features"><code class="flex name class">
+<span>class <span class="ident">Features</span></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Contains all pipeline functions for both LIWC and glove.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Features:
+    &#34;&#34;&#34;
+    Contains all pipeline functions for both LIWC and glove.
+    &#34;&#34;&#34;
+
+    def __init__(
+        self,
+    ):
+        return
+
+    def featureLIWC(
+        self,
+        profileCol,
+    ):
+        &#34;&#34;&#34;
+        Extract LIWC features (namely LIWC categories) from
+        each profile in list as feature.
+
+        Parameters
+        ----------
+        profileCol : list, default=None, required
+            List with profiles to generate features for.
+
+        Returns
+        -------
+        np.array(outputList) : numpy.array
+            Generated features in numpy format.
+        &#34;&#34;&#34;
+        # will contain the LIWC measures for each profile
+        outputList = []
+
+        # loop over profileCollection
+        for profile in profileCol:
+            # create row
+            liwc_data = []
+            # get names of liwc categories
+            for attrName in Profile.liwc_category_list:
+                # get value of current category
+                attr = getattr(profile, attrName)
+                # append to current profile
+                # and convert to float
+                liwc_data.append(np.float(attr))
+
+            outputList.append(liwc_data)
+
+        # create numpy array, as scikit needs this format
+        return np.array(outputList)
+
+    def createLIWCFeaturePipeline(
+        self,
+    ):
+        &#34;&#34;&#34;
+        Create pipeline that can be passed into multiple training procceses
+        this is just a blueprint for calculating the features
+        no features are calculated yet!
+
+        Returns
+        -------
+        featurePipeline : Pipeline
+            Pipeline containing feature generation and scaling.
+        &#34;&#34;&#34;
+
+        # Create skicit-learn compatible FunctionTransformers
+        # for usage with other sklearn functions
+        # featureLIWC is the name of the function to be called to
+        # extract features
+        liwc_Trans = FunctionTransformer(self.featureLIWC, validate=False)
+
+        # Combine feature(s) with FeatureUnion
+        featureTransformer = FeatureUnion([
+                                (&#39;liwc&#39;, liwc_Trans),
+                                ], n_jobs=-1)  # parallelize via multiprocess
+
+        # combine into a pipeline including scaling
+        featurePipeline = Pipeline([
+                (&#39;features&#39;, featureTransformer),
+                (&#34;stdScaler&#34;, StandardScaler())
+        ])
+
+        return featurePipeline
+
+    def _condenseGloVeVectors(
+        self,
+        vectorList,
+    ):
+        &#34;&#34;&#34;
+        For each user a vectorList is passed in with different length.
+        This will be condensed into a single 900 dim vector.
+        &#34;&#34;&#34;
+
+        # convert to np array for mean,max,min functions
+        vectorList = np.array(vectorList)
+
+        # correct structure from (1,x,300) to (x,300)
+        vectorList = vectorList[0]
+
+        # for each dimension identify mean,max,min
+        # and save in separate vector
+        meanVector = vectorList.mean(axis=0)
+        maxVector = np.amax(a=vectorList, axis=0)
+        minVector = np.amin(a=vectorList, axis=0)
+
+        # combine all 300 dim vectors in 900 dim vector
+        returnVector = []
+        returnVector.extend(meanVector)
+        returnVector.extend(maxVector)
+        returnVector.extend(minVector)
+
+        # convert to numpy array for scikit
+        returnVector = np.array(returnVector)
+
+        return returnVector
+
+    def featureGloVe(
+        self,
+        profileList,
+    ):
+        &#34;&#34;&#34;
+        For each profile in profile list generate GloVe features.
+
+        Each profile contains text and for this text the glove vectors
+        are retrieved and condensed into one single vector for this user.
+        All user vectors are appended into the outputList.
+
+        The word coverageStatistics and wordCounts for each user
+        are saved in this feature object instance to be retrieved later.
+
+        Parameters
+        ----------
+        profileList : list, default=None, required
+            List containing relevant profiles for which to extract features.
+
+        Returns
+        -------
+        np.array(outputList) : numpy.array
+            Features in correct output format.
+        &#34;&#34;&#34;
+
+        if self.glove is None:
+            raise Exception(&#34;GloVe not loaded.&#34;)
+
+        # will contain the GloVe measures for each profile
+        outputList = []
+
+        # get index as list, for faster lookup
+        index_as_list = self.glove.get_index_list()
+
+        # initialize progress bar
+        helper = Helper()
+        numProfiles = len(profileList)
+        helper.printProgressBar(
+            0,
+            numProfiles,
+            prefix=&#39;Progress:&#39;,
+            suffix=&#39;Complete&#39;,
+            length=50
+        )
+
+        # list for saving coverage statistics
+        coverageStatistics = []
+        # word count, that are included, for profiles
+        wordCounts = []
+
+        # loop over profileList
+        for num, profile in enumerate(profileList):
+            # tokenize text in tweets
+            # separated by space
+            tokens = profile.text.split(&#39; &#39;)
+
+            profile_vectors = []
+
+            # for each word lookup glove vector
+            # if no match -&gt; ignore it
+            # first identify set of words not in glove
+            not_in_glove = set(np.setdiff1d(tokens, index_as_list))
+
+            # get words in glove, indcluding duplicates
+            # so if words exist n times in text, they will be n times in list
+            in_glove = [word for word in tokens if word not in not_in_glove]
+
+            if len(in_glove) == 0:
+                # es konnte kein wort in glove gefunden werden
+                # raise Exception
+                eString = (
+                    &#34;Could not find any glove values for given words&#34;
+                )
+                raise NoGloveValueError(eString)
+            else:
+                # mind. ein Wort wurde gefunden
+                # lookup glove vectors
+                # should return duplicates!
+                glove_values = self.glove.getGloVeByWordList(
+                    wordList=in_glove
+                )
+                converted_vals = np.array(glove_values)
+                # add vectors to list of this profile&#39;s vectors
+                profile_vectors.append(converted_vals)
+
+                # fill coverage statistics as share of tokens (=words)
+                # that exist in glove in comparison to total tokens
+                profile_coverage = len(converted_vals) / len(tokens)
+                # add to global list
+                coverageStatistics.append(profile_coverage)
+                wordCounts.append(len(tokens))
+
+                # after all vectors for this profile are retrieved
+                # condense with maximum, minimum, average in 900 dim vector
+                final_vector = self._condenseGloVeVectors(profile_vectors)
+
+                # add 900 dim to output list
+                outputList.append(final_vector)
+
+            # Update Progress Bar
+            helper.printProgressBar(
+                num + 1,
+                numProfiles,
+                prefix=&#39;Progress:&#39;,
+                suffix=&#39;Complete&#39;,
+                length=50
+            )
+
+        # save coverage statistics in class attribute to be accessible
+        self.coverageStatistics = coverageStatistics
+        self.wordCounts = wordCounts
+
+        # create numpy array, as scikit needs this format
+        return np.array(outputList)
+
+    def createGloVeFeaturePipeline(
+        self,
+        glovePath=&#39;data/glove/glove.db&#39;,
+        dataBaseMode=True,
+    ):
+        &#34;&#34;&#34;
+        Create pipeline that can be passed into multiple training procceses
+        this is just a blueprint for calculating the features
+        no features are calculated yet!
+
+        No parallelization (n_jobs=1) due to GloVe lookup in database.
+
+        Parameters
+        ----------
+        glovePath : string, default=&#39;data/glove/glove.db&#39;
+            Path to GloVe flat or database file.
+        dataBaseMode : boolean, default=True
+            If True path points to SQLite database file.
+
+        Returns
+        -------
+        featurePipeline : Pipeline
+            Pipeline containing feature generation.
+        &#34;&#34;&#34;
+
+        glove = GloVe(
+            filePath=glovePath,
+            dataBaseMode=dataBaseMode,
+        )
+        self.glove = glove
+
+        # Create skicit-learn compatible FunctionTransformers
+        # for usage with other sklearn functions
+        # featureGloVe is the name of the function to be called to
+        # extract features
+        glove_Trans = FunctionTransformer(self.featureGloVe, validate=False)
+
+        # Combine feature(s) with FeatureUnion
+        featureTransformer = FeatureUnion([
+                                (&#39;glove&#39;, glove_Trans),
+                                ], n_jobs=1)  # no parallelization
+
+        # combine into a pipeline, no scaling since GloVe is scaled
+        featurePipeline = Pipeline([
+                (&#39;features&#39;, featureTransformer)
+        ])
+
+        return featurePipeline</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="miping.training.features.Features.createGloVeFeaturePipeline"><code class="name flex">
+<span>def <span class="ident">createGloVeFeaturePipeline</span></span>(<span>self, glovePath='data/glove/glove.db', dataBaseMode=True)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Create pipeline that can be passed into multiple training procceses
+this is just a blueprint for calculating the features
+no features are calculated yet!</p>
+<p>No parallelization (n_jobs=1) due to GloVe lookup in database.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>glovePath</code></strong> :&ensp;<code>string</code>, default=<code>'data/glove/glove.db'</code></dt>
+<dd>Path to GloVe flat or database file.</dd>
+<dt><strong><code>dataBaseMode</code></strong> :&ensp;<code>boolean</code>, default=<code>True</code></dt>
+<dd>If True path points to SQLite database file.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>featurePipeline</code></strong> :&ensp;<code>Pipeline</code></dt>
+<dd>Pipeline containing feature generation.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def createGloVeFeaturePipeline(
+    self,
+    glovePath=&#39;data/glove/glove.db&#39;,
+    dataBaseMode=True,
+):
+    &#34;&#34;&#34;
+    Create pipeline that can be passed into multiple training procceses
+    this is just a blueprint for calculating the features
+    no features are calculated yet!
+
+    No parallelization (n_jobs=1) due to GloVe lookup in database.
+
+    Parameters
+    ----------
+    glovePath : string, default=&#39;data/glove/glove.db&#39;
+        Path to GloVe flat or database file.
+    dataBaseMode : boolean, default=True
+        If True path points to SQLite database file.
+
+    Returns
+    -------
+    featurePipeline : Pipeline
+        Pipeline containing feature generation.
+    &#34;&#34;&#34;
+
+    glove = GloVe(
+        filePath=glovePath,
+        dataBaseMode=dataBaseMode,
+    )
+    self.glove = glove
+
+    # Create skicit-learn compatible FunctionTransformers
+    # for usage with other sklearn functions
+    # featureGloVe is the name of the function to be called to
+    # extract features
+    glove_Trans = FunctionTransformer(self.featureGloVe, validate=False)
+
+    # Combine feature(s) with FeatureUnion
+    featureTransformer = FeatureUnion([
+                            (&#39;glove&#39;, glove_Trans),
+                            ], n_jobs=1)  # no parallelization
+
+    # combine into a pipeline, no scaling since GloVe is scaled
+    featurePipeline = Pipeline([
+            (&#39;features&#39;, featureTransformer)
+    ])
+
+    return featurePipeline</code></pre>
+</details>
+</dd>
+<dt id="miping.training.features.Features.createLIWCFeaturePipeline"><code class="name flex">
+<span>def <span class="ident">createLIWCFeaturePipeline</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Create pipeline that can be passed into multiple training procceses
+this is just a blueprint for calculating the features
+no features are calculated yet!</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>featurePipeline</code></strong> :&ensp;<code>Pipeline</code></dt>
+<dd>Pipeline containing feature generation and scaling.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def createLIWCFeaturePipeline(
+    self,
+):
+    &#34;&#34;&#34;
+    Create pipeline that can be passed into multiple training procceses
+    this is just a blueprint for calculating the features
+    no features are calculated yet!
+
+    Returns
+    -------
+    featurePipeline : Pipeline
+        Pipeline containing feature generation and scaling.
+    &#34;&#34;&#34;
+
+    # Create skicit-learn compatible FunctionTransformers
+    # for usage with other sklearn functions
+    # featureLIWC is the name of the function to be called to
+    # extract features
+    liwc_Trans = FunctionTransformer(self.featureLIWC, validate=False)
+
+    # Combine feature(s) with FeatureUnion
+    featureTransformer = FeatureUnion([
+                            (&#39;liwc&#39;, liwc_Trans),
+                            ], n_jobs=-1)  # parallelize via multiprocess
+
+    # combine into a pipeline including scaling
+    featurePipeline = Pipeline([
+            (&#39;features&#39;, featureTransformer),
+            (&#34;stdScaler&#34;, StandardScaler())
+    ])
+
+    return featurePipeline</code></pre>
+</details>
+</dd>
+<dt id="miping.training.features.Features.featureGloVe"><code class="name flex">
+<span>def <span class="ident">featureGloVe</span></span>(<span>self, profileList)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>For each profile in profile list generate GloVe features.</p>
+<p>Each profile contains text and for this text the glove vectors
+are retrieved and condensed into one single vector for this user.
+All user vectors are appended into the outputList.</p>
+<p>The word coverageStatistics and wordCounts for each user
+are saved in this feature object instance to be retrieved later.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>profileList</code></strong> :&ensp;<code>list</code>, default=<code>None, required</code></dt>
+<dd>List containing relevant profiles for which to extract features.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>np.array(outputList) : numpy.array</code></dt>
+<dd>Features in correct output format.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def featureGloVe(
+    self,
+    profileList,
+):
+    &#34;&#34;&#34;
+    For each profile in profile list generate GloVe features.
+
+    Each profile contains text and for this text the glove vectors
+    are retrieved and condensed into one single vector for this user.
+    All user vectors are appended into the outputList.
+
+    The word coverageStatistics and wordCounts for each user
+    are saved in this feature object instance to be retrieved later.
+
+    Parameters
+    ----------
+    profileList : list, default=None, required
+        List containing relevant profiles for which to extract features.
+
+    Returns
+    -------
+    np.array(outputList) : numpy.array
+        Features in correct output format.
+    &#34;&#34;&#34;
+
+    if self.glove is None:
+        raise Exception(&#34;GloVe not loaded.&#34;)
+
+    # will contain the GloVe measures for each profile
+    outputList = []
+
+    # get index as list, for faster lookup
+    index_as_list = self.glove.get_index_list()
+
+    # initialize progress bar
+    helper = Helper()
+    numProfiles = len(profileList)
+    helper.printProgressBar(
+        0,
+        numProfiles,
+        prefix=&#39;Progress:&#39;,
+        suffix=&#39;Complete&#39;,
+        length=50
+    )
+
+    # list for saving coverage statistics
+    coverageStatistics = []
+    # word count, that are included, for profiles
+    wordCounts = []
+
+    # loop over profileList
+    for num, profile in enumerate(profileList):
+        # tokenize text in tweets
+        # separated by space
+        tokens = profile.text.split(&#39; &#39;)
+
+        profile_vectors = []
+
+        # for each word lookup glove vector
+        # if no match -&gt; ignore it
+        # first identify set of words not in glove
+        not_in_glove = set(np.setdiff1d(tokens, index_as_list))
+
+        # get words in glove, indcluding duplicates
+        # so if words exist n times in text, they will be n times in list
+        in_glove = [word for word in tokens if word not in not_in_glove]
+
+        if len(in_glove) == 0:
+            # es konnte kein wort in glove gefunden werden
+            # raise Exception
+            eString = (
+                &#34;Could not find any glove values for given words&#34;
+            )
+            raise NoGloveValueError(eString)
+        else:
+            # mind. ein Wort wurde gefunden
+            # lookup glove vectors
+            # should return duplicates!
+            glove_values = self.glove.getGloVeByWordList(
+                wordList=in_glove
+            )
+            converted_vals = np.array(glove_values)
+            # add vectors to list of this profile&#39;s vectors
+            profile_vectors.append(converted_vals)
+
+            # fill coverage statistics as share of tokens (=words)
+            # that exist in glove in comparison to total tokens
+            profile_coverage = len(converted_vals) / len(tokens)
+            # add to global list
+            coverageStatistics.append(profile_coverage)
+            wordCounts.append(len(tokens))
+
+            # after all vectors for this profile are retrieved
+            # condense with maximum, minimum, average in 900 dim vector
+            final_vector = self._condenseGloVeVectors(profile_vectors)
+
+            # add 900 dim to output list
+            outputList.append(final_vector)
+
+        # Update Progress Bar
+        helper.printProgressBar(
+            num + 1,
+            numProfiles,
+            prefix=&#39;Progress:&#39;,
+            suffix=&#39;Complete&#39;,
+            length=50
+        )
+
+    # save coverage statistics in class attribute to be accessible
+    self.coverageStatistics = coverageStatistics
+    self.wordCounts = wordCounts
+
+    # create numpy array, as scikit needs this format
+    return np.array(outputList)</code></pre>
+</details>
+</dd>
+<dt id="miping.training.features.Features.featureLIWC"><code class="name flex">
+<span>def <span class="ident">featureLIWC</span></span>(<span>self, profileCol)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Extract LIWC features (namely LIWC categories) from
+each profile in list as feature.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>profileCol</code></strong> :&ensp;<code>list</code>, default=<code>None, required</code></dt>
+<dd>List with profiles to generate features for.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>np.array(outputList) : numpy.array</code></dt>
+<dd>Generated features in numpy format.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def featureLIWC(
+    self,
+    profileCol,
+):
+    &#34;&#34;&#34;
+    Extract LIWC features (namely LIWC categories) from
+    each profile in list as feature.
+
+    Parameters
+    ----------
+    profileCol : list, default=None, required
+        List with profiles to generate features for.
+
+    Returns
+    -------
+    np.array(outputList) : numpy.array
+        Generated features in numpy format.
+    &#34;&#34;&#34;
+    # will contain the LIWC measures for each profile
+    outputList = []
+
+    # loop over profileCollection
+    for profile in profileCol:
+        # create row
+        liwc_data = []
+        # get names of liwc categories
+        for attrName in Profile.liwc_category_list:
+            # get value of current category
+            attr = getattr(profile, attrName)
+            # append to current profile
+            # and convert to float
+            liwc_data.append(np.float(attr))
+
+        outputList.append(liwc_data)
+
+    # create numpy array, as scikit needs this format
+    return np.array(outputList)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="miping.training" href="index.html">miping.training</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="miping.training.features.Features" href="#miping.training.features.Features">Features</a></code></h4>
+<ul class="">
+<li><code><a title="miping.training.features.Features.createGloVeFeaturePipeline" href="#miping.training.features.Features.createGloVeFeaturePipeline">createGloVeFeaturePipeline</a></code></li>
+<li><code><a title="miping.training.features.Features.createLIWCFeaturePipeline" href="#miping.training.features.Features.createLIWCFeaturePipeline">createLIWCFeaturePipeline</a></code></li>
+<li><code><a title="miping.training.features.Features.featureGloVe" href="#miping.training.features.Features.featureGloVe">featureGloVe</a></code></li>
+<li><code><a title="miping.training.features.Features.featureLIWC" href="#miping.training.features.Features.featureLIWC">featureLIWC</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.1</a>.</p>
+</footer>
+</body>
+</html>

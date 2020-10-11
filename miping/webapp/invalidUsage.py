@@ -1,4 +1,5 @@
 class InvalidUsage(Exception):
+    """Custom exception, when requests are not built as expected"""
     # invalid request
     status_code = 400
 

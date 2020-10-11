@@ -3,8 +3,7 @@ import os
 
 class TrainedModels:
     """
-    TODO docstring Class TrainedModels
-    provides paths for trained model files
+    Provides paths for trained model files.
     """
 
     # big 5 list for loops
@@ -15,13 +14,14 @@ class TrainedModels:
         'big5_agreeableness',
         'big5_neuroticism',
     ]
+    """Big Five attribute list for loops"""
 
     def __init__(
         self,
     ):
         """
-        TODO init func Class TrainedModels
-        precalculate path for folder in which models are saved
+        Init function.
+        Precalculate path for folder in which models are saved
         MiningPersonalityInGerman/miping/trainedModels/...
         file_path_dict = {
             'big5_openness': {
@@ -60,7 +60,7 @@ class TrainedModels:
         self,
     ):
         """
-        TODO get_file_path_dict
+        Get precalculated file_path_dict.
         """
 
         return self.file_path_dict

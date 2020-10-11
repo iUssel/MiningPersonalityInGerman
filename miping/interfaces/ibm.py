@@ -6,7 +6,8 @@ from ..models.profile import Profile
 
 class IbmAPI:
     """
-    TODO docstring Class Ibm
+    Class for enclosing IbmAPI related functions.
+    This is regarding IBM Watson Personality Insight.
     """
 
     def __init__(
@@ -15,10 +16,17 @@ class IbmAPI:
         url,
     ):
         """
-        TODO init func Class ibm api
+        Initialize API with custom URL and API key.
+
+        Parameters
+        ----------
+        apiKey : string, default=None, required
+            Private API key.
+        url : string, default=None, required
+            URL to IBM PI instance.
         """
 
-        # save as instance variables for later authenticatio
+        # save as instance variables for later authentication
         self.apiKey = apiKey
         self.url = url
 
@@ -31,10 +39,29 @@ class IbmAPI:
         language='en',
     ):
         """
-        TODO get profile method
-        either pass a profile instance or we create one
+        Get personality prediction based on text.
 
-        text needs at least 100 chars
+        A HTTP request is made with the given text to the IBM API
+        in order to get personality predictions. Warnings
+        are printed during the process. If no error is encountered,
+        either a new profile is filled with the JSON response, or
+        the passed fillProfile is filled.
+
+        Parameters
+        ----------
+        text : string, default=None, required
+            Text for making prediction, at least 100 characters.
+            A warning is issued if less than 600 characters.
+        fillProfile : Profile, default=None
+            If passed, the personality data is saved inside the given
+            profile. Otherwise a new profile is created.
+        language : string, default='en'
+            Full absolute path for file to be loaded via yaml.safe_load().
+
+        Returns
+        -------
+        config : dict
+            The parsed dict containing all config values.
         """
         # used to skip loading, when there is an error
         errorEncounterd = False

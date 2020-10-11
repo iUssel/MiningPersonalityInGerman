@@ -4,7 +4,7 @@ from sklearn import linear_model
 
 class RidgeRegression(ModelBase):
     """
-    TODO docstring Class RidgeRegression
+    RidgeRegression Subclass of ModelBase
     """
 
     def __init__(
@@ -12,15 +12,20 @@ class RidgeRegression(ModelBase):
         gridSearchParams=None,
     ):
         """
-        TODO init func Class DecisionTree
-        gridSearchParams: dict
+        Init function calling super constructor and setting the model.
+
+        Parameters
+        ----------
+        gridSearchParams : dict, default=None
+            Dictionary containing all parameters that should be
+            considered during grid search.
         """
         if gridSearchParams is not None:
             gridSearch = gridSearchParams
         else:
-            # TODO applying best default parameters
+            # applying default parameters
             defaultParams = {
-                'alpha': [0.1, 1.0, 10.0],
+                'alpha': [20],
                 'random_state': [0]
             }
             gridSearch = defaultParams

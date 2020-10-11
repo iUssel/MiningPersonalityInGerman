@@ -4,14 +4,14 @@ from .profile import Profile
 
 class ProfileCollection:
     """
-    TODO docstring Class ProfileCollection
+    Collection of Profile objects
     """
 
     def __init__(
         self,
     ):
         """
-        TODO init func Class ProfileCollection
+        Creates empty profileList
         """
         # initialize empty list to collect profiles
         self.profileList = []
@@ -23,7 +23,12 @@ class ProfileCollection:
         profileObj: Profile,
     ):
         """
-        TODO add_profile
+        Add Profile to profileList.
+
+        Parameters
+        ----------
+        profileObj : Profile, default=None, required
+            Profile object instance.
         """
 
         self.profileList.append(profileObj)
@@ -35,7 +40,12 @@ class ProfileCollection:
         full_path='profilelist.csv',
     ):
         """
-        TODO docstring
+        Export profiles in profile list to one CSV file.
+
+        Parameters
+        ----------
+        full_path : string, default='profilelist.csv'
+            Full path for export file.
         """
 
         # write output csv file
@@ -69,7 +79,14 @@ class ProfileCollection:
         idsonly=False,
     ):
         """
-        TODO docstring read_profile_list_file
+        Import profiles to profile list from one CSV file.
+
+        Parameters
+        ----------
+        full_path : string, default='profilelist.csv'
+            Full path for import file.
+        idsonly : boolean, default=False
+            Indicates if file contains only user ids.
         """
 
         # read csv file
@@ -120,8 +137,17 @@ class ProfileCollection:
         userID
     ):
         """
-        TODO docstring get_profile_by_user_id
-        give userID and return profile with
+        Search and return profile in profile list with given user id.
+
+        Parameters
+        ----------
+        userID : string, default=None, required
+            User id to search for in profileList.
+
+        Returns
+        -------
+        userProfile : Profile
+            Profile with matching user id.
         """
 
         # filter current profile list to get profile

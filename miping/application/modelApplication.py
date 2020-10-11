@@ -13,24 +13,36 @@ from ..training.features import NoGloveValueError
 
 class ModelApplication:
     """
-    TODO docstring Class ModelApplication
-    central class for prediction
+    Central class for actually utilize trained models and
+    do predictions. Wraps relevant function of other miping classes.
+    Twitter API, models, and GloVe pipeline are saved to class
+    variables to make the web application more efficient.
+    Everything is initialized on the first request, afterwards
+    all requests will be faster.
     """
 
     # will hold twitter api object for class
     twitter = None
+    """Twitter API object"""
     # glove pipeline object for class
     glove_pipeline = None
+    """GloVe feature pipeline"""
 
     # useful for coverage statistics
     featuresObj = None
+    """Feature object instance for coverage statistics"""
 
     # trained and imported models
     big5_openness = None
+    """Imported model for Openness"""
     big5_conscientiousness = None
+    """Imported model for Conscientiousness"""
     big5_extraversion = None
+    """Imported model for Extraversion"""
     big5_agreeableness = None
+    """Imported model for Agreeableness"""
     big5_neuroticism = None
+    """Imported model for Neuroticism"""
     # big 5 list for loops
     big5List = [
         'big5_openness',
@@ -39,6 +51,7 @@ class ModelApplication:
         'big5_agreeableness',
         'big5_neuroticism',
     ]
+    """List of model variables for access in loop"""
 
     def __init__(
         self,
@@ -50,15 +63,37 @@ class ModelApplication:
         use_onnx_models=True,
     ):
         """
-        TODO init func Class ModelApplication
-        modelPathDict = {
-            'big5_openness': {
-                'onnx': /miping/trainedModels/glovebig5_openness.ONNX,
-                'pickle': /miping/trainedModels/glovebig5_openness.pickle
-            },
-            ...
-        }
-        modelPathDict as returned from TrainedModels class
+        Initialize necessary APIs and import models.
+
+        Twitter API is initialized, GloVe pipeline created and
+        models imported.
+
+        Parameters
+        ----------
+        twitter_consumer_key : string, default=None, required
+            Developer API key for Twitter. Needed to query API.
+        twitter_consumer_secret : string, default=None, required
+            Developer API key secrect for Twitter. Needed to query API.
+        glove_file_path : string, default=None, required
+            Full path to GloVe vector file (either database or
+            plain text file).
+        dataBaseMode : boolean, default=None, required
+            If True, glove_file_path points to SQLite database file.
+            If False, flat vector file.
+        modelPathDict : string, default=None, required
+            ModelPathDict as returned from TrainedModels class.
+            Contains the pathes to the trained models.
+            E.g.:
+            modelPathDict = {
+                'big5_openness': {
+                    'onnx': /miping/trainedModels/glovebig5_openness.ONNX,
+                    'pickle': /miping/trainedModels/glovebig5_openness.pickle
+                },
+                ...
+            }
+        use_onnx_models : string, default=True
+            If True, use ONNX models. If False, use pickle models.
+            Pickle models might provide more feature, but are a security risk.
         """
 
         # initialize twitter api
@@ -87,7 +122,24 @@ class ModelApplication:
         use_onnx_models,
     ):
         """
-        TODO importModels
+        Import trained models once and save in class variables.
+
+        Parameters
+        ----------
+        modelPathDict : string, default=None, required
+            ModelPathDict as returned from TrainedModels class.
+            Contains the pathes to the trained models.
+            E.g.:
+            modelPathDict = {
+                'big5_openness': {
+                    'onnx': /miping/trainedModels/glovebig5_openness.ONNX,
+                    'pickle': /miping/trainedModels/glovebig5_openness.pickle
+                },
+                ...
+            }
+        use_onnx_models : string, default=True
+            If True, use ONNX models. If False, use pickle models.
+            Pickle models might provide more feature, but are a security risk.
         """
         for dimension in self.big5List:
             # check if already loaded
@@ -123,7 +175,20 @@ class ModelApplication:
         twitter_consumer_secret
     ):
         """
-        TODO initializes twitter api if not happened yet
+        Initialize Twitter API, if not already happened, and return
+        corresponding class variable.
+
+        Parameters
+        ----------
+        twitter_consumer_key : string, default=None, required
+            Developer API key for Twitter. Needed to query API.
+        twitter_consumer_secret : string, default=None, required
+            Developer API key secrect for Twitter. Needed to query API.
+
+        Returns
+        -------
+        ModelApplication.twitter : TwitterAPI
+            Initialized TwitterAPI object.
         """
         if ModelApplication.twitter is None:
             # set Class attribute, not instance attribute
@@ -142,8 +207,17 @@ class ModelApplication:
         userName
     ):
         """
-        TODO func validate_username_input
-        takes data as input and checks if the input is a username string
+        Check if passed userName is a valid Twitter userName.
+
+        Exceptions are raised if the userName does not meet the
+        requirements. This happens for saftey reasons, so nobody
+        exploits the web application via buffer overflow or something
+        else.
+
+        Parameters
+        ----------
+        userName : string, default=None, required
+            userName to validate.
         """
         # check format
         minlength = 1
@@ -175,7 +249,22 @@ class ModelApplication:
         dataBaseMode,
     ):
         """
-        TODO initializes glove pipeline
+        Initialize GloVe pipeline, if not already happened, and return
+        corresponding class variable.
+
+        Parameters
+        ----------
+        glove_file_path : string, default=None, required
+            Full path to GloVe vector file (either database or
+            plain text file).
+        dataBaseMode : boolean, default=None, required
+            If True, glove_file_path points to SQLite database file.
+            If False, flat vector file..
+
+        Returns
+        -------
+        ModelApplication.glove_pipeline : Pipeline
+            Initialized GloVe pipeline.
         """
         # if already created, skip init
         if ModelApplication.glove_pipeline is None:
@@ -195,8 +284,21 @@ class ModelApplication:
         username,
     ):
         """
-        TODO create_profile
-        does not validate user name
+        Get tweets for given username and create Profile object to return.
+
+        It's checked if the user exists and is public. Then 200 tweets are
+        loaded, combined into a single string, and the cleaning step
+        is applied. The result is saved into a new Profile object.
+
+        Parameters
+        ----------
+        username : string, default=None
+            Already validated username to create profile for.
+
+        Returns
+        -------
+        profile : Profile
+            Miping Profile object filled based on the username.
         """
 
         # get twitter api instance
@@ -256,8 +358,24 @@ class ModelApplication:
         profileList,
     ):
         """
-        TODO get_personality by profile list
-        enables to predict multiple user's at once
+        Return Big Five predictions for all profiles in profileList
+
+        Features are calculated for whole profileList at once.
+        An exception is raised if no matching GloVe vectors could
+        be found. Do prediction with previously saved models
+        for each dimension and save to returnDict.
+
+        Parameters
+        ----------
+        profileList : list, default=None
+            List of Profile objects for which predictions should
+            be carried out.
+
+        Returns
+        -------
+        returnDict : dict
+            Dictionary containing Big Five, word coverage, and word
+            count results.
         """
 
         # feature pipeline

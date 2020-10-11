@@ -4,14 +4,14 @@ from .user import User
 
 class UserCollection:
     """
-    TODO docstring Class UserCollection
+    Data model class for grouping user objects.
     """
 
     def __init__(
         self,
     ):
         """
-        TODO init func Class UserCollection
+        Initialize empty userlist.
         """
         # initialize empty list to collect tweets
         self.userList = []
@@ -21,7 +21,7 @@ class UserCollection:
         userObj: User,
     ):
         """
-        TODO funcAddUser
+        Add user object to userlist.
         """
 
         self.userList.append(userObj)
@@ -34,10 +34,14 @@ class UserCollection:
         ids_only=False
     ):
         """
-        TODO docstring write_user_list_file
-        Write all from user list to file
+        Export userlist to CSV file.
 
-        if ids_only True it will write only one column
+        Parameters
+        ----------
+        full_path : string, default='userlist.csv'
+            Full path for export file.
+        ids_only : boolean, default=False
+            If True, will export only user ids.
         """
 
         # write output csv file
@@ -71,8 +75,14 @@ class UserCollection:
         ids_only=False,
     ):
         """
-        TODO docstring read_user_list_file
-        Read all tweets from user list file
+        Import userlist from CSV file.
+
+        Parameters
+        ----------
+        full_path : string, default='userlist.csv'
+            Full path for import file.
+        ids_only : boolean, default=False
+            If True, will import only user ids.
         """
 
         # read csv file
@@ -103,8 +113,7 @@ class UserCollection:
         self,
     ):
         """
-        TODO docstring get_id_list
-        Return list with ids of list
+        Return list of user ids in userList.
         """
 
         idList = list(user.id_str for user in self.userList)

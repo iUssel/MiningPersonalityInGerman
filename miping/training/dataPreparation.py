@@ -3,15 +3,12 @@ import re
 
 class DataPreparation:
     """
-    TODO docstring Class DataPreparation
+    All relevant data preparation steps are combined in this class.
     """
 
     def __init__(
         self,
     ):
-        """
-        TODO init func Class DataPreparation
-        """
         pass
 
     def clean_text(
@@ -19,7 +16,24 @@ class DataPreparation:
         textString,
     ):
         """
-        TODO clean_text
+        Apply data cleansing to given text.
+
+        Turn all to lower case.
+        Remove URLs.
+        Pad hashtags with space.
+        Remove mentions.
+        Add spaces around punctuations.
+        Remove double spaces in result.
+
+        Parameters
+        ----------
+        textString : string, default=None, required
+            Text that should be cleaned.
+
+        Returns
+        -------
+        textString : string
+            Cleaned text.
         """
 
         # set to lower case

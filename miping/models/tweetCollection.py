@@ -4,7 +4,7 @@ from .tweetObj import TweetObj
 
 class TweetCollection:
     """
-    TODO docstring Class TweetCollection
+    Data model for a collection of TweetObjs
     """
 
     def __init__(
@@ -12,7 +12,8 @@ class TweetCollection:
         additionalAttributes=None
     ):
         """
-        TODO init func Class TweetCollection
+        Initialize empty tweetList and save if there
+        are additionalAttributes.
         """
         # initialize empty list to collect tweets
         self.tweetList = []
@@ -29,7 +30,7 @@ class TweetCollection:
         tweetObj: TweetObj,
     ):
         """
-        TODO funcAddTweet
+        Add tweetObj to tweetList.
         """
 
         self.tweetList.append(tweetObj)
@@ -41,7 +42,7 @@ class TweetCollection:
         tweetCol,
     ):
         """
-        TODO add_tweet_collection
+        Add tweetCollection to tweetlist by extending it.
         """
         self.tweetList.extend(tweetCol.tweetList)
 
@@ -53,12 +54,15 @@ class TweetCollection:
         ids_only=False
     ):
         """
-        TODO docstring write_tweet_list_file
-        Write all from tweet list to file
+        Export objects in tweetlist to CSV file.
 
-        if ids_only True it will write only one column
+        Parameters
+        ----------
+        full_path : string, default='tweetlist.csv'
+            Full path for export file.
+        ids_only : boolean, default=False
+            If True only one column for ids will be written.
         """
-
         # write output csv file
         with open(full_path, "w", newline='', encoding='utf-8') as outfile:
             # initialize csv writer
@@ -99,8 +103,16 @@ class TweetCollection:
         removeNewLineChar=True,
     ):
         """
-        TODO docstring read_tweet_list_file
-        Read all tweets from tweet list file
+        Import tweet objects to tweetlist from CSV file.
+
+        Parameters
+        ----------
+        full_path : string, default='tweetlist.csv'
+            Full path for import file.
+        ids_only : boolean, default=False
+            If True only one column for ids will be written.
+        removeNewLineChar : boolean, default=True
+            Remove new line characters from texts in tweets.
         """
 
         # read csv file
@@ -144,8 +156,7 @@ class TweetCollection:
         self,
     ):
         """
-        TODO docstring get_id_list
-        Return list with ids of list
+        Return list of tweet ids in tweetlist.
         """
 
         idList = list(tweets.id_str for tweets in self.tweetList)
@@ -156,7 +167,7 @@ class TweetCollection:
         self,
     ):
         """
-        TODO docstring get_distinct_user_id_list
+        Return list of distinct user ids in tweetlist.
         """
 
         # get user ids from tweets
@@ -172,9 +183,17 @@ class TweetCollection:
         userID
     ):
         """
-        TODO docstring get_tweet_of_userid
-        give userID and return tweetCollection with tweets
-        by that user
+        Extract tweets from tweetlist written by given userID.
+
+        Parameters
+        ----------
+        userID : string, default=None, required
+            UserID to get tweets for.
+
+        Returns
+        -------
+        twCol : TweetCollection
+            Another Tweetcollection containing only tweet from the given user.
         """
         # initialize new tweet collection
         if self.addAttrBool:
@@ -199,10 +218,8 @@ class TweetCollection:
         self,
     ):
         """
-        TODO docstring combine_tweet_text
-
-        takes all tweets of list and combines the text
-        in one string
+        Takes all tweets of tweetlist and combines the text in one string.
+        Separated by space.
         """
         # join tweet texts with space in one string
         # it will access each tweets text attribute

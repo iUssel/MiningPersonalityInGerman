@@ -13,15 +13,12 @@ from .noGloveValueError import NoGloveValueError
 
 class Features:
     """
-    TODO docstring Class Features
+    Contains all pipeline functions for both LIWC and glove.
     """
 
     def __init__(
         self,
     ):
-        """
-        TODO init func Class Features
-        """
         return
 
     def featureLIWC(
@@ -29,9 +26,18 @@ class Features:
         profileCol,
     ):
         """
-        TODO func featureLIWC
-        from profileCollection as input in pipeline
-        extract the relevant LIWC features
+        Extract LIWC features (namely LIWC categories) from
+        each profile in list as feature.
+
+        Parameters
+        ----------
+        profileCol : list, default=None, required
+            List with profiles to generate features for.
+
+        Returns
+        -------
+        np.array(outputList) : numpy.array
+            Generated features in numpy format.
         """
         # will contain the LIWC measures for each profile
         outputList = []
@@ -57,10 +63,14 @@ class Features:
         self,
     ):
         """
-        TODO func createLIWCFeaturePipeline
-        create pipeline that can be passed into multiple training procceses
+        Create pipeline that can be passed into multiple training procceses
         this is just a blueprint for calculating the features
         no features are calculated yet!
+
+        Returns
+        -------
+        featurePipeline : Pipeline
+            Pipeline containing feature generation and scaling.
         """
 
         # Create skicit-learn compatible FunctionTransformers
@@ -87,8 +97,8 @@ class Features:
         vectorList,
     ):
         """
-        TODO func condenseGloVeVectors
-        min max average
+        For each user a vectorList is passed in with different length.
+        This will be condensed into a single 900 dim vector.
         """
 
         # convert to np array for mean,max,min functions
@@ -119,9 +129,24 @@ class Features:
         profileList,
     ):
         """
-        TODO func featureGloVe
-        from profileList as input in pipeline
-        extract the relevant GloVe features
+        For each profile in profile list generate GloVe features.
+
+        Each profile contains text and for this text the glove vectors
+        are retrieved and condensed into one single vector for this user.
+        All user vectors are appended into the outputList.
+
+        The word coverageStatistics and wordCounts for each user
+        are saved in this feature object instance to be retrieved later.
+
+        Parameters
+        ----------
+        profileList : list, default=None, required
+            List containing relevant profiles for which to extract features.
+
+        Returns
+        -------
+        np.array(outputList) : numpy.array
+            Features in correct output format.
         """
 
         if self.glove is None:
@@ -220,12 +245,23 @@ class Features:
         dataBaseMode=True,
     ):
         """
-        TODO func createGloVeFeaturePipeline
-        create pipeline that can be passed into multiple training procceses
+        Create pipeline that can be passed into multiple training procceses
         this is just a blueprint for calculating the features
         no features are calculated yet!
 
-        no parallelization due to GloVe lookup
+        No parallelization (n_jobs=1) due to GloVe lookup in database.
+
+        Parameters
+        ----------
+        glovePath : string, default='data/glove/glove.db'
+            Path to GloVe flat or database file.
+        dataBaseMode : boolean, default=True
+            If True path points to SQLite database file.
+
+        Returns
+        -------
+        featurePipeline : Pipeline
+            Pipeline containing feature generation.
         """
 
         glove = GloVe(

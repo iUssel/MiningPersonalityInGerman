@@ -3,7 +3,7 @@ import googlemaps
 
 class MapsAPI:
     """
-    TODO docstring Class Maps
+    Class for enclosing Google Maps related functions
     """
 
     def __init__(
@@ -11,9 +11,12 @@ class MapsAPI:
         apiKey,
     ):
         """
-        TODO init func Class MapsAPI
+        Initialize client with apiKey.
 
-        Expects Places Api Key
+        Parameters
+        ----------
+        apiKey : string, default=None, required
+            Google Places API key.
         """
         self.gmaps = googlemaps.Client(
             key=apiKey
@@ -24,7 +27,18 @@ class MapsAPI:
         geoString,
     ):
         """
-        TODO docstring get_address
+        Return result for search with Google's Place API.
+
+        Parameters
+        ----------
+        geoString : string, default=None, required
+            String with location we are trying to verify. In our case
+            mostly Twitter profile locations.
+
+        Returns
+        -------
+        address_result : dict
+            Google result with potential candiates matching the search string.
         """
 
         try:

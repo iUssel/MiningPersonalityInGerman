@@ -5,7 +5,8 @@ from dotenv import load_dotenv
 
 class ConfigLoader:
     """
-    TODO docstring
+    Assembles methods to read information from environment variables
+    and YML-Config files.
     """
 
     def __init__(
@@ -14,7 +15,26 @@ class ConfigLoader:
         modelConfigPath="",
     ):
         """
-        TODO init function of ConfigLoader Class
+        Init Function of ConfigLoader Class for setting Configfile paths.
+
+        Loads environment variable from .env file and checks if given
+        parameters are set. If not an exception is raised.
+        Afterwards functions for actually loading the values from YML and
+        .env are called. Variable values are saved in object variables
+        config, config_models and environmentVars.
+
+        Parameters
+        ----------
+        configPath : string, default=""
+            Full path for the config YML file which controls the program flow.
+            Ideally, the string is passed from a pathlib.Path() object, that
+            manages path string regardsless of the platform OS.
+        modelConfigPath : string, default=""
+            Full path for the model config YML file which
+            contains the grid search and tuning parameters for each
+            model type.
+            Ideally, the string is passed from a pathlib.Path() object, that
+            manages path string regardsless of the platform OS.
         """
 
         # .env variables are loaded from file
@@ -39,7 +59,17 @@ class ConfigLoader:
         path,
     ):
         """
-        TODO doc stringt funcReadConfig
+        Read YML file in given path.
+
+        Parameters
+        ----------
+        path : string, default=None
+            Full absolute path for file to be loaded via yaml.safe_load().
+
+        Returns
+        -------
+        config : dict
+            The parsed YML as dict containing all config values.
         """
 
         with open(path, "r") as ymlfile:
@@ -51,7 +81,16 @@ class ConfigLoader:
         self,
     ):
         """
-        TODO func Read Environment Vars
+        Read relevant environment variables.
+
+        Due to the .env functionality, environment variables are read
+        from system and from all .env files in the higher-level directories.
+        Some keys are optional, but Twitter consumer tokens are required.
+
+        Returns
+        -------
+        apiKeys : dict
+            All API keys are stored inside that dictionary.
         """
 
         # retrieve API keys and other secrets from environment variables
@@ -123,10 +162,13 @@ class ConfigLoader:
 
 
 class _InputError(Exception):
-    """Internal exception raised for errors in the input.
+    """
+    Internal exception raised for errors in the input.
 
-    Attributes:
-        message -- explanation of the error
+    Parameters
+    ----------
+    message : string, default=None
+        Additional message to be passed to Exception.
     """
 
     def __init__(self, message):

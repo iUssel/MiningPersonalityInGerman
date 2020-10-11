@@ -4,7 +4,7 @@ from sklearn.svm import SVR
 
 class SupportVectorMachine(ModelBase):
     """
-    TODO docstring Class SupportVectorMachine
+    SupportVectorMachine Subclass of ModelBase
     """
 
     def __init__(
@@ -12,19 +12,24 @@ class SupportVectorMachine(ModelBase):
         gridSearchParams=None,
     ):
         """
-        TODO init func Class SupportVectorMachine
-        gridSearchParams: dict
+        Init function calling super constructor and setting the model.
+
+        Parameters
+        ----------
+        gridSearchParams : dict, default=None
+            Dictionary containing all parameters that should be
+            considered during grid search.
         """
 
         if gridSearchParams is not None:
             gridSearch = gridSearchParams
         else:
-            # TODO applying best default parameters
+            # applying default parameters
             defaultParams = {
-                'kernel': ['rbf', 'sigmoid', 'linear'],
-                'C': [0.001, 0.01, 0.1, 1, 10, 100],
-                'epsilon': [0.001, 0.01, 0.1, 1, 10],
-                'max_iter': [100],
+                'kernel': ['linear'],
+                'C': [0.01],
+                'epsilon': [0.1],
+                'max_iter': [300],
             }
 
             gridSearch = defaultParams

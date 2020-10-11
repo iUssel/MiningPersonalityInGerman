@@ -13,20 +13,30 @@ from ..trainedModels import TrainedModels
 
 class RequestHandler:
     """
-    TODO docstring Class Requesthandler -
-    handle flask app stuff
-    captcha
+    Actual webapplication backend.
+    Coordinates request handling and processing.
     """
 
     # verify captcha
     verify_url_b = 'https://www.google.com/recaptcha/api/siteverify?secret='
+    """ReCaptcha base URL"""
 
     @staticmethod
     def loadKey(
         name
     ):
         """
-        TODO loadCaptchaKey staticmethod
+        Staticmethod to load API keys from environment variables.
+
+        Parameters
+        ----------
+        name : string, default=None, required
+            Name of environment variable to load.
+
+        Returns
+        -------
+        envKey : string
+            Actual API key or configuration value.
         """
         # load .env vars in environment variables
         load_dotenv()
@@ -54,8 +64,13 @@ class RequestHandler:
         config
     ):
         """
-        TODO init func Class Requesthandler
-        save config from app
+        Initialize requestHandler to save config and initialize
+        ModelApplication (this will load GloVe and models once).
+
+        Parameters
+        ----------
+        config : dict, default=None, required
+            Configuration from flask app, contains relevant API keys.
         """
 
         self.config = config
@@ -97,8 +112,14 @@ class RequestHandler:
         data
     ):
         """
-        TODO func validate_username_input
-        takes data as input and checks if the input is a username string
+        Takes data as input and checks if the input is a username string.
+
+        Raises exception if no valid username provided
+
+        Parameters
+        ----------
+        data : dict, default=None
+            Data that has been sent with the HTTP request.
         """
         if 'twitterHandle' in data:
             handleData = data['twitterHandle']
@@ -122,7 +143,19 @@ class RequestHandler:
         data,
     ):
         """
-        TODO check_recaptcha
+        Check if recaptcha token is valid. Return False otherwise.
+
+        Raises exception if no or invliad token is provided.
+
+        Parameters
+        ----------
+        data : dict, default=None
+            Data that has been sent with the HTTP request.
+
+        Returns
+        -------
+        boolean : boolean
+            Returns True if token is valid, otherwise False.
         """
         # check if token is passed
         if 'token' not in data.keys():
@@ -159,7 +192,17 @@ class RequestHandler:
         username,
     ):
         """
-        TODO get_personality
+        Get tweets for username and return Big Five predictions.
+
+        Parameters
+        ----------
+        username : string, default=None, required
+            Username to get personality prediction for.
+
+        Returns
+        -------
+        personalityDict : dict
+            Result dictionary containing the relevant data.
         """
 
         # create profile object from username

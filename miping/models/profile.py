@@ -1,6 +1,6 @@
 class Profile:
     """
-    TODO docstring Class Profile
+    Data class containing the final structure used to derive features.
     """
 
     attributeNameList = [
@@ -45,6 +45,7 @@ class Profile:
         'facet_vulnerability',
         'text'
     ]
+    """Full list of attributes including IBM Big Five facets."""
 
     liwc_category_list = [
         'WC',
@@ -141,12 +142,13 @@ class Profile:
         'Parenth',
         'OtherP'
     ]
+    """All 93 LIWC categories, for easier loop."""
 
     def __str__(
         self
     ):
         """
-        TODO doc __str__
+        When printing, the user id will be printed.
         """
 
         returnString = (
@@ -166,7 +168,25 @@ class Profile:
         ibmJson=None,
     ):
         """
-        TODO init func Class Profile
+        Init function to set all parameters to None.
+
+        We can create empty profiles and fill them afterwards
+        (e.g. when importing), therefore no variables are required.
+
+        Parameters
+        ----------
+        userID : string, default=None
+            Twitter user id.
+        text : string, default=None
+            Condensed tweets for this user as one string.
+        numberWords : string, default=None
+            Number of words in text.
+        numberTweets : string, default=None
+            Number of tweets before condensing.
+        language : string, default=None
+            Language this user speaks native (according to custom criteria).
+        ibmJson : dict, default=None
+            Result of IbmAPI call. If set, fitting attributes will be set.
         """
 
         # initialize attributes even if they are none
@@ -198,7 +218,12 @@ class Profile:
         ibmJson,
     ):
         """
-        TODO load_ibm_json
+        Take result JSON object of IBM API and fill corresponding attributes.
+
+        Parameters
+        ----------
+        ibmJson : dict, default=None, required
+            Dictionary as returned by IbmAPI.
         """
 
         # fill object variables based on IBM json
@@ -230,7 +255,7 @@ class Profile:
         opennessDict,
     ):
         """
-        TODO _load_ibm_openness
+        Private function to load Openness dimension and facets
         """
         # save main trait
         self.big5_openness = opennessDict['percentile']
@@ -258,7 +283,7 @@ class Profile:
         conscientiousnessDict,
     ):
         """
-        TODO _load_ibm_conscientiousness
+        Private function to load conscientiousness dimension and facets
         """
         # save main trait
         self.big5_conscientiousness = conscientiousnessDict['percentile']
@@ -286,7 +311,7 @@ class Profile:
         extraversionDict,
     ):
         """
-        TODO _load_ibm_extraversion
+        Private function to load extraversion dimension and facets
         """
         # save main trait
         self.big5_extraversion = extraversionDict['percentile']
@@ -314,7 +339,7 @@ class Profile:
         agreeablenessDict,
     ):
         """
-        TODO _load_ibm_agreeableness
+        Private function to load agreeableness dimension and facets
         """
         # save main trait
         self.big5_agreeableness = agreeablenessDict['percentile']
@@ -342,7 +367,7 @@ class Profile:
         neuroticismDict,
     ):
         """
-        TODO _load_ibm_neuroticism
+        Private function to load neuroticism dimension and facets
         """
         # save main trait
         self.big5_neuroticism = neuroticismDict['percentile']

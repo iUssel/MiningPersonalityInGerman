@@ -13,7 +13,10 @@ from scipy.stats.stats import pearsonr
 
 class TrainingProcess:
     """
-    TODO docstring Class trainingProcess
+    Wrapper class for training process (3rd step).
+    Contains all functions needed for training and evaluation.
+    Calls mostly miping module functions and allows imports
+    and exports of data via csv.
     """
 
     def __init__(
@@ -22,7 +25,15 @@ class TrainingProcess:
         modelConfig,
     ):
         """
-        TODO init func Class trainingProcess
+        Init function for configurations.
+
+        Parameters
+        ----------
+        config : dict, default=None, required
+            Configuration object as returned from ConfigLoader class.
+        modelConfig : dict, default=None, required
+            Configuration object for model training and grid search
+            as returned from ConfigLoader class.
         """
 
         self.config = config
@@ -35,9 +46,25 @@ class TrainingProcess:
         step='LIWC',
     ):
         """
-        TODO docstring createModels
+        Initialize models with grid search parameters and create a model list.
 
-        returns modelList
+        Step decides which grid search parameters to select
+        from model configuration. Based on the model configuration
+        it will be checked if miping.models has fitting classes for
+        the given model names (if not an exception is raised).
+        If it has, an instance of that class is created with
+        the corresponding grid search parameters as input.
+        All model instances are collected in a list.
+
+        Parameters
+        ----------
+        step : string, default='LIWC'
+            Indicates if LIWC or glove models should be created.
+
+        Returns
+        -------
+        modelList : list
+            List of created models with grid search parameters.
         """
 
         if step == 'LIWC':
@@ -94,7 +121,36 @@ class TrainingProcess:
         readONNXModel=False,
     ):
         """
-        TODO doLIWCModelTraining
+        Return trained and selected LIWC models.
+
+        Based on the given profile collection do LIWC model training.
+        First initialize LIWC feature pipeline. Then create model list.
+        Select best models and in the end do a complete training
+        for the best models.
+        Models can be imported and exported via pickle and ONNX files.
+        Pickle files are binaries and therefore should be treated with
+        care in terms of security.
+        Expected paths are:
+        'data/trainedModels/' + label + ".pickle"
+        'data/trainedModels/' + label + ".ONNX"
+
+        Parameters
+        ----------
+        profileCol : ProfileCollection, default=None, required
+            ProfileCollection to use as training input.
+        writePickleFiles : boolean, default=False
+            Export trained models as pickle files if True.
+        readPickleFiles : boolean, default=False
+            Import trained models from pickle file.
+        writeONNXModel : boolean, default=False
+            Export trained models to ONNX file.
+        readONNXModel : boolean, default=False
+            Import trained models from ONNX file.
+
+        Returns
+        -------
+        globalTrainedModels : dict
+            Trained, tuned, and selected models for LIWC predictions.
         """
 
         if writePickleFiles is True and readPickleFiles is True:
@@ -264,8 +320,47 @@ class TrainingProcess:
         writeFiles=False,
     ):
         """
-        TODO predictPersonalities
-        ibmList list of countries we already got profiles
+        Predict Big Five personality scores for profiles based on LIWC models.
+
+        Allows imports and exports of results via CSV. Expected path is
+        'data/07' + country + 'full_profiles.csv'.
+        If the given country exists in the ibmList the ProfileCollection
+        is returned unmodified, as the Big Five score have been retrieved
+        via IVM API. Otherwise, the LIWC feature pipeline is
+        initialized and features are calculated for all profiles.
+        With these features predictions will be carried out per profile
+        and Big Five dimension. Profiles will be enriched with Big Five
+        information and returned.
+        During the predictions a progress bar is shown.
+
+        Parameters
+        ----------
+        profileCol : ProfileCollection, default=None, required
+            ProfileCollection containing profiles to do LIWC based predictions
+            for.
+        country : string, default=None, required
+            Country name of where the passed users are collected from
+            (as specified in config)
+        globalLIWCModels : dict, default=None, required
+            Fully trained LIWC models ready for making predictions.
+        ibmList : string, default=None, required
+            List of countries for which Big Five scores have been
+            retrieved via IBM API. For those no prediction is carried out.
+        readFiles : boolean, default=False
+            If True, CSV files will be read instead of following program
+            logic.
+        writeFiles : boolean, default=False
+            Can only be True, if readFiles is False. If True, will export
+            results to CSV files. Allows to read files in the next program
+            run.
+
+        Returns
+        -------
+        returnProfileCol : ProfileCollection
+            ProfileCollection enriched with Big Five personality information
+            based on LIWC model predictions.
+            If country was in IBM list, the Big Five information already
+            existed and are not modified.
         """
         if writeFiles is True and readFiles is True:
             raise Exception(
@@ -382,7 +477,26 @@ class TrainingProcess:
         model,
     ):
         """
-        TODO doc predict_profile
+        Return profile with filled, predicted Big Five value for dimension.
+
+        Parameters
+        ----------
+        profile : Profile, default=None, required
+            User profile for which prediction should be carried out.
+        features : numpy.array, default=None, required
+            Calculated features for this profile on which prediction
+            is based.
+        dimension : string, default=None, required
+            Big Five dimension name. This is the attribute name
+            under which the value will be saved in the profile.
+        model : miping.models.ModelBase.model, default=None, required
+            Trained model with function predict to predict the given
+            Big Five dimension.
+
+        Returns
+        -------
+        profile : Profile
+            Profile with set dimension attribute.
         """
 
         result = model.predict(features)
@@ -396,14 +510,28 @@ class TrainingProcess:
         boolListWrite,
     ):
         """
-        TODO writeReadChecker
-        helps checking write read variables
-        readVar contains names and values of readVar
-        writeVar contains name and values of writeVar
-        function compares based on index
-        only on of 2 variable is allowed to be true
-        boolListRead = [('readPickleFiles',False),('readONNXModel',False)]
-        boolListWrite = [('writePickleFiles',False,),('writeONNXModel',False)]
+        Check if given lists fulfill consistency criteria.
+
+        For most functions we allow to either import or export results.
+        It is not possible to both import and export at the same time.
+        Therefore we check the variables with this function.
+        The function compares based on index.
+        So e.g. index 0 of boolListRead and boolListWrite cannot be True at
+        the same time. Both parameters need to be list of the same length.
+        Each list element consists of a tuple, where 1st tupel element
+        is the variable name and the second is its Boolean value.
+        An example:
+        boolListRead = [('readPickleFiles',False),('readONNXModel',True)]
+        boolListWrite = [('writePickleFiles',False,),('writeONNXModel',True)]
+        If these were passed in the function an exception would be raised,
+        because the second item in the lists is True in both lists.
+
+        Parameters
+        ----------
+        boolListRead : list, default=None, required
+            List of tuples (name, boolean) for read values to check.
+        boolListWrite : boolean, default=None, required
+            List of tuples (name, boolean) for write values to check.
         """
         # length must be same
         if len(boolListRead) != len(boolListWrite):
@@ -426,7 +554,18 @@ class TrainingProcess:
         self,
     ):
         """
-        TODO importModelPickle
+        Import and return GloVe models from pickle file.
+
+        Import previously exported models. The expected path is:
+        'data/trainedModels/glove' + label + ".pickle".
+        For actual import `mipingModels.ModelBase.importModelPickle` is
+        called and the resulting model objects are captured in a
+        dictionary with Big Five dimension names as keys.
+
+        Returns
+        -------
+        globalTrainedModels : dict
+            Dictionary containing the imported trained GloVe models.
         """
         print("\nReading files for GloVe model training from pickle")
         # load models in this dict
@@ -458,7 +597,18 @@ class TrainingProcess:
         self,
     ):
         """
-        TODO importModelONNX
+        Import and return GloVe models from ONNX file.
+
+        Import previously exported models. The expected path is:
+        'data/trainedModels/glove' + label + ".ONNX".
+        For actual import `mipingModels.OnnxModel.importModelONNX` is
+        called and the resulting model objects are captured in a
+        dictionary with Big Five dimension names as keys.
+
+        Returns
+        -------
+        globalTrainedModels : dict
+            Dictionary containing the imported trained GloVe models.
         """
         print("\nReading files for GloVe model training from ONNX")
         # load models in this dict
@@ -494,7 +644,35 @@ class TrainingProcess:
         readFeatureFile,
     ):
         """
-        TODO prepareFeaturesGloVe
+        Depending on parameter import precalculated features or prepare
+        feature pipeline.
+
+        To save time precalculated features (exported in a previous run),
+        can be imported. Expected path is 'data/08gloveFeatures.npy'.
+        If those are not imported the glove feature pipeline is created
+        and returned.
+        For glove feature pipeline "glove_path" and "glove_database"
+        have to be set in the global configuration to point to the glove
+        vector file.
+        All variables are returned, but might be empty depending on flag.
+
+        Parameters
+        ----------
+        readFeatureFile : boolean, default=None, required
+            Flag to indicate if precalculated features should be read
+            or only pipeline should be prepared.
+
+        Returns
+        -------calc_features, gloveFeaturePipeline, features
+        calc_features : numpy.array
+            Imported precalculated features or empty (depending on flag).
+        gloveFeaturePipeline : Pipeline
+            If flag is true, then pipeline is none. If flag is false,
+            pipeline is created glove feature pipeline.
+        features : Features
+            If flag is true, then features is none. If flag is false,
+            its Features object instance used to create pipeline.
+            Later relevant for word coverage statistics.
         """
         if readFeatureFile is True:
             print("reading featureFile")
@@ -542,7 +720,48 @@ class TrainingProcess:
         readFeatureFile=False,
     ):
         """
-        TODO doGloVeModelTraining
+        Based on given profile collection do GloVe model training.
+
+        Multiple import and export options are available.
+        Trained models can be imported and exported via pickle or ONNX.
+        This is controlled via parameters, but you can only import via
+        ONNX or pickle, not both at the same time, otherwise an exception
+        will be thrown. On the other hand, it is possible to simultaneously
+        export to both pickle and ONNX.
+        Expected paths are defined in `TrainingProcess.importGloVeModelPickle`
+        and `TrainingProcess.importGloVeModelONNX`.
+        At first, depending on the readFeatureFile flag, the glove feature
+        pipeline is imported or precalculated features are imported via
+        `TrainingProcess.prepareFeaturesGloVe`.
+        Afterwards the modelList is created to start modelselection
+        afterwards. This results in the best models which will be completely
+        trained in the end. If features were not imported, the word coverage
+        statistics is printed.
+
+        Parameters
+        ----------
+        profileCol : string, default=None, required
+            ProfileCollection as input for GloVe model training.
+        writePickleFiles : boolean, default=False
+            If True, final models will be exported to pickle files.
+        readPickleFiles : boolean, default=False
+            If True, instead of training trained models will be imported
+            from pickle files.
+        writeONNXModel : boolean, default=False
+            If True, final models will be exported to ONNX files.
+        readONNXModel : boolean, default=False
+            If True, instead of training trained models will be imported
+            from ONNX files.
+        writeFeatureFile : boolean, default=False
+            Calculated features will be exported via numpy.dump function
+            if True.
+        readFeatureFile : boolean, default=False
+            Previously exported features can be imported if True.
+
+        Returns
+        -------
+        globalTrainedModels : dict
+            Selected, tuned, and trained GloVe models.
         """
 
         # check that only one of read/write is True
@@ -707,7 +926,28 @@ class TrainingProcess:
         readFeatureFile=False,
     ):
         """
-        TODO do_prediction
+        Do GloVe based prediction for profile collection and return result.
+
+        This function is for comparing true with predicted values via
+        Pearson correlation.
+        At first import or calculate features. Then do prediction for
+        each dimension. Descriptive statistics for prediction values
+        are printed. Pearson correlation coefficients are calculated.
+
+        Parameters
+        ----------
+        profileCol : ProfileCollection, default=None, required
+            ProfileCollection to do GloVe prediction for.
+        globalGloVeModels : dict, default=None, required
+            Dictionary with fully trained GloVe models.
+        readFeatureFile : boolean, default=False
+            If True features are read from file.
+
+        Returns
+        -------
+        prediction : dict
+            Dictionary containing the predicted numeric values for each
+            Big Five dimension.
         """
         print("Now doing prediction")
         # depending on configuration load pre calculated
@@ -782,10 +1022,21 @@ class TrainingProcess:
         labelName,
     ):
         """
-        TODO func extractLabels
-        extract values for one specific labelName
-        labels are the percentages value to predict
-        e.g. for Extraversion value
+        Extract and return list of attribute values from objects in
+        profileList.
+
+        Parameters
+        ----------
+        profileList : list, default=None, required
+            List of Profile objects for which to extract the label values.
+        labelName : string, default=None, required
+            Attribute value to extract from profileList. Usually a Big Five
+            dimension
+
+        Returns
+        -------
+        labels : list
+            List of float values for one Big Five dimension.
         """
         # initialize return variable
         labels = []

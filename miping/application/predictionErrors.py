@@ -1,8 +1,8 @@
 class UserNameError(Exception):
-    """TODO PredictionErrorfor proper catch clause"""
+    """Raised if user name is not valid"""
     pass
 
 
 class NotASuitableUserError(Exception):
-    """TODO NotSuitableUser"""
+    """Raised if user is not suitable (e.g. private or suspended)"""
     pass

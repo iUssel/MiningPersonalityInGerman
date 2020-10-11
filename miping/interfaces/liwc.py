@@ -7,15 +7,14 @@ from ..models.profile import Profile
 
 class LiwcAPI:
     """
-    TODO docstring Class Liwc
+    Class for wrapping LIWC related functions
+    There is no real LIWC API, because the program is a
+    standalone Java program.
     """
 
     def __init__(
         self,
     ):
-        """
-        TODO init func Class Liwc
-        """
         pass
 
     def import_liwc_result(
@@ -24,7 +23,22 @@ class LiwcAPI:
         profileCol,
     ):
         """
-        TODO docstring import_liwc_result
+        Read LIWC data and return enriched ProfileCollection.
+
+        For each user, his/her profile is filled with corresponding
+        LIWC data from LIWC export file.
+
+        Parameters
+        ----------
+        fullPath : string, default=None, required
+            Full path of LIWC export file.
+        profileCol : ProfileCollection, default=None, required
+            ProfilCollection to enrich with LIWC data.
+
+        Returns
+        -------
+        profileCol : ProfilCollection
+            ProfilCollection enriched with LIWC data.
         """
 
         # read csv file

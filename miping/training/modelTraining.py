@@ -13,14 +13,14 @@ from sklearn.model_selection import cross_validate
 
 class ModelTraining:
     """
-    TODO docstring Class ModelTraining
+    Wrapper class for all model training functions.
     """
 
     def __init__(
         self,
         labelsGlobalList,
         crossValidationIterations=10,
-        n_jobs=1,  # TODO evtl. auf -1
+        n_jobs=1,
         # e.g. neg_mean_absolute_error MAE or
         # neg_root_mean_squared_error RMSE
         scoringFunc='neg_root_mean_squared_error',
@@ -28,9 +28,26 @@ class ModelTraining:
         printCoefficients=False,
     ):
         """
-        TODO init func Class ModelTraining
-        labelsGlobalList -> values to predict
-        n_jobs=-1 -> parallelization
+        Initialize values for model training.
+
+        Parameters
+        ----------
+        labelsGlobalList : list, default=None, required
+            List of dimensions to predict (e.g. Big Five).
+        crossValidationIterations : integer, default=10
+            Number of cross validation iterations.
+        n_jobs : integer, default=1
+            Number of prallel jobs in sklearn.
+            n_jobs=-1 -> parallelization. Does not always work.
+            E.g. SVM throws warnings.
+        scoringFunc : string, default='neg_root_mean_squared_error'
+            Which scoring function should be chosen for selecting
+            the best model. Should be sklearn function. Since sklearn
+            follows "higher = better". Error scores are negative.
+        printIntermediateResults : boolean, default=True
+            Print intermediate results, such as scores.
+        printCoefficients : boolean, default=False
+            Print model coefficients and kernel parameters of trained models.
         """
         # save list of labels to predict
         # one model for each label will be calculated
@@ -61,10 +78,21 @@ class ModelTraining:
         labelName,
     ):
         """
-        TODO func extractLabels
-        extract values for one specific labelName
+        Extract values for one specific labelName
         labels are the percentages value to predict
-        e.g. for Extraversion value
+        e.g. for Extraversion value.
+
+        Parameters
+        ----------
+        profileList : list, default=None, required
+            List of profiles to extract labels from.
+        labelName : string, default=None, required
+            Label to extract from profiles.
+
+        Returns
+        -------
+        labels : list
+            Numeric values used for training and prediction.
         """
         # initialize return variable
         labels = []
@@ -84,7 +112,32 @@ class ModelTraining:
         features
     ):
         """
-        TODO func doc crossvalidateModel
+        Return best model from grid search and do cross validation.
+
+        A grid search is performed with the given parameters.
+        The best model selected and a cross validation with
+        this model performed. Scores will be printed to console.
+        Duration of process is printed.
+
+        Parameters
+        ----------
+        model : modelBase.model, default=None, required
+            Model from sklearn to train.
+        gridSearchParams : dict, default=None, required
+            Dictionary with parameters for grid search.
+        labels : list, default=None, required
+            Numeric values as prediction target.
+        features : numpy.array, default=None, required
+            Numeric features to predict from.
+
+        Returns
+        -------grid_model.best_score_, bestModel, bestParams
+        grid_model.best_score_ : dict
+            Dictionary with scores of best model.
+        bestModel : modelBase.model
+            Best performing model during gridsearch.
+        bestParams : dict
+            Parameters of best performing model.
         """
 
         # ignore terminated early warning
@@ -171,8 +224,18 @@ class ModelTraining:
         features
     ):
         """
-        TODO func doc provideScores
-        MAE, MSE, RMSE, correlations and R2
+        Does cross validation for given model in modelBase.
+        Calculates MAE, MSE, RMSE, correlations and R2.
+        Prints results and saves in modelBase.
+
+        Parameters
+        ----------
+        modelBase : modelBase, default=None, required
+            ModelBase class containing the model.
+        labels : list, default=None, required
+            Numeric values as prediction target.
+        features : numpy.array, default=None, required
+            Numeric features to predict from.
         """
         # get actual estimator from object
         model = modelBase.model
@@ -224,10 +287,34 @@ class ModelTraining:
         precalculatedFeatures=None,
     ):
         """
-        TODO doc func startModelSelection
-        take modellist and do training
+        Identify best model for each dimension.
 
-        saveFeatures in instance
+        First, features are calculated. The model selection is done
+        for each dimension (label). Labels are extracted and for each
+        model in modelObjList grid search is performed.
+        Then best model is identified for this dimension and added to
+        globalBestModels.
+        Additional scores are provided via cross validation.
+
+        Parameters
+        ----------
+        modelObjList : list, default=None, required
+            List of models to select from.
+        featurePipeline : Pipeline, default=None, required
+            Created feature pipeline to use.
+        profileColTraining : ProfileCollection, default=None, required
+            ProfileCollection to generate features and extract labels from.
+        saveFeatures : boolean, default=False
+            To save time feature calculation step can be saved and
+            exported in caller function.
+        precalculatedFeatures : numpy array, default=None
+            If passed, those features are used and no feature calculation
+            takes place.
+
+        Returns
+        -------
+        globalBestModels : dict
+            Dictionary with best model for each label to predict.
         """
         profileList = profileColTraining.profileList
 
@@ -363,10 +450,30 @@ class ModelTraining:
         precalculatedFeatures=None,
     ):
         """
-        TODO doc func completeModelTraining
-        take modellist and do training
+        Fully train models in modelCollection.
 
-        saveFeatures -> access from außerhalb
+        Features are calculated, then for each dimension model is
+        fully trained and saved back in collection.
+
+        Parameters
+        ----------
+        modelCollection : dict, default=None, required
+            Dictionary of best models to fully train.
+        featurePipeline : Pipeline, default=None, required
+            Created feature pipeline to use.
+        profileColTraining : ProfileCollection, default=None, required
+            ProfileCollection to generate features and extract labels from.
+        saveFeatures : boolean, default=False
+            To save time feature calculation step can be saved and
+            exported in caller function.
+        precalculatedFeatures : numpy array, default=None
+            If passed, those features are used and no feature calculation
+            takes place.
+
+        Returns
+        -------
+        modelCollection : dict
+            Collection contains now fully trained models.
         """
         profileList = profileColTraining.profileList
 
@@ -413,7 +520,8 @@ class ModelTraining:
         value
     ):
         """
-        TODO doc string _nested_set
+        Helps when saving scores to intialize
+        dictionary.
         nested arrays
         https://stackoverflow.com/questions/13687924/
         setting-a-value-in-a-nested-python-dictionary-

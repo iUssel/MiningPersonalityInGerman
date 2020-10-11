@@ -28,8 +28,8 @@ app.config['glove_database_mode'] = (
 @app.route("/test")
 def testAPI():
     """
-    TODO Simple test code, to check if API is set up correctly.
-    Will always be available
+    Simple test code, to check if API is set up correctly.
+    Will always be available, when server is running.
     """
     if app.config['CAPTCHAKEY'] == "":
         captcha = False
@@ -57,7 +57,7 @@ def testAPI():
 @app.route('/personality', methods=['POST'])
 def parse_request():
     """
-    TODO accept user name and return personality profile
+    Accept user name and return personality profile.
     """
 
     if request is None:

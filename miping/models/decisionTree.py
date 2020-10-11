@@ -4,7 +4,7 @@ from sklearn import tree
 
 class DecisionTree(ModelBase):
     """
-    TODO docstring Class DecisionTree
+    DecisionTree Subclass of ModelBase
     """
 
     def __init__(
@@ -12,20 +12,24 @@ class DecisionTree(ModelBase):
         gridSearchParams=None,
     ):
         """
-        TODO init func Class DecisionTree
-        gridSearchParams: dict
-        """
+        Init function calling super constructor and setting the model.
 
+        Parameters
+        ----------
+        gridSearchParams : dict, default=None
+            Dictionary containing all parameters that should be
+            considered during grid search.
+        """
         if gridSearchParams is not None:
             gridSearch = gridSearchParams
         else:
-            # TODO applying best default parameters
+            # applying default parameters
             defaultParams = {
                 'criterion': ['mse'],
                 'splitter': ['best'],
-                'max_depth': [10],
+                'max_depth': [4],
                 'min_samples_split': [2],
-                'min_samples_leaf': [1],
+                'min_samples_leaf': [50],
                 'random_state': [0]
             }
 

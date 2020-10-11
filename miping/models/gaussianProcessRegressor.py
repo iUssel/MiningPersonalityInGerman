@@ -7,7 +7,7 @@ from sklearn.gaussian_process.kernels import Matern, WhiteKernel
 
 class GaussianProcessRegressor(ModelBase):
     """
-    TODO docstring Class GaussianProcessRegressor
+    GaussianProcessRegressor Subclass of ModelBase
     """
 
     def __init__(
@@ -15,8 +15,14 @@ class GaussianProcessRegressor(ModelBase):
         gridSearchParams=None,
     ):
         """
-        TODO init func Class GaussianProcessRegressor
-        gridSearchParams: dict
+        Init function calling super constructor and setting the model.
+        Setting the kernel.
+
+        Parameters
+        ----------
+        gridSearchParams : dict, default=None
+            Dictionary containing all parameters that should be
+            considered during grid search.
         """
         # standard kernel
         # kernel = 1.0 * RBF(1.0)
@@ -27,9 +33,9 @@ class GaussianProcessRegressor(ModelBase):
         if gridSearchParams is not None:
             gridSearch = gridSearchParams
         else:
-            # TODO applying best default parameters
+            # applying default parameters
             defaultParams = {
-                'n_restarts_optimizer': [0, 2, 10],
+                'n_restarts_optimizer': [3],
                 'random_state': [0]
             }
 

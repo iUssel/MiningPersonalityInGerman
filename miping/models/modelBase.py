@@ -5,7 +5,9 @@ from joblib import dump, load
 
 class ModelBase:
     """
-    TODO docstring Class ModelBase
+    Class meant to be subclassed.
+    Every new model should call the construct of ModelBase.
+    This ensures a unified interface.
     """
 
     @staticmethod
@@ -13,8 +15,16 @@ class ModelBase:
         path
     ):
         """
-        TODO doc importModelPickle
-        be aware of security issues
+        Import pickle file from given path.
+
+        Since pickle is binary, be aware of security issues
+        when importing from unkown sources. Therefore extra
+        user confirmation is required for importing.
+
+        Parameters
+        ----------
+        path : string, default=None
+            Full absolute path for model pickle file.
         """
         print("Do not import pickle models from unknown sources!")
         # import model from pickle file
@@ -40,7 +50,24 @@ class ModelBase:
         gridSearchParams=None,
     ):
         """
-        TODO init func Class ModelBase
+        Init function to set relevant model parameters.
+
+        Parameters
+        ----------
+        labelName : string, default=""
+            Indicates for which Big Five dimension the model is.
+        modelName : string, default=""
+            Model algorithm type (e.g. linear, SVM etc.).
+        model : Python object, default=None
+            Any Python object that has fit and predict functions such as
+            sklearn models. If only prediction is relevant, only predict
+            function is needed (e.g. the case with ONNX).
+        params : dict, default=None
+            After full training the model parameters can be stored here.
+        scores : dict, default=None
+            After full training the model scores can be stored here.
+        gridSearchParams : dict, default=None
+            Parameters to control for during grid search.
         """
         # save all variables in class instance
         self.labelName = labelName
@@ -59,8 +86,7 @@ class ModelBase:
         self,
     ):
         """
-        TODO func getModel
-        returns saved model
+        Returns saved model.
         """
 
         return self.model
@@ -70,7 +96,12 @@ class ModelBase:
         path,
     ):
         """
-        TODO exportModelPickle func
+        Export model object to pickle file.
+
+        Parameters
+        ----------
+        path : string, default=None, required
+            Full path for export file.
         """
         print(
             "Exporting pickle of " +
@@ -88,10 +119,20 @@ class ModelBase:
         numDim,
         inputName,
     ):
+
         """
-        TODO doc exportModelONNX
-        numDim e.g. 93
-        inputName e.g. liwc_input
+        Export model object to ONNX file.
+
+        Parameters
+        ----------
+        path : string, default=None, required
+            Full path for export file.
+        numDim : integer, default=None, required
+            Number of dimensions in features used to
+            train this model. For LIWC 93, for
+            GloVe 300.
+        inputName : string, default=None, required
+            Name for Input, e.g. liwc_input. Can be any string.
         """
         print(
             "Exporting ONNX of " +

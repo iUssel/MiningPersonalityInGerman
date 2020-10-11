@@ -1,13 +1,13 @@
 class TweetObj:
     """
-    TODO docstring Class TweetObj
+    Data model for Tweets
     """
 
     def __str__(
         self
     ):
         """
-        TODO ensuring that printing the object, prints id
+        When printing user id and tweet id are printed.
         """
         returnString = (
             "TweetObj with ID " +
@@ -24,11 +24,21 @@ class TweetObj:
         removeNewLineChar=True
     ):
         """
-        TODO init func Class TweetObj maybe reduce complexity
-        Creates tweetObj, which can be manually filled
-        or via init function
-        """
+        Init function filling attributes with passed tweepyStatus. If
+        no status is passed attributes will be initialized with empty values.
+        This allows to manually fill the attributes later.
 
+        Parameters
+        ----------
+        tweepyStatus : tweepyStatus, default=None
+            tweepyStatus object as returned via tweepy module.
+            Contains the information of each tweet.
+        additionalAttributeList : list, default=None
+            List of attributes that are additionally collected,
+            such as 'lang' for language.
+        removeNewLineChar : boolean, default=True
+            Remove new line characters from texts in tweets.
+        """
         if tweepyStatus is not None:
             self.id_str = tweepyStatus.id_str
             self.created_at = tweepyStatus.created_at

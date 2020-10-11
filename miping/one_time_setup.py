@@ -17,8 +17,16 @@ def main(
     domain
 ):
     """
-    TODO main
+    Starting function to call after parameters were checked.
+
+    Parameters
+    ----------
+    setup_webserver : boolean, default=None, required
+        If True, webserver will be set up.
+    domain : string, default=None
+        Domain to set the server up for. Usually localhost.
     """
+
     webserver = False
 
     print("Setting up miping")
@@ -150,7 +158,16 @@ def modify_env(
     glove_path,
 ):
     """
-    TODO modify_env
+    Modify the .env file for specific environment to change glove path.
+
+    Parameters
+    ----------
+    mipingDir : string, default=None, required
+        Directory path to miping module.
+    workingDir : string, default=None, required
+        Current working directory.
+    glove_path : string, default=None, required
+        Path to glove file.
     """
     try:
         # push glove file data to .env
@@ -186,6 +203,20 @@ def determine_if_webserver(
     domain
 ):
     """
+    Only setup webserver if domain is among the known domains:
+    "miping" or "localhost".
+
+    Parameters
+    ----------
+    setup_webserver : boolean, default=None, required
+        Flag if webserver should setup.
+    domain : string, default=None, required
+        Domain to setup webserver for.
+
+    Returns
+    -------
+    webserver : boolean
+        Flag that decides if webserver is setup or not.
     """
     if setup_webserver == 'True' or setup_webserver is True:
         print('Will setup webserver')
@@ -217,7 +248,15 @@ def prepare_supervisor(
     workingDir
 ):
     """
-    TODO prepare_supervisor
+    Copy and modify supervisor config according to
+    current system.
+
+    Parameters
+    ----------
+    mipingDir : string, default=None, required
+        Directory path to miping module.
+    workingDir : string, default=None, required
+        Current working directory.
     """
     try:
         # cp to data and modify supervisor config
@@ -258,7 +297,15 @@ def prepare_bash_scripts(
     workingDir
 ):
     """
-    TODO prepare_bash_scripts
+    Copy and modify bash scripts for start and stop webserver according to
+    current system.
+
+    Parameters
+    ----------
+    mipingDir : string, default=None, required
+        Directory path to miping module.
+    workingDir : string, default=None, required
+        Current working directory.
     """
     try:
         existsStart = os.path.isfile(workingDir + '/data/start_webserver.sh')
@@ -296,7 +343,13 @@ def prepare_ssl(
     workingDir
 ):
     """
-    TODO prepare_ssl
+    Setup ssl certificates for current system.
+    This step needs probably root permissions.
+
+    Parameters
+    ----------
+    workingDir : string, default=None, required
+        Current working directory.
     """
     try:
         # check and create ssl keys
@@ -349,7 +402,14 @@ def create_self_signed_cert(
     KEY_FILE,
 ):
     """
-    TODO create_self_signed_cert
+    Create self signed certificates for current system.
+
+    Parameters
+    ----------
+    CERT_FILE : string, default=None, required
+        Target path for cert file.
+    KEY_FILE : string, default=None, required
+        Target path for key file.
     """
     from OpenSSL import crypto
     from socket import gethostname
@@ -388,7 +448,14 @@ def modify_web_sh(
     pythonBinaryDir,
 ):
     """
-    TODO modify_web_sh
+    Modify start webserver bash script for current system.
+
+    Parameters
+    ----------
+    confPath : string, default=None, required
+        Path of bash script to manipulate.
+    pythonBinaryDir : string, default=None, required
+        Path for binary of supervisord.
     """
     try:
         print("Modify webserver.sh")
@@ -423,7 +490,14 @@ def modify_nginx_conf(
     wwwRoot,
 ):
     """
-    TODO modify_supervisor_conf
+    Modify start webserver bash script for current system.
+
+    Parameters
+    ----------
+    confPath : string, default=None, required
+        Path of bash script to manipulate.
+    wwwRoot : string, default=None, required
+        Path for webfiles root.
     """
     try:
         print("Modify nginx config")
@@ -465,7 +539,18 @@ def modify_supervisor_conf(
     gunicornPath
 ):
     """
-    TODO modify_supervisor_conf
+    Modify start supervisor config for current system.
+
+    Parameters
+    ----------
+    confPath : string, default=None, required
+        Path of supervisor config to manipulate.
+    currentDir : string, default=None, required
+        Working directory path.
+    user : string, default=None, required
+        Current active user.
+    gunicornPath : string, default=None, required
+        Path for gunicorn.
     """
     try:
         print("Modify supervisor config")
@@ -512,7 +597,18 @@ def downloadGloVe(
     zip_file_url='https://miping-glove.s3.eu-central-1.amazonaws.com/glove.zip'
 ):
     """
-    TODO downloadGloVe
+    Download glove ZIP file from miping server and extract.
+    Download only if file does not exist already.
+    This will take a while.
+
+    Parameters
+    ----------
+    path : string, default=None
+        Path to download glove file to.
+    filename : string, default=None
+        Filename to extract ZIP file to.
+    zip_file_url : string
+        Fill to download ZIP file from.
     """
     try:
         # check if already exists
@@ -542,7 +638,7 @@ def makeDir(
     directory,
 ):
     """
-    makeDir
+    Create directory in parent directory.
     """
     path = parent + directory
     # check if already exists

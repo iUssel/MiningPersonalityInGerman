@@ -7,7 +7,9 @@ from pathlib import Path
 
 
 def main():
-    """TODO Doc string
+    """
+    This function is called, when main.py is called as a script.
+    It controls the whole data collection, preparation, and training process.
     """
 
     # get configuration
@@ -237,7 +239,16 @@ def main():
 
 def initialize():
     """
-    TODO Doc String funcInitialize
+    Initialize function reads configurations and environment variables
+
+    Returns
+    -------
+    config : dict
+        Global config, controlling the overall flow and parameters.
+    config_models : dict
+        Model configuration for grid search and tuning.
+    apiKeys : dict
+        Sensitive values stored locally in .env file, such as API keys.
     """
     # load configuration
     configPath = Path(os.path.dirname(os.path.abspath(__file__)))

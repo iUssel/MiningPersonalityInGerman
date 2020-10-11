@@ -1,5 +1,5 @@
 class NoGloveValueError(Exception):
     """
-    TODO docstring Class NoGloveValueError
+    Raised if no value can be found in GloVe for a user's text.
     """
     pass

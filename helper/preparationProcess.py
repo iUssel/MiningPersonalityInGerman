@@ -11,7 +11,9 @@ from miping.models import TweetCollection
 
 class PreparationProcess:
     """
-    TODO docstring Class PreparationProcess
+    Wrapper class for data preparation process (2nd step).
+    Contains all functions needed for preparation. Calls mostly miping
+    module functions and allows imports and exports of data via csv.
     """
 
     def __init__(
@@ -21,7 +23,16 @@ class PreparationProcess:
         twitter=None,
     ):
         """
-        TODO init func Class PreparationProcess
+        Init function to save configuration and API objects.
+
+        Parameters
+        ----------
+        config : dict, default=None, required
+            Configuration object as returned from ConfigLoader class.
+        ibm : miping.interfaces.IbmAPI, default=None
+            Initialized IbmAPI object, ready for calls.
+        twitter : miping.interfaces.TwitterAPI, default=None
+            Initialized TwitterAPI object, ready for calls.
         """
         # save config
         self.config = config
@@ -39,7 +50,31 @@ class PreparationProcess:
         country,
     ):
         """
-        TODO
+        Fetch and return user profiles and tweet list for user ID list
+        in CSV file.
+
+        Twitter allows only to pass tweet and user IDs, when publicly sharing
+        scraped data. This function allows to import a CSV file containing
+        only user IDs and automatically fetching related user objects and
+        for each user up to the latest 250 tweets. Private users are skipped.
+        The CSV file path is hard coded.
+        Expected CSV path: 'data/04' + country + 'UserIDs.csv'
+
+        Parameters
+        ----------
+        country : string, default=None, required
+            The country parameter is used to differentiate between CSV files.
+            The country name is automatically added to the file name. It
+            should match a country given in the global config.
+
+        Returns
+        -------
+        tweetCol : miping.models.TweetCollection
+            Data model type in miping module. Contains the retrieved tweets
+            for all given users.
+        usersCol : miping.models.UserCollection
+            Data model type in miping module. Contains user objects as
+            returned by Twitter API.
         """
         # load user ids from file
         # path for saved profiles
@@ -90,10 +125,54 @@ class PreparationProcess:
         hydrateUsers=False,
     ):
         """
-        TODO do_condense_tweets
+        Actual data preparation for each user. Combining tweets to string.
 
-        returns profile Collection with user texts and ids
+        This function allows to import and export results via CSV. When
+        importing the actual program code is skipped.
+        Expected CSV path: 'data/04condensed' + country + 'profiles.csv'.
+        It is possible to start this process with just a list of
+        user ids, then hydrate_users() has to be called first.
+        For each user in the list all tweets are combined into a single
+        string. Then the cleaning function is called to remove
+        unwanted characters. Only if the resulting string has 600 or
+        more space separated tokens, a Profile object is created for that
+        user.
+
+        Parameters
+        ----------
+        verifiedTweetCol : miping.models.TweetCollection, default=None, req
+            Previously collected tweets as tweet collection. Contains all
+            tweets that should be condensed and combined with the
+            user objects.
+        verifiedUsers : miping.models.UserCollection, default=None, req
+            Previously collected users as user collection. These will be
+            combined with the tweet collection.
+        language : string, default=None, required
+            Language (two letter ISO code) for given contry
+            (as specified in config).
+        country : string, default=None, required
+            Country name of where the passed users are collected from
+            (as specified in config)
+        readFiles : boolean, default=False
+            If True, CSV files will be read instead of following program
+            logic.
+        writeFiles : boolean, default=False
+            Can only be True, if readFiles is False. If True, will export
+            results to CSV files. Allows to read files in the next program
+            run.
+        hydrateUsers : boolean, default=False
+            Only True, if readFiles is False. Will call hydrate_users() and
+            and take its results as input for condensing. In this case
+            verifiedTweetCol and verifiedUsers can be passed as empty
+            objects.
+
+        Returns
+        -------
+        returnProfileCol : miping.models.ProfileCollection
+            Profile collection containing all profiles created.
+            Profiles include tweets and users.
         """
+
         if writeFiles is True and readFiles is True:
             raise Exception(
                 "readFiles and writeFiles cannot be True at the same time."
@@ -194,9 +273,36 @@ class PreparationProcess:
         writeFiles=False,
     ):
         """
-        TODO do_get_ibm_profiles
+        Query IBM API for given ProfileCollection for personality scores.
 
-        calls ibm api for profiles
+        Allows imports and exports of results via CSV. Expected path is
+        'data/05' + country + 'ibm_profiles.csv'. For each profile
+        in given profile collection, IBM API is called and the existing
+        profile enriched by IBM personality information. Result
+        is returned as enriched profile collection. If errors occur for
+        a user (e.g. too few words), this user will be excluded.
+        A progress bar is shown during this process. Note that IBM
+        does not support all languages.
+
+        Parameters
+        ----------
+        profileCol : miping.models.ProfileCollection, default=None, required
+            Profile collection that should be enriched.
+        country : string, default=None, required
+            Country name of where the passed users are collected from
+            (as specified in config)
+        readFiles : boolean, default=False
+            If True, CSV files will be read instead of following program
+            logic.
+        writeFiles : boolean, default=False
+            Can only be True, if readFiles is False. If True, will export
+            results to CSV files. Allows to read files in the next program
+            run.
+
+        Returns
+        -------
+        returnProfileCol : ProfileCollection
+            New IBM enriched ProfileCollection based on the input collection.
         """
         if writeFiles is True and readFiles is True:
             raise Exception(
@@ -292,10 +398,49 @@ class PreparationProcess:
         skipInputWait=False
     ):
         """
-        TODO do_liwc
+        Return enriched profiles with LIWC data from separate file.
 
-        will enrich given profileCol with read LIWC files
+        Allows imports and exports of results via CSV. Expected path is
+        'data/06' + country + 'liwc_profiles.csv'.
+        The input profile collection contains tweet and user data and
+        should be enriched with LIWC data. Since LIWC is a standalone
+        program it cannot be integrated into the Python program.
+        The user is asked to manually prepare the previously exported
+        profile collection with LIWC and then export the LIWC results.
+        These results are saved in CSV format in liwcPath and fileName.
+        From there they are imported via LIWC API and enrich the existing
+        profiles.
+
+        Parameters
+        ----------
+        profileCol : ProfileCollection, default=None, required
+            Input profile collection which should be enriched with LIWC data.
+        country : string, default=None, required
+            Country name of where the passed users are collected from
+            (as specified in config)
+        liwcPath : string, default=None, required
+            Relative path of where the LIWC export is saved.
+        fileName : string, default=None, required
+            File name for LIWC export.
+        readFiles : boolean, default=False
+            If True, CSV files will be read instead of following program
+            logic.
+        writeFiles : boolean, default=False
+            Can only be True, if readFiles is False. If True, will export
+            results to CSV files. Allows to read files in the next program
+            run.
+        skipInputWait : boolean, default=False
+            If False, the user needs to manually confirm by pressing enter
+            that the LIWC export is ready for import. If True, this
+            confirmation step is skipped and the program assumes the
+            file already exists.
+
+        Returns
+        -------
+        returnProfileCol : ProfileCollection
+            New LIWC enriched ProfileCollection based on the input collection.
         """
+
         if writeFiles is True and readFiles is True:
             raise Exception(
                 "readFiles and writeFiles cannot be True at the same time."
@@ -378,7 +523,22 @@ class PreparationProcess:
         globalProfileCollection,
     ):
         """
-        TODO docstring print_statistics
+        Print descriptive statistics for given profile collections.
+
+        The given dictionary contains one profile collection for
+        each country. Information will be printed about the number
+        of users, number of words, number of tweets, and the Big
+        Five personality scores.
+        In the end and additional check is carried out to see if any
+        user has more than 250 tweets in the collection. Since we
+        selected only 250 tweets for each user, more tweets would
+        indicate that we accidentally selected this user twice.
+
+        Parameters
+        ----------
+        globalProfileCollection : dict, default=None, required
+            Dictionary containing profile collections for each country.
+            For each collection the descriptive statistics are printed.
         """
 
         print("\nData Preparation Statistics")
@@ -446,7 +606,15 @@ class PreparationProcess:
         percentile=False
     ):
         """
-        TODO docstring
+        Print min, max, mean, std, and 25th and 75th percentile for values.
+
+        Parameters
+        ----------
+        printList : list, default=None, required
+            List containing numeric values for which descriptive statistics
+            should be calculated and printed.
+        percentile : boolean, default=False
+            If True, additionally 25th and 75th percentile are printed.
         """
         if len(printList) > 0:
             print("MIN: " + str(min(printList)))
