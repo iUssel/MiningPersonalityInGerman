@@ -7,7 +7,8 @@ miping.egg-info/
 tempCodeRunnerFile.py
 
 ## Ignore data folder completly for development
-/data/*
+/data/private/*
+/data/public/*
 
 ## Ignore Dot files which are used by pyreverse for class diagram generation
 *.dot

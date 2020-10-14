@@ -580,7 +580,7 @@ class PreparationProcess:
                 seq = []
                 for profile in locProfileList:
                     value = getattr(profile, attr)
-                    if value == '':
+                    if value == '' or value is None:
                         # append nothing if no value given
                         continue
                     seq.append(float(value))

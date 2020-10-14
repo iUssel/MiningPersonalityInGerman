@@ -1,13 +1,10 @@
 # MiningPersonalityInGerman
 MiningPersonalityInGerman (MiPInG)
 
-This is a sample text
+Mining Personality In German (MiPinG) predicts your Big Five personality score based on your public Twitter profile. Simply enter your Twitter username and we will analyze the language of your Tweets. To learn more about MiPinG go to https://miping.de/ or visit our GitHub https://github.com/iUssel/MiningPersonalityInGerman.
 
-For API Keys:
-export CONSUMER_KEY='xxxxxxxxxxxxxxxxxxx'
-
-export 'CONSUMER_KEY'='xxxxxxxxxxxxxxxxxxxxxxx'
-
+Please check https://github.com/iUssel/MiningPersonalityInGerman/blob/master/docs/main.html for detailed source code documentation.
+For further documentation check https://github.com/iUssel/MiningPersonalityInGerman/blob/master/docs/SettingUpMiPinG.pdf and https://github.com/iUssel/MiningPersonalityInGerman/blob/master/docs/TrainingMiPinG.pdf .
 
 Copyright 2020 Henning Usselmann
 

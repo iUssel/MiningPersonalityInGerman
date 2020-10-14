@@ -1,4 +1,4 @@
-include docs/*.pdf
+include docs/
 include helper/
 include .env.example
 include config.yml

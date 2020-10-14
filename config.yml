@@ -1,10 +1,10 @@
 # controls which steps to do when starting main.py
 process:
   scraping: False
-  dataPreparation: False
+  dataPreparation: True
   modelTrainingLIWC: False
-  derivePersonalities: True
-  modelTrainingGloVe: True
+  derivePersonalities: False
+  modelTrainingGloVe: False
 
 scraping:
   # number of seconds to stream tweet data
@@ -66,18 +66,18 @@ preparationProcess:
   # determines if files are written during the process or read
   # helps to recreate steps with the same data
   condenseTweets:
-    writeFile: False
-    readFile: True
+    writeFile: True
+    readFile: False
 
   getIBMprofile:
-    writeFile: False
-    readFile: True
+    writeFile: True
+    readFile: False
   
   # for LIWC we always write the files if read is false
   # since it's a separate program
   liwc:
-    writeFile: False
-    readFile: True
+    writeFile: True
+    readFile: False
     # relative path for LIWC results 
     path: 'data/liwcInput/'
     # will be prefixed with country name
@@ -159,17 +159,17 @@ twitter:
   # we want to get tweets from multiple locations
   # (USA and Germany), hence we provide multiple countiries
   coordinates:
-    USA:
-      name: 'USA' # should match Google Places API result
-      lang: 'en'
-      langThreshold: 0.8
-      otherLangThreshold: 0.05
-      northeast: # state Maine, USA
-        lat: 47.459833
-        lng: -66.885417
-      southwest: # state California, USA
-        lat: 32.528832
-        lng: -124.482003
+#    USA:
+#      name: 'USA' # should match Google Places API result
+#      lang: 'en'
+#      langThreshold: 0.8
+#      otherLangThreshold: 0.05
+#      northeast: # state Maine, USA
+#        lat: 47.459833
+#        lng: -66.885417
+#      southwest: # state California, USA
+#        lat: 32.528832
+#        lng: -124.482003
     Germany:
       name: 'Germany'
       lang: 'de'
